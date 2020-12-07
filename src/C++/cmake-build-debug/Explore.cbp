@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Explore"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Explore">
+				<Option output="/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Explore" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/."/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore/Debug"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/IOExplore"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 Explore"/>
+					<CompileFile command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Explore/fast">
+				<Option output="/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Explore" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/."/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore/Debug"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore"/>
+					<Add directory="/Users/aniekmarkus/Documents/Git/Explore/src/C++/IOExplore"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 Explore/fast"/>
+					<CompileFile command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j16 -f &quot;/Users/aniekmarkus/Documents/Git/Explore/src/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore/Debug/CMExplore.pch">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore/cmdline.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore/initialise.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore/main.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMExplore/main.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/bin.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/bin.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/candidate.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/candidate.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/classdef.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/classdef.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/condition.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/condition.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/conjunction.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/conjunction.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/constraint.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/constraint.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/cutoff.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/cutoff.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/explore.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/explore.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/feature.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/feature.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/initialise.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/mandatory.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/mandatory.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/observation.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/observation.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/outbuf.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/partition.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/partition.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/performance.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/performance.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/population.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/population.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/roc.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/roc.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/rocpair.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/rocpair.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/rule.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/rule.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/set.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/set.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/timing.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/timing.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/Explore/values.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/IOExplore/IOExplore.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/IOExplore/IOExplore.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/IOExplore/initialise.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/common.cpp">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/common.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/stl.h">
+			<Option target="Explore"/>
+		</Unit>
+		<Unit filename="/Users/aniekmarkus/Documents/Git/Explore/src/C++/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
