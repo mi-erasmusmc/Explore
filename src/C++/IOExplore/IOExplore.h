@@ -9,8 +9,7 @@
 #define ExploreIO
 
 #include "../Explore/explore.h"
-#include <values.h>
-
+#include "../Explore/values.h"
 
 struct FeatureRestriction {
   string    Name;

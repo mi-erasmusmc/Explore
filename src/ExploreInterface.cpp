@@ -15,21 +15,17 @@ int runExplore(Rcpp::CharacterVector input) {
   // Transfer data from NumericVector to std::string
   auto str = Rcpp::as<std::string>(input); 
   
-  // auto parts = boost::program_options::split_unix(commandLine);
   std::vector<char*> cstrings;
-
+  
   cstrings.push_back(const_cast<char*> (str.c_str()));
   
   int argc = (int)cstrings.size()+1;
   char** argv = cstrings.data();
   
-  Rcpp::Rcout << "Integer: " << argc << "\n";
-  Rcpp::Rcout << "Character: " << argv << "\n";
-
   auto res = main(argc, argv);
   
   return(res);
-
+  
 }
 
 /*** R
@@ -38,7 +34,7 @@ int runExplore(Rcpp::CharacterVector input) {
 # Sys.setenv("PKG_CXXFLAGS"="-I /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0/")
 # sourceCpp(paste0(getwd(), "/src/ExploreInterface.cpp"))
 
-# runExplore("test.project")
+# runExplore(paste0(getwd(), "/src/C++/Test/test.project"))
 */
 
 int main(int argc, char* argv[])
@@ -46,27 +42,14 @@ int main(int argc, char* argv[])
   char*		parm;
   char*   filename;
   ExploreSettings ProjectSettings;
-  
-  int i;
-  printf("Check argc %d\n",argc);
-  for(i=0;i<argc-1;i++)
-  {
-    printf("Check argv %s\n",argv[i]);
-  }
-  
-  parm = argv[0];
-  
-  printf("Check argv point %p\n",parm);
-  printf("Check argv string %s\n",parm);
 
-  //Parse arguments
-  
+  // Parse arguments
   if (get_parameters(argc, argv, &ProjectSettings)){
     MyExplore     = new Explore();
     MyIOExplore 	= new IOExplore();
     MyIOExplore->SetProject(MyExplore);                                           // Connect IOExplore with Explore
     printf("Runs %d \n",ProjectSettings.Runs);
-
+    
     if (MyIOExplore->SetupExploreFromProject(ProjectSettings.ProjectFile)){
       printf("Running EXPLORE using %s\n",ProjectSettings.ProjectFile.c_str());
       for (unsigned int i=1; i <= ProjectSettings.Runs; i++) {
@@ -88,10 +71,9 @@ int main(int argc, char* argv[])
       printf("Project loaded unsuccesfully: \n %s \n",MyIOExplore->PrintProjectLoadErrors().c_str());
     }
   }
-   
+  
   return 0;
 }
-
 
 bool get_parameters(int argc, char *argv[], ExploreSettings *c)
 {  bool   ok = true;
@@ -136,8 +118,6 @@ bool get_parameters(int argc, char *argv[], ExploreSettings *c)
   }
   return(true);
 }
-
-
 
 /**********************************************************************
  
