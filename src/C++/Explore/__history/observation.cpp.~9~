@@ -1,0 +1,108 @@
+//----------------------------------------------------------------------------//
+// $Header: //depot/Explore/Explore/observation.cpp#7 $
+// $Author: Pepe $
+// $DateTime: 2004/10/11 08:11:59 $
+// $Change: 100 $
+//----------------------------------------------------------------------------//
+
+#include "observation.h"
+
+/**********************************************************************
+Function: OBSERVATION() 
+Category: Constructors and Destructors
+Scope: public
+In: -
+Out: -
+Description: Default constructor for an observation.
+**********************************************************************/
+OBSERVATION::OBSERVATION() {
+}
+
+/**********************************************************************
+Function: OBSERVATION()
+Category: Constructors and Destructors
+Scope: public
+In: float, value of the observation.
+    unsigned int, class of the observation.
+    unsigned int, order of the observation.
+Out: -
+Description: Constructor for an observation.
+**********************************************************************/
+OBSERVATION::OBSERVATION(double OValue, unsigned int OClass, unsigned int OOrder) {
+  Value = OValue;
+  Class = OClass;
+  Order = OOrder;
+}
+
+/**********************************************************************
+Function: OBSERVATION()
+Category: Constructors and Destructors
+Scope: public
+In: OBSERVATION&, observation to be copied.
+Out: -
+Description: Copy-constructor for an observation.
+**********************************************************************/
+OBSERVATION::OBSERVATION(const OBSERVATION& CObservation) {
+  Value = CObservation.GetValue();
+  Class = CObservation.GetClass();
+  Order = CObservation.GetOrder();
+}
+
+/**********************************************************************
+Function: ~OBSERVATION()
+Category: Constructors and Destructors
+Scope: public
+In: -
+Out: -
+Description: Destructor for an observation.
+**********************************************************************/
+OBSERVATION::~OBSERVATION() {
+}
+
+/**********************************************************************
+Function: GetOrder() const 
+Category: Selectors
+Scope: public
+In: -
+Out: -
+Description: Returns the order of the observation.
+**********************************************************************/
+unsigned int OBSERVATION::GetOrder() const {
+  return Order;
+}
+
+/**********************************************************************
+Function: GetClass() const
+Category: Selectors
+Scope: public
+In: -
+Out: -
+Description: Returns the class of the observation.
+**********************************************************************/
+unsigned int OBSERVATION::GetClass() const {
+  return Class;
+}
+
+/**********************************************************************
+Function: GetVValue() const
+Category: Selectors
+Scope: public
+In: -
+Out: -
+Description: Returns the continuous value of the observation.
+**********************************************************************/
+double OBSERVATION::GetCValue() const {
+  return CValue;
+}
+
+/**********************************************************************
+Function: GetDValue() const
+Category: Selectors
+Scope: public
+In: -
+Out: -
+Description: Returns the discrete value of the observation.
+**********************************************************************/
+string OBSERVATION::GetDValue() const {
+  return DValue;
+}

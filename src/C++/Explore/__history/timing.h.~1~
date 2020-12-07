@@ -1,0 +1,30 @@
+//----------------------------------------------------------------------------//
+// $Header: //depot/Explore/Explore/timing.h#7 $
+// $Author: Pepe $
+// $DateTime: 2004/10/11 08:11:59 $
+// $Change: 100 $
+//----------------------------------------------------------------------------//
+
+#ifndef TIMING_H
+#define TIMING_H
+
+#include "../stl.h"
+#include <sstream>
+
+class TIMING {
+  private:
+    static vector<string>         Descriptions;
+    static vector<unsigned long>  Counters;
+    static vector<clock_t>        TotalTimes;
+
+    static bool ClkTck;
+
+  public:
+    TIMING();
+    ~TIMING();
+
+    void AddTime(string TDescription, clock_t StartTime, clock_t EndTime);
+    string PrintAll();
+};
+
+#endif

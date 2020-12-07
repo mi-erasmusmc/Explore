@@ -1,0 +1,121 @@
+SETTINGS
+
+PROJECT
+
+Name: Name
+Remarks: sadasd
+Branch and Bound optimization: Yes
+Subsumption Pruning: Yes
+
+POPULATION SETTINGS
+
+Partition method: Cross-validation
+Number of partitions: 10
+Randomize: Yes (seed:1239271569)
+Number of classes: 2
+Number of observations: 690
+Positive class: 1
+
+CLASSES
+
+Class		Size	Ratio
+0		383	0.555072
+1		307	0.444928
+
+
+MANDATORY FEATURES
+
+None.
+
+CUTOFF RANGE
+
+None.
+
+RESTRICTION
+
+
+RULE SETTINGS
+
+Minimum length: 1
+Maximum length: 2
+
+FEATURE SETTINGS
+
+Cutoff method: Referent Value Analysis
+Operator method: Exhaustive
+
+CONSTRAINTS
+
+Optimize: Sensitivity
+Specificity >= 0.95
+Start at : Thu Apr 09 12:06:11 2009
+
+RULES
+
+PARTITION: 1
+
+TIMING (31) Seconds
+Calculation time of each rulelength
+0.031	
+Total:0.031 sec.
+
+RULELENGTH 1
+
+Best candidate: 'A10' > 3.50
+
+Learn-set: SE:46.57 SP:95.65 ACC:73.79 PPV:89.58 NPV:69.04 
+
+test-set: SE:35.87 SP:95.69 ACC:69.23 PPV:86.84 NPV:65.29 
+RULELENGTH 2
+
+Best candidate: 'A8' = 1 AND 'A14' > 11.00
+
+Learn-set: SE:59.93 SP:95.07 ACC:79.42 PPV:90.71 NPV:74.72 
+
+test-set: SE:55.43 SP:98.28 ACC:79.33 PPV:96.23 NPV:73.55 
+
+
+====================================================
+Best Length:2
+Start Inducing rule on validation set
+
+BEST RULES (8 candidates)
+
+RULELENGTH 1
+
+None.
+
+RULELENGTH 2
+
+Best candidate: 'A8' = 1 AND 'A14' > 11.00
+
+Learn-set: SE:59.93 SP:95.07 ACC:79.42 PPV:90.71 NPV:74.72 
+
+Validation-set: SE:43.33 SP:89.47 ACC:69.12 PPV:76.47 NPV:66.67 
+
+PARTITION: 2
+
+TIMING (4547) Seconds
+Calculation time of each rulelength
+4.547	
+Total:4.547 sec.
+
+RULELENGTH 1
+
+Best candidate: 'A10' > 3.50
+
+Learn-set: SE:42.6 SP:95.65 ACC:72.03 PPV:88.72 NPV:67.48 
+
+test-set: SE:45.16 SP:94.78 ACC:72.6 PPV:87.5 NPV:68.12 
+RULELENGTH 2
+
+Best candidate: 'A8' = 1 AND 'A14' > 33.00
+
+Learn-set: SE:54.51 SP:95.36 ACC:77.17 PPV:90.42 NPV:72.31 
+
+test-set: SE:60.22 SP:93.91 ACC:78.85 PPV:88.89 NPV:74.48 
+
+
+====================================================
+Best Length:2
+Start Inducing rule on validation set

@@ -1,0 +1,3 @@
+# Makevars
+PKG_CXXSTD=-std=c++11
+PKG_CXXFLAGS=-I /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0/
