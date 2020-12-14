@@ -5,7 +5,7 @@
 // $Change: 87 $
 //----------------------------------------------------------------------------//
 
-#define FINAL=1
+#define FINAL = 1
 
 #ifdef __BORLANDC__                                                             // Borland Compiler
 #pragma hdrstop                                                                 // End pre-compiled headers

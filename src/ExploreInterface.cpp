@@ -3,8 +3,6 @@
 #include "C++/CMExplore/main.h"
 #include "C++/CMExplore/initialise.h"
 
-#pragma hdrstop
-
 #ifdef DEBUG_TIMING
 TIMING ExploreTiming;
 #endif
@@ -39,8 +37,6 @@ int runExplore(Rcpp::CharacterVector input) {
 
 int main(int argc, char* argv[])
 {
-  char*		parm;
-  char*   filename;
   ExploreSettings ProjectSettings;
 
   // Parse arguments
@@ -153,7 +149,7 @@ void ExploreSummary(string CurrentRule,
                     double RulesTotalLimit,
                     unsigned int PartitionsTotal) {
   
-  printf("Partition '%d' of '%d' ; Combination '%d' of '%d'", PartitionsDone, PartitionsTotal,
+  printf("Partition '%d' of '%d' ; Combination '%ld' of '%ld'", PartitionsDone, PartitionsTotal,
          CombinationsDone, CombinationsTotal);
   printf("Current best rule: '%s' '%s'\n", BestRule.c_str(), CurrentPerformance.c_str());
   
