@@ -5,19 +5,20 @@
 
 using namespace Rcpp;
 
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP _Explore_rcpp_hello_world() {
+// runExplore
+int runExplore(Rcpp::CharacterVector input);
+RcppExport SEXP _Explore_runExplore(SEXP inputSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type input(inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(runExplore(input));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Explore_rcpp_hello_world", (DL_FUNC) &_Explore_rcpp_hello_world, 0},
+    {"_Explore_runExplore", (DL_FUNC) &_Explore_runExplore, 1},
     {NULL, NULL, 0}
 };
 

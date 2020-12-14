@@ -1,11 +1,15 @@
 Package: Explore
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Exhaustive Procedure for LOgic-Rule Extraction
 Version: 1.0
-Date: 2020-12-07
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full sentences.
+Date: 2020-12-14
+Author: Aniek F Markus 
+Maintainer:  Aniek F Markus <a.markus@erasmusmc.nl>
+Description: This package includes the implementation of EXPLORE in C++ and connects it to R. 
 License: GPL (>= 2)
+Depends:
+    R (>= 3.6.1)
 Imports: Rcpp (>= 1.0.5)
+Encoding: UTF-8
 LinkingTo: Rcpp
+RoxygenNote: 7.1.1

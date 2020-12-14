@@ -1,3 +1,4 @@
+
 #include <Rcpp.h>
 #include "C++/CMExplore/main.h"
 #include "C++/CMExplore/initialise.h"
@@ -8,7 +9,6 @@
 TIMING ExploreTiming;
 #endif
 
-// Now I put a comment above
 // [[Rcpp::export]]
 int runExplore(Rcpp::CharacterVector input) {
   
