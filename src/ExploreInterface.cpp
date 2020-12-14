@@ -7,6 +7,7 @@
 TIMING ExploreTiming;
 #endif
 
+//' @export
 // [[Rcpp::export]]
 int runExplore(Rcpp::CharacterVector input) {
   
@@ -32,7 +33,8 @@ int runExplore(Rcpp::CharacterVector input) {
 # Sys.setenv("PKG_CXXFLAGS"="-I /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0/")
 # sourceCpp(paste0(getwd(), "/src/ExploreInterface.cpp"))
 
-# runExplore(paste0(getwd(), "/src/C++/Test/test.project"))
+# input <- paste0(getwd(), "/src/C++/Test/test.project")
+# runExplore(input)
 */
 
 int main(int argc, char* argv[])
