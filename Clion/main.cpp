@@ -3,6 +3,8 @@
 
 #include "../src/C++/CMExplore/initialise.h"
 #include "../src/C++/CMExplore/main.h"
+#include "../src/C++/Explore/explore.h"
+
 #pragma hdrstop
 
 #ifdef DEBUG_TIMING
@@ -30,12 +32,12 @@ int main(int argc, char* argv[])
 	   printf("Run %d of %d:\n",i,ProjectSettings.Runs);
 	 }
 	 printf("Result are written to %s\n\n",MyIOExplore->GetResultFilename().c_str());
-	 MyExplore->SetOutput(MyIOExplore->GetResultBuffer());
-	 MyExplore->ClearPartitions();
-	 MyExplore->Partition();
-	 MyExplore->FindCutoffs();
-	 MyExplore->FindOperators();
-	 MyExplore->Initialise();                                                   // Initialise Explore rule-generation
+	 MyExplore->Explore::SetOutput(MyIOExplore->GetResultBuffer());
+	 MyExplore->Explore::ClearPartitions();
+	 MyExplore->Explore::Partition();
+	 MyExplore->Explore::FindCutoffs();
+	 MyExplore->Explore::FindOperators();
+	 MyExplore->Explore::Initialise();                                                   // Initialise Explore rule-generation
 	 MyExplore->Start();
 	 MyIOExplore->SetNextIncrementalResultFile();
 	 MyExplore->ResetSeed();

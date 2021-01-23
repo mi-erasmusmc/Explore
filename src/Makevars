@@ -1,3 +1,12 @@
 # Makevars
-PKG_CXXSTD=-std=c++11
-PKG_CXXFLAGS=-I /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0/
+CXX_STD = CXX11
+
+SOURCES=$(wildcard C++/*.cpp C++/IOExplore/*.cpp C++/Explore/*.cpp C++/CMExplore/*.cpp)
+
+OBJECTS = ExploreInterface.o RcppExports.o $(SOURCES:.cpp=.o)
+
+PKG_CPPFLAGS=-I.
+
+all: $(SHLIB)
+
+clean:  @rm -f $(OBJECTS)

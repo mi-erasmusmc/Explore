@@ -3,6 +3,9 @@ project(Explore)
 
 set(CMAKE_CXX_STANDARD 14)
 
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -stdlib=libc++")
+
 set(Boost_INCLUDE_DIR /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0)
 set(Boost_LIBRARY_DIR /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0/libs)
 include_directories(${Boost_INCLUDE_DIR})
@@ -14,7 +17,7 @@ include_directories(CMExplore/Debug)
 include_directories(Explore)
 include_directories(IOExplore)
 
-add_executable(Explore
+set(SOURCE_FILES
         Clion/main.cpp
         src/C++/CMExplore/Debug/australian.arff
         src/C++/CMExplore/Debug/bin.obj
@@ -105,3 +108,8 @@ add_executable(Explore
         src/C++/common.h
         src/C++/stl.h
         src/C++/stlpmt.lib)
+
+add_executable(Explore ${SOURCE_FILES})
+
+# add_library(ExploreLib SHARED ${SOURCE_FILES})
+# add_library(ExploreLib SHARED ${SOURCE_FILES})

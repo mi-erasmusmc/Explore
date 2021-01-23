@@ -33,7 +33,7 @@
 #include <float.h>
 
 #define        MAXDOUBLE        DBL_MAX
-#define        MAXFLOAT        FLT_MAX
+/* #define        MAXFLOAT        FLT_MAX */
 #define        MINDOUBLE        DBL_MIN
 #define        MINFLOAT        FLT_MIN
 #define        DMINEXP                DBL_MIN_EXP

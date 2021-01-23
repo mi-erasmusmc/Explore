@@ -1,11 +1,17 @@
 
+// [[Rcpp::depends(BH)]]
 #include <Rcpp.h>
 #include "C++/CMExplore/main.h"
 #include "C++/CMExplore/initialise.h"
+#include "../src/C++/Explore/explore.h"
 
 #ifdef DEBUG_TIMING
 TIMING ExploreTiming;
 #endif
+
+using namespace Rcpp;
+
+//' @useDynLib Explore
 
 //' @export
 // [[Rcpp::export]]
@@ -55,13 +61,13 @@ int main(int argc, char* argv[])
           printf("Run %d of %d:\n",i,ProjectSettings.Runs);
         }
         printf("Result are written to %s\n\n",MyIOExplore->GetResultFilename().c_str());
-        MyExplore->SetOutput(MyIOExplore->GetResultBuffer());
-        MyExplore->ClearPartitions();
-        MyExplore->Partition();
-        MyExplore->FindCutoffs();
-        MyExplore->FindOperators();
-        MyExplore->Initialise();                                                   // Initialise Explore rule-generation
-        MyExplore->Start();
+        MyExplore->Explore::SetOutput(MyIOExplore->GetResultBuffer());
+        MyExplore->Explore::ClearPartitions();
+        MyExplore->Explore::Partition();
+        MyExplore->Explore::FindCutoffs();
+        MyExplore->Explore::FindOperators();
+        MyExplore->Explore::Initialise();                                                   // Initialise Explore rule-generation
+        MyExplore->Explore::Start();
         MyIOExplore->SetNextIncrementalResultFile();
         MyExplore->ResetSeed();
       }
@@ -156,7 +162,6 @@ void ExploreSummary(string CurrentRule,
   printf("Current best rule: '%s' '%s'\n", BestRule.c_str(), CurrentPerformance.c_str());
   
 }
-
 
 
 //---------------------------------------------------------------------------
