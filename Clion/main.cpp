@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	 MyExplore->Explore::FindOperators();
 	 MyExplore->Explore::Initialise();                                                   // Initialise Explore rule-generation
 	 MyExplore->Start();
-	 MyIOExplore->SetNextIncrementalResultFile();
+	 // MyIOExplore->SetNextIncrementalResultFile();
 	 MyExplore->ResetSeed();
    }
   } else {
