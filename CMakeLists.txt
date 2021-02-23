@@ -19,36 +19,6 @@ include_directories(IOExplore)
 
 set(SOURCE_FILES
         Clion/main.cpp
-        src/C++/CMExplore/Debug/australian.arff
-        src/C++/CMExplore/Debug/bin.obj
-        src/C++/CMExplore/Debug/breast-cancer.arff
-        src/C++/CMExplore/Debug/candidate.obj
-        src/C++/CMExplore/Debug/classdef.obj
-        src/C++/CMExplore/Debug/CMExplore.exe
-        src/C++/CMExplore/Debug/CMExplore.map
-        src/C++/CMExplore/Debug/CMExplore.pch
-        src/C++/CMExplore/Debug/CMExplore.tds
-        src/C++/CMExplore/Debug/common.obj
-        src/C++/CMExplore/Debug/condition.obj
-        src/C++/CMExplore/Debug/conjunction.obj
-        src/C++/CMExplore/Debug/constraint.obj
-        src/C++/CMExplore/Debug/cutoff.obj
-        src/C++/CMExplore/Debug/explore.obj
-        src/C++/CMExplore/Debug/feature.obj
-        src/C++/CMExplore/Debug/IOExplore.obj
-        src/C++/CMExplore/Debug/main.obj
-        src/C++/CMExplore/Debug/mandatory.obj
-        src/C++/CMExplore/Debug/observation.obj
-        src/C++/CMExplore/Debug/output-1.result
-        src/C++/CMExplore/Debug/partition.obj
-        src/C++/CMExplore/Debug/performance.obj
-        src/C++/CMExplore/Debug/population.obj
-        src/C++/CMExplore/Debug/roc.obj
-        src/C++/CMExplore/Debug/rocpair.obj
-        src/C++/CMExplore/Debug/rule.obj
-        src/C++/CMExplore/Debug/set.obj
-        src/C++/CMExplore/Debug/test.project
-        src/C++/CMExplore/Debug/timing.obj
         src/C++/CMExplore/cmdline.h
         src/C++/CMExplore/CMExplore.cbproj
         src/C++/CMExplore/CMExplore.cbproj.local

@@ -245,6 +245,8 @@ bool IOExplore::ReadDataFile() {
   Project->SetNoClasses(ClassNames.size());
   return true;
  */
+
+  return false;
 }
 
 /**********************************************************************
@@ -1725,6 +1727,7 @@ bool IOExplore::SetResultFile(string IOFilename) {
   }
 
   CloseResultFile();
+
   ResultFile.open(ResultFilename.c_str(),ios::out);
   if (ResultFile.is_open()) {
 	return true;

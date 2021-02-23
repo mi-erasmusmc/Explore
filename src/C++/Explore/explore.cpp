@@ -59,6 +59,7 @@ Explore::Explore() {
     // Output
     IsUpdateRealtime            = false;
 
+    IsSavePartitions            = true; // added
     IsPrintSettings             = true;
     IsPrintPartitions           = false;
 
@@ -1395,7 +1396,7 @@ Out: -
 Description: Partition the population of explore.
 **********************************************************************/
 bool Explore::Partition() {
-  //ValidateBestCandidate();                                                          // Do not remove! Is needed for summarising best candidates at the end of projects (ie. HOLDOUT)
+  ValidateBestCandidate();                                                          // Do not remove! Is needed for summarising best candidates at the end of projects (ie. HOLDOUT)
 
   if (Population.Partition()) {                                                 // Will return false with holdout on second call!
 

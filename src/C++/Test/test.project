@@ -4,13 +4,13 @@ Remarks=test
 DataFile=/Users/aniekmarkus/Documents/Git/Explore/src/C++/Test/iris.arff
 Output=File
 OutputFile=/Users/aniekmarkus/Documents/Git/Explore/src/C++/Test/iris.result
-IncrementalOutputFile=true
+IncrementalOutputFile=false
 [Setup]
 PartitionMethod=CROSS_VALIDATION
 Randomize=no
 StartRulelength=1
 EndRulelength=3
-LearnRatio=0.66
+LearnRatio=0.9
 NumberofPartitions=3
 OperatorMethod=ROCAREA
 CutoffMethod=RVAC
@@ -35,5 +35,6 @@ PrintFeatureSets=no
 PrintCutoffSets=yes
 PrintPerformance=yes
 PrintSets=no
+SavePartitions=no
 [Run]
 OptimizeRules=yes

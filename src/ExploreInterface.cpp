@@ -16,9 +16,8 @@ using namespace Rcpp;
 //' @export
 // [[Rcpp::export]]
 int runExplore(Rcpp::CharacterVector input) {
-  
-  // Transfer data from NumericVector to std::string
-  auto str = Rcpp::as<std::string>(input); 
+  // Transfer data from CharacterVector to std::string
+  std::string str = Rcpp::as<std::string>(input); 
   
   std::vector<char*> cstrings;
   
@@ -27,10 +26,9 @@ int runExplore(Rcpp::CharacterVector input) {
   int argc = (int)cstrings.size()+1;
   char** argv = cstrings.data();
   
-  auto res = main(argc, argv);
+  int res = main(argc, argv);
   
   return(res);
-  
 }
 
 /*** R
@@ -46,7 +44,7 @@ int runExplore(Rcpp::CharacterVector input) {
 int main(int argc, char* argv[])
 {
   ExploreSettings ProjectSettings;
-
+  
   // Parse arguments
   if (get_parameters(argc, argv, &ProjectSettings)){
     MyExplore     = new Explore();
@@ -61,14 +59,14 @@ int main(int argc, char* argv[])
           printf("Run %d of %d:\n",i,ProjectSettings.Runs);
         }
         printf("Result are written to %s\n\n",MyIOExplore->GetResultFilename().c_str());
-        MyExplore->Explore::SetOutput(MyIOExplore->GetResultBuffer());
-        MyExplore->Explore::ClearPartitions();
-        MyExplore->Explore::Partition();
-        MyExplore->Explore::FindCutoffs();
-        MyExplore->Explore::FindOperators();
-        MyExplore->Explore::Initialise();                                                   // Initialise Explore rule-generation
-        MyExplore->Explore::Start();
-        MyIOExplore->SetNextIncrementalResultFile();
+        MyExplore->SetOutput(MyIOExplore->GetResultBuffer());
+        MyExplore->ClearPartitions();
+        MyExplore->Partition();
+        MyExplore->FindCutoffs();
+        MyExplore->FindOperators();
+        MyExplore->Initialise();                                                   // Initialise Explore rule-generation
+        MyExplore->Start();
+        // MyIOExplore->SetNextIncrementalResultFile();
         MyExplore->ResetSeed();
       }
     } else {
