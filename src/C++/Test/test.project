@@ -19,6 +19,8 @@ ClassFeature=class
 PositiveClass=Iris-versicolor
 [Restrictions]
 Rule=
+FeatureInclude=
+FeatureRule=
 [Constraints]
 Maximize=SPECIFICITY
 [Output]

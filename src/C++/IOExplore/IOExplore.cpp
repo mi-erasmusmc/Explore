@@ -1149,7 +1149,11 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
 		ProjectSettings.Rule = CurrentValue;
 	  }
 
-	  if (CurrentHeading.compare("Feature")==0) {                               // Feature restriction (feature, mandatory, minrange1, maxrange1, minrange2, maxrange2, operator)
+        if (CurrentHeading.compare("FeatureInclude")==0) {                                  // Include mandatory features
+            ProjectSettings.FeatureInclude = CurrentValue;
+        }
+
+	  if (CurrentHeading.compare("FeatureRule")==0) {                               // Feature restriction (feature, mandatory, minrange1, maxrange1, minrange2, maxrange2, operator)
 		FeatureParameters.clear();
 		char* FeatureRestriction = (char*)CurrentValue.c_str();
 		MyToken = str_parse(&FeatureRestriction,";");
@@ -1520,6 +1524,12 @@ bool IOExplore::SetupExploreFromStruct() {
       return false;
     }
   }
+
+    if (Project->GetFeatureNumber(ProjectSettings.FeatureInclude)>-1){
+        Project->SetMandatoryFeature(Project->GetFeatureNumber(ProjectSettings.FeatureInclude), true);
+    }
+
+
   Project->SetMaximizeMeasure(ProjectSettings.Maximize);
   if (ProjectSettings.Sensitivity>0 && ProjectSettings.Sensitivity < 1) {
     Project->SetConstraint(SENSITIVITY,ProjectSettings.Sensitivity);
@@ -1536,6 +1546,7 @@ bool IOExplore::SetupExploreFromStruct() {
   if (ProjectSettings.NPV>0 && ProjectSettings.NPV < 1) {
     Project->SetConstraint(NPV,ProjectSettings.NPV);
   }
+
   Project->SetRuleOutputMethod(ProjectSettings.OutputMethod);
 
   Project->SetPrintSettings(ProjectSettings.PrintSettings);

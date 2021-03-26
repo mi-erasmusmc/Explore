@@ -43,6 +43,7 @@ struct ExploreSettings {
   CUTOFF_METHOD               CutoffMethod;
   string                      CutoffFile;
   string                      Rule;                                             // Restrictions
+  string                      FeatureInclude;
   vector<FeatureRestriction>  FeatureRestrictions;
   PERFORMANCE_MEASURE         Maximize;
   double                      Sensitivity;
