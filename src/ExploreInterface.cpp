@@ -5,17 +5,16 @@
 #include "C++/CMExplore/initialise.h"
 #include "../src/C++/Explore/explore.h"
 
-#ifdef DEBUG_TIMING
-TIMING ExploreTiming;
-#endif
+#define DEBUG_TIMING
 
 using namespace Rcpp;
 
 //' @useDynLib Explore
+//' @import Rcpp
 
 //' @export
 // [[Rcpp::export]]
-int runExplore(Rcpp::CharacterVector input) {
+void runExplore(Rcpp::CharacterVector input) {
   // Transfer data from CharacterVector to std::string
   std::string str = Rcpp::as<std::string>(input); 
   
@@ -27,8 +26,6 @@ int runExplore(Rcpp::CharacterVector input) {
   char** argv = cstrings.data();
   
   int res = main(argc, argv);
-  
-  return(res);
 }
 
 /*** R
@@ -50,15 +47,15 @@ int main(int argc, char* argv[])
     MyExplore     = new Explore();
     MyIOExplore 	= new IOExplore();
     MyIOExplore->SetProject(MyExplore);                                           // Connect IOExplore with Explore
-    printf("Runs %d \n",ProjectSettings.Runs);
+    // printf("Runs %d \n",ProjectSettings.Runs);
     
     if (MyIOExplore->SetupExploreFromProject(ProjectSettings.ProjectFile)){
-      printf("Running EXPLORE using %s\n",ProjectSettings.ProjectFile.c_str());
+      // printf("Running EXPLORE using %s\n",ProjectSettings.ProjectFile.c_str());
       for (unsigned int i=1; i <= ProjectSettings.Runs; i++) {
         if (ProjectSettings.Runs>1) {
           printf("Run %d of %d:\n",i,ProjectSettings.Runs);
         }
-        printf("Result are written to %s\n\n",MyIOExplore->GetResultFilename().c_str());
+        // printf("Result are written to %s\n\n",MyIOExplore->GetResultFilename().c_str());
         MyExplore->SetOutput(MyIOExplore->GetResultBuffer());
         MyExplore->ClearPartitions();
         MyExplore->Partition();

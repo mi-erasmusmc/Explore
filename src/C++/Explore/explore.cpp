@@ -3519,8 +3519,8 @@ void Explore::PrintSummary() {
   #endif
 
   #ifdef COMMANDVERSION
-	 printf("Partition %d of %d\n", PartitionsDone, NoPartitions);
-	 printf("Best rule: %s \nPerformance: %s\n\n", BestStringRule.c_str(), BestStringPerformance.c_str());
+	// printf("Partition %d of %d\n", PartitionsDone, NoPartitions);
+	// printf("Best rule: %s \nPerformance: %s\n\n", BestStringRule.c_str(), BestStringPerformance.c_str());
   #endif
 
 #ifdef DEBUG_TIMING
