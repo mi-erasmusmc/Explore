@@ -4,7 +4,7 @@ Title: Exhaustive Procedure for LOgic-Rule Extraction
 Version: 1.0
 Date: 2020-12-14
 Author: Aniek F Markus 
-Maintainer:  Aniek F Markus <a.markus@erasmusmc.nl>
+Maintainer: Aniek F Markus <a.markus@erasmusmc.nl>
 Description: This package includes the implementation of EXPLORE in C++ and connects it to R. 
 License: GPL (>= 2)
 Depends:
@@ -13,3 +13,7 @@ Imports: Rcpp (>= 1.0.5)
 Encoding: UTF-8
 LinkingTo: Rcpp, BH (>= 1.51.0)
 RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
