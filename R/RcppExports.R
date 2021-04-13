@@ -2,10 +2,11 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @useDynLib Explore
+#' @import Rcpp
 NULL
 
 #' @export
 runExplore <- function(input) {
-    .Call(`_Explore_runExplore`, input)
+    invisible(.Call('_Explore_runExplore', PACKAGE = 'Explore', input))
 }
 

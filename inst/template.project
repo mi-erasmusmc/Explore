@@ -24,8 +24,8 @@ FeatureRule=
 [Constraints]
 Maximize=ACCURACY
 [Output]
-OutputMethod=INCREMENT
-PrintSettings=yes
+OutputMethod=BEST
+PrintSettings=no
 PrintPartitions=no
 PrintFeatureOperators=no
 PrintCutoffMethod=no
@@ -35,7 +35,7 @@ PrintOperatorValues=no
 PrintCombinations=no
 PrintFeatureSets=no
 PrintCutoffSets=no
-PrintPerformance=yes
+PrintPerformance=no
 PrintSets=no
 SavePartitions=no
 [Run]

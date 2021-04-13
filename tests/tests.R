@@ -18,4 +18,4 @@ model <- Explore::trainExplore(output_path = output_path, train_data = data, set
 model <- Explore::trainExplore(output_path = output_path, train_data = data, ClassFeature = "'class'", PositiveClass = '"Iris-versicolor"', FeatureInclude = "'petallength'")
 
 ###  Predict
-prediction <- Explore::predictExplore(output_path, model, test_data = data)
+prediction <- Explore::predictExplore(model, test_data = data)

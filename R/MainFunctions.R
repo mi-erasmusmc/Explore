@@ -46,12 +46,15 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
   settings <- paste(readLines(settings_path), collapse="\n")
   results <- paste(readLines(getSetting(settings, "OutputFile", type = "value")), collapse="\n")
   
-  all_rules <- stringr::str_extract_all(results, "Best candidate:.*?\u000A")[[1]] # check if it works with  multiple best candidates
+  # TODO: check if this works with mandatory features
+  best_length <- stringr::str_extract(results, "Best Length:.*?\u000A")[[1]] # extract best length 
+  best_length <- parse_number(best_length) # filter out only the integer
   
-  # TODO: find out which model is the one of interest
-  rule_string <- all_rules[[length(all_rules)]]
+  # Find rule of interest
+  rule_string <- stringr::str_extract(results, paste0("RULELENGTH ", best_length, "\u000A*?Best candidate:.*?\u000A"))[[1]]
   
   # Clean string
+  rule_string <- stringr::str_replace(rule_string, paste0("RULELENGTH ", best_length), "")
   rule_string <- stringr::str_replace(rule_string, "Best candidate:", "")
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
   rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
@@ -81,7 +84,7 @@ settingsExplore <- function(settings,
                             PrintSettings = NULL,
                             PrintPerformance = NULL) {
   
-  # Insert location training data and cuytoff file if train_data is entered
+  # Insert location training data and cutoff file if train_data is entered
   if (!is.null(train_data)) {
     settings <- changeSetting(settings, parameter = "DataFile", input = paste0(output_path, file_name, ".arff"), default_setting = NA)
     settings <- changeSetting(settings, parameter = "CutoffFile", input = paste0(output_path, file_name, ".cutoff"), default_setting = NA)
@@ -112,7 +115,6 @@ settingsExplore <- function(settings,
 
 #' predictExplore
 #'
-#' @param output_path 
 #' @param model 
 #' @param test_data 
 #'
@@ -120,7 +122,7 @@ settingsExplore <- function(settings,
 #' @export
 #'
 #' @examples
-predictExplore <- function(output_path, model, test_data) {
+predictExplore <- function(model, test_data) {
   
   # Split string 
   all_terms <- stringr::str_split_fixed(model, "OR", n=Inf)

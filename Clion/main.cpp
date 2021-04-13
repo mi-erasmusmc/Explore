@@ -21,30 +21,30 @@ int main(int argc, char* argv[])
  ExploreSettings ProjectSettings;
 
  //Parse arguments
- if (get_parameters(argc, argv, &ProjectSettings)){
-  MyExplore     = new Explore();
-  MyIOExplore 	= new IOExplore();
-  MyIOExplore->SetProject(MyExplore);                                           // Connect IOExplore with Explore
-  if (MyIOExplore->SetupExploreFromProject(ProjectSettings.ProjectFile)){
-   printf("Running EXPLORE using %s\n",ProjectSettings.ProjectFile.c_str());
-	for (unsigned int i=1; i <= ProjectSettings.Runs; i++) {
-	 if (ProjectSettings.Runs>1) {
-	   printf("Run %d of %d:\n",i,ProjectSettings.Runs);
-	 }
-	 printf("Result are written to %s\n\n",MyIOExplore->GetResultFilename().c_str());
-	 MyExplore->Explore::SetOutput(MyIOExplore->GetResultBuffer());
-	 MyExplore->Explore::ClearPartitions();
-	 MyExplore->Explore::Partition();
-	 MyExplore->Explore::FindCutoffs();
-	 MyExplore->Explore::FindOperators();
-	 MyExplore->Explore::Initialise();                                                   // Initialise Explore rule-generation
-	 MyExplore->Start();
-	 // MyIOExplore->SetNextIncrementalResultFile();
-	 MyExplore->ResetSeed();
-   }
-  } else {
-		printf("Project loaded unsuccesfully: \n %s \n",MyIOExplore->PrintProjectLoadErrors().c_str());
-  }
+ if (get_parameters(argc, argv, &ProjectSettings)) {
+     MyExplore = new Explore();
+     MyIOExplore = new IOExplore();
+     MyIOExplore->SetProject(MyExplore);                                           // Connect IOExplore with Explore
+     if (MyIOExplore->SetupExploreFromProject(ProjectSettings.ProjectFile)) {
+         printf("Running EXPLORE using %s\n", ProjectSettings.ProjectFile.c_str());
+         for (unsigned int i = 1; i <= ProjectSettings.Runs; i++) {
+             if (ProjectSettings.Runs > 1) {
+                 printf("Run %d of %d:\n", i, ProjectSettings.Runs);
+             }
+             printf("Result are written to %s\n\n", MyIOExplore->GetResultFilename().c_str());
+             MyExplore->Explore::SetOutput(MyIOExplore->GetResultBuffer());
+             MyExplore->Explore::ClearPartitions();
+             MyExplore->Explore::Partition();
+             MyExplore->Explore::FindCutoffs();
+             MyExplore->Explore::FindOperators();
+             MyExplore->Explore::Initialise();                                                   // Initialise Explore rule-generation
+             MyExplore->Explore::Start();
+             // MyIOExplore->Explore::SetNextIncrementalResultFile();
+             MyExplore->Explore::ResetSeed();
+         }
+     } else {
+         printf("Project loaded unsuccesfully: \n %s \n", MyIOExplore->PrintProjectLoadErrors().c_str());
+     }
  }
   return 0;
 }

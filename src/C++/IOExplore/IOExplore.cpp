@@ -131,7 +131,7 @@ void IOExplore::ClearSettings() {
   ProjectSettings.PPV                    = 0;
   ProjectSettings.Accuracy               = 0;
   ProjectSettings.OutputMethod           = INCREMENT;
-  ProjectSettings.PrintSettings          = true;
+  ProjectSettings.PrintSettings          = false;
   ProjectSettings.PrintPartitions        = false;
   ProjectSettings.PrintFeatureOperators  = false;
   ProjectSettings.PrintCutoffMethod      = false;
@@ -141,10 +141,10 @@ void IOExplore::ClearSettings() {
   ProjectSettings.PrintCombinations      = false;
   ProjectSettings.PrintFeatureSets       = false;
   ProjectSettings.PrintCutoffSets        = false;
-  ProjectSettings.PrintPerformance       = true;
+  ProjectSettings.PrintPerformance       = false;
   ProjectSettings.PrintSets              = false;
-  ProjectSettings.BranchBound            = true;
-  ProjectSettings.SubSumption            = true;
+  ProjectSettings.BranchBound            = false;
+  ProjectSettings.SubSumption            = false;
 }
 
 /**********************************************************************

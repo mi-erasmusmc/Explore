@@ -165,6 +165,7 @@ Out: -
 Description: Prints the current combination.
 **********************************************************************/
 void RULE::PrintCombination() {
+    cout << "Term tuple: ";
   for (unsigned int i=0; i<Conjunctions.size(); i++) {
     if (i) cout << " ";
     cout << Conjunctions[i].Size;
@@ -206,7 +207,6 @@ void RULE::PrintCutoffSet() {
   clock_t Start, End;
   Start = clock();
 #endif
-
   for (unsigned int i=0; i<Conjunctions.size(); i++) {
 	if (i>0) cout << " OR  ";
     for (unsigned int j=0; j< Conjunctions[i].Conditions.size(); j++) {
