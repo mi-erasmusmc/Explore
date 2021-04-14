@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
          for (unsigned int i = 1; i <= ProjectSettings.Runs; i++) {
              if (ProjectSettings.Runs > 1) {
                  printf("Run %d of %d:\n", i, ProjectSettings.Runs);
+                 MyIOExplore->IOExplore::SetNextIncrementalResultFile(); // Only when multiple runs this is required
              }
              printf("Result are written to %s\n\n", MyIOExplore->GetResultFilename().c_str());
              MyExplore->Explore::SetOutput(MyIOExplore->GetResultBuffer());
@@ -39,7 +40,6 @@ int main(int argc, char* argv[])
              MyExplore->Explore::FindOperators();
              MyExplore->Explore::Initialise();                                                   // Initialise Explore rule-generation
              MyExplore->Explore::Start();
-             // MyIOExplore->Explore::SetNextIncrementalResultFile();
              MyExplore->Explore::ResetSeed();
          }
      } else {
