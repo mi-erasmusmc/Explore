@@ -19,3 +19,6 @@ model <- Explore::trainExplore(output_path = output_path, train_data = data, Cla
 
 ###  Predict
 prediction <- Explore::predictExplore(model, test_data = data)
+
+### AUC
+aucroc <- aucrocExplore(output_path = output_path, train_data = data, settings_path = paste0(output_path, "train_data.project"), ClassFeature = "'class'", PositiveClass = '"Iris-versicolor"')

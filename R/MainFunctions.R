@@ -46,16 +46,11 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
   settings <- paste(readLines(settings_path), collapse="\n")
   results <- paste(readLines(getSetting(settings, "OutputFile", type = "value")), collapse="\n")
   
-  # TODO: check if this works with mandatory features
-  best_length <- stringr::str_extract(results, "Best Length:.*?\u000A")[[1]] # extract best length 
-  best_length <- parse_number(best_length) # filter out only the integer
-  
-  # Find rule of interest
-  rule_string <- stringr::str_extract(results, paste0("RULELENGTH ", best_length, "\u000A*?Best candidate:.*?\u000A"))[[1]]
-  
+  # Load model
+  rule_string <- stringr::str_extract(results, "Best candidate \\(overall\\):.*?\u000A")
+ 
   # Clean string
-  rule_string <- stringr::str_replace(rule_string, paste0("RULELENGTH ", best_length), "")
-  rule_string <- stringr::str_replace(rule_string, "Best candidate:", "")
+  rule_string <- stringr::str_replace(rule_string, "Best candidate \\(overall\\):", "")
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
   rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
   
@@ -81,6 +76,9 @@ settingsExplore <- function(settings,
                             ClassFeature,
                             PositiveClass,
                             FeatureInclude = NULL,
+                            Maximize = NULL,
+                            Accuracy = NULL,
+                            Specificity = NULL,
                             PrintSettings = NULL,
                             PrintPerformance = NULL) {
   
@@ -99,6 +97,9 @@ settingsExplore <- function(settings,
   # Insert other settings if given
   settings <- changeSetting(settings, parameter = "EndRulelength", input = EndRulelength, default_setting = 3)
   settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude, default_setting = "")
+  settings <- changeSetting(settings, parameter = "Maximize", input = Maximize, default_setting = "ACCURACY")
+  settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy, default_setting = "")
+  settings <- changeSetting(settings, parameter = "Specificity", input = Specificity, default_setting = "")
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings, default_setting = "yes")
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance, default_setting = "yes")
   
@@ -152,3 +153,42 @@ predictExplore <- function(model, test_data) {
 }
 
 
+#' aucrocExplore
+#'
+#' @param output_path 
+#' @param train_data 
+#' @param settings_path 
+#' @param file_name 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+aucrocExplore <- function(output_path, train_data, settings_path, ...) {
+  
+  # Range of specificities to check
+  specificities <- seq(from = 0.01, to = 0.99, by = 0.02)
+  
+  # Set specificity constraint and maximize sensitivity
+  sensitivities <- rep(NA, length(specificities))
+  for (s in 1:length(specificities)) { # s <- 0.1
+    
+    model <- Explore::trainExplore(output_path = output_path, train_data = train_data, settings_path = settings_path, Maximize = "SENSITIVITY", Specificity = specificities[s], ...)
+    
+    # Extract sensitivity from results file
+    results <- paste(readLines(paste0(output_path, "train_data.result")), collapse="\n")
+    
+    sensitivity <- stringr::str_extract_all(results, "Train-set: .*?\u000A")[[1]]
+    sensitivity <- stringr::str_extract(results, "SE:.*? ")[[1]]
+    sensitivity <- stringr::str_remove_all(sensitivity, "SE:")
+    sensitivity <- stringr::str_replace_all(sensitivity, " ", "")
+    
+    sensitivities[s] <- as.numeric(sensitivity)
+  }
+  
+  aucroc <- simple_auc(TPR = rev(sensitivities), FPR = rev(1 - specificities))
+  plot(1-specificities, sensitivities)
+  
+  return(aucroc)
+}

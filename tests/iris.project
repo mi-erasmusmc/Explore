@@ -23,6 +23,8 @@ FeatureInclude=''
 FeatureRule=
 [Constraints]
 Maximize=ACCURACY
+Accuracy=
+Specificity=
 [Output]
 OutputMethod=BEST
 PrintSettings=no
@@ -35,6 +37,7 @@ PrintOperatorValues=no
 PrintCombinations=no
 PrintFeatureSets=no
 PrintCutoffSets=no
+PrintCutoffSetsBestLength=no
 PrintPerformance=no
 PrintSets=no
 SavePartitions=no
