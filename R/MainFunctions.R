@@ -22,12 +22,12 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
       stop("Data is NULL, but is required when settings_path is not entered.")
     } else {
       # Load template
-      settings <- paste(readLines("inst/template.project"), collapse="\n")
+      settings <- paste0(paste(readLines("inst/template.project"), collapse="\n"),"\n")
     }
   }
   else {
     # Load settings
-    settings <- paste(readLines(settings_path), collapse="\n")
+    settings <- paste0(paste(readLines(settings_path), collapse="\n"),"\n")
   }
   
   # Save train_data if entered
@@ -73,6 +73,8 @@ settingsExplore <- function(settings,
                             file_name,
                             train_data = NULL,
                             EndRulelength = NULL,
+                            OperatorMethod = NULL,
+                            CutoffMethod = NULL,
                             ClassFeature,
                             PositiveClass,
                             FeatureInclude = NULL,
@@ -80,7 +82,9 @@ settingsExplore <- function(settings,
                             Accuracy = NULL,
                             Specificity = NULL,
                             PrintSettings = NULL,
-                            PrintPerformance = NULL) {
+                            PrintPerformance = NULL,
+                            Subsumption = NULL,
+                            BranchBound = NULL) {
   
   # Insert location training data and cutoff file if train_data is entered
   if (!is.null(train_data)) {
@@ -94,14 +98,18 @@ settingsExplore <- function(settings,
   # Insert default setting if needed
   settings <- changeSetting(settings, parameter = "OutputFile", input = NULL, default_setting = paste0(output_path, file_name, ".result"))
   
-  # Insert other settings if given
+  # Insert other settings if given and default if @ in template
   settings <- changeSetting(settings, parameter = "EndRulelength", input = EndRulelength, default_setting = 3)
+  settings <- changeSetting(settings, parameter = "OperatorMethod", input = OperatorMethod, default_setting = "ROCAREA")
+  settings <- changeSetting(settings, parameter = "CutoffMethod", input = CutoffMethod, default_setting = "RVAC")
   settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude, default_setting = "")
   settings <- changeSetting(settings, parameter = "Maximize", input = Maximize, default_setting = "ACCURACY")
   settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy, default_setting = "")
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity, default_setting = "")
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings, default_setting = "yes")
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance, default_setting = "yes")
+  settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption, default_setting = "no")
+  settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound, default_setting = "no")
   
   # Save settings file
   settings_path <- paste0(output_path, file_name,".project")
