@@ -141,6 +141,7 @@ void IOExplore::ClearSettings() {
   ProjectSettings.PrintCombinations      = false;
   ProjectSettings.PrintFeatureSets       = false;
   ProjectSettings.PrintCutoffSets        = false;
+  ProjectSettings.PrintCutoffSetsBestLength        = false;
   ProjectSettings.PrintPerformance       = false;
   ProjectSettings.PrintSets              = false;
   ProjectSettings.BranchBound            = false;
@@ -665,7 +666,11 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
     ProjectSettings.PrintCutoffSets = false;
     if (Project->GetPrintCutoffSets()) {
       ProjectSettings.PrintCutoffSets = true;
-    } 
+    }
+    ProjectSettings.PrintCutoffSetsBestLength = false;
+    if (Project->GetPrintCutoffSetsBestLength()) {
+        ProjectSettings.PrintCutoffSetsBestLength = true;
+    }
     ProjectSettings.PrintPerformance = false;
     if (Project->GetPrintPerformance()) {
       ProjectSettings.PrintPerformance = true;
@@ -897,7 +902,7 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
     } else {
       ProjectFile << "PrintFeatureSets=no" << endl;
     }
-    if (ProjectSettings.PrintFeatureSets) {
+    if (ProjectSettings.PrintCutoffSets) {
       ProjectFile << "PrintCutoffSets=yes" << endl;
     } else {
       ProjectFile << "PrintCutoffSets=no" << endl;
@@ -972,8 +977,14 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
 	while (!ProjectFile.fail()) {
 	  // Explode buffer into parameter and value
 	  ParameterDone = false;
+
 	  while (!ParameterDone) {
 		Dummy = Buffer;
+
+		if (Dummy[0] == '\0') {
+		    ParameterDone = true;
+		}
+
 		MyToken = str_parse(&Dummy,"=");
 		for (unsigned int i=0; MyToken; i++) {
 		  if (!i) {
@@ -1162,7 +1173,7 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
 		  MyToken = str_parse(&FeatureRestriction,";");
 		}
 		if (FeatureParameters.size()==7) {
-		  // Iterate through featurenames to find the right feature order
+		  // Iterate through feature names to find the right feature order
 		  list<string>::iterator CurrentFeatureName(FeatureNames.begin());
 		  list<string>::iterator LastFeatureName(FeatureNames.end());
 		  for (unsigned int i=0; CurrentFeatureName != LastFeatureName; CurrentFeatureName++) {
@@ -1394,6 +1405,17 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
           return false;
         }
       }
+
+        if (CurrentHeading.compare("PrintCutoffSetsBestLength")==0) {                       // Print cutoffsets
+            if (CurrentValue.compare("yes")==0) {
+                ProjectSettings.PrintCutoffSetsBestLength = true;
+            } else if (CurrentValue.compare("no")==0) {
+                ProjectSettings.PrintCutoffSetsBestLength = false;
+            } else {
+                ProjectLoadErrors.push_back("Invalid value for print cutoffsets bestlength.");
+                return false;
+            }
+        }
       if (CurrentHeading.compare("PrintPerformance")==0) {                      // Print performance
         if (CurrentValue.compare("yes")==0) {
           ProjectSettings.PrintPerformance = true;
@@ -1559,6 +1581,7 @@ bool IOExplore::SetupExploreFromStruct() {
   Project->SetPrintCombinations(ProjectSettings.PrintCombinations);
   Project->SetPrintFeatureSets(ProjectSettings.PrintFeatureSets);
   Project->SetPrintCutoffSets(ProjectSettings.PrintCutoffSets);
+  Project->SetPrintCutoffSetsBestLength(ProjectSettings.PrintCutoffSetsBestLength);
   Project->SetPrintPerformance(ProjectSettings.PrintPerformance);
   Project->SetPrintSets(ProjectSettings.PrintSets);
   Project->SetSavePartitions(ProjectSettings.SavePartitions);
