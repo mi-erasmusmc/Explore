@@ -52,7 +52,6 @@ class POPULATION {
 
     bool Resubstitute();                                                        // Partition using resubstitution method
     bool Holdout();                                                             // Partition using holdout method
-    bool HoldoutRandomSubsampling();                                            // Partition using holdout random subsampling method
     bool LeaveOneOut();                                                         // Partition using leave-one-out method
 	bool CrossValidate();                                                       // Partition using cross-validation method
 	void ResetPartitions();

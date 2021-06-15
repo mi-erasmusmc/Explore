@@ -39,6 +39,7 @@ class Explore {
 
     bool Initialised;                                                           // Is explore initialised? (dependant on above booleans)
     bool Randomize;                                                             // Use randomization when partitioning? -> default = true
+    bool Final;
 
     PERFORMANCE CurrentPerformance;                                             // Performance of last rule generated
 
@@ -103,6 +104,7 @@ class Explore {
     bool IsPrintCombinations;                                                   // Print combinations to output
     bool IsPrintFeatureSets;                                                    // Print featuresets to output
     bool IsPrintCutoffSets;                                                     // Print conditionsets to output
+    bool IsPrintCutoffSetsBestLength;
     bool IsPrintPerformance;                                                    // Print performance to output
     bool IsPrintSets;                                                           // Print sets to output
     bool IsPrintOperatorMethod;                                                 // Print operator-method information to output
@@ -206,6 +208,7 @@ class Explore {
     bool GetPrintCombinations();                                                // Should combinations be printed to output
     bool GetPrintFeatureSets();                                                 // Should featuresets be printed to output
     bool GetPrintCutoffSets();                                                  // Should conditionsets be printed to output
+    bool GetPrintCutoffSetsBestLength();                                                  // Should conditionsets be printed to output
     bool GetPrintPerformance();                                                 // Should performance be printed to output
 	bool GetPrintSets();                                                        // Should sets be printed to output
 	bool GetPrintOperatorMethod();                                              // Should operator-method information be printed to output
@@ -225,7 +228,6 @@ class Explore {
     unsigned int GetNoProjectCandidates();                                      // Get the number of current best-performing rules of the project list
     unsigned int GetNoPartitionCandidates();                                    // Get the number of current best-performing rules of the partition list
 
-	void TestBestCandidate();                                                   // Calculate performance best candidate on Test partition
 	void ValidateBestCandidate();                                               // Calculate performance best candidate on VALIDATION partition
 	CANDIDATE GetBestCandidate();                                               // Returns the best rule with its performance (the best candidate)
     void SummarisePerformance();                                                // Calculate minimum, maximum and average values for MAXIMIZE_MEASURE based on candidates
@@ -253,6 +255,7 @@ class Explore {
     void SetPrintCombinations(bool Setting);                                    // Print combinations to output
     void SetPrintFeatureSets(bool Setting);                                     // Print featuresets to output
     void SetPrintCutoffSets(bool Setting);                                      // Print conditionsets to output
+    void SetPrintCutoffSetsBestLength(bool Setting);                                      // Print conditionsets to output
     void SetPrintPerformance(bool Setting);                                     // Print performance to output
     void SetPrintSets(bool Setting);                                            // Print sets to output
     void SetPrintOperatorMethod(bool Setting);                                  // Print operator-method information to output
@@ -286,7 +289,7 @@ class Explore {
 	bool AddFeature(string FeatureName, unsigned int Nom);                      // Add a feature to the population
 	void AddObservation(list<string> Values, unsigned int Class);               // Add an observation to the population
 
-    void TestRule();                                                            // Test current rule
+    bool TestRule();                                                            // Test current rule
 
 	bool SetPartitionMethod(const PARTITION_METHOD PMethod);                    // Partitioning method to be used
     bool SetCutoffMethod(const CUTOFF_METHOD CMethod);                          // Cutoff method to be used

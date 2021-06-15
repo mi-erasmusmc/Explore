@@ -755,9 +755,9 @@ double RULE::RuleComplexity(unsigned int NoPartitions) {
   TotalExponentialLimit=0;
   #endif
 
-  while (NextCombination()) {
+  while (NextCombination()) { // TODO: check if should be NextCombinationGenerator()
     RuleComplexity += CombinationComplexity();
-    while (NextFeatureSet()) {
+    while (NextFeatureSet()) { // TODO: check if should be NextFeatureSetGenerator()
       #if defined(EXPONENTIAL_WORKUNITS)
       FeatureSetComplexity = FeatureSetComplexityLimit();
       TotalExponentialLimit += (FeatureSetComplexity / pow(EXPONENTIAL_BASE,(Conjunctions.size()-1)));
@@ -986,7 +986,7 @@ PERFORMANCE RULE::CalculatePerformance() {
   Start = clock();
 #endif
 
-  if (!FPCPOptimization || (GetTestMode()==VALIDATION) || (GetTestMode()==TEST)){
+  if (!FPCPOptimization || (GetTestMode()==VALIDATION) || (GetTestMode()==TRAIN)){
     for (unsigned int i=0; i<Conjunctions.size(); i++) {
       if (Conjunctions[i].Changed) {
         if (i==0) {
@@ -2439,6 +2439,19 @@ void RULE::SetPrintCutoffSets(bool Setting) {
 }
 
 /**********************************************************************
+Function: SetPrintCutoffSets()
+Category: Modifiers
+Scope: public
+In: bool, yes or no
+Out: -
+Description: Rule must cout conditionsets that it generates.
+**********************************************************************/
+void RULE::SetPrintCutoffSetsBestLength(bool Setting) {
+    IsPrintCutoffSetsBestLength = Setting;
+}
+
+
+/**********************************************************************
 Function: SetTestMode()
 Category: Modifiers
 Scope: public
@@ -2456,11 +2469,12 @@ void RULE::SetTestMode(PARTITION_TYPE PType) {
 		case LEARN:
 		  PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetLearnClasses();
 		  break;
-		case TEST:
-		  PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetTestClasses();
-		  break;
 		case VALIDATION:
 		  PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetValidationClasses();
+            break;
+        case TRAIN: // both learn and validation set
+            PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetTrainClasses();
+            break;
 	}
     FeatureOperators[j].InitialiseSets(PartitionClasses);
   }
@@ -2910,13 +2924,18 @@ Out: bool, succeeded or not.
 Description: Generates the next partition of the rule, keeping into
 account any restrictions that were set previously.
 **********************************************************************/
-bool RULE::NextCombinationRestriction() {
-  do {
-    if (!NextCombination()) {
-      return false;
+bool RULE::NextCombinationGenerator() {
+
+    if (RestrictionSet || MandatorySet) { // || Rule.IsMandatorySet()
+        do {
+            if (!NextCombination()) {
+                return false;
+            }
+        } while (!CheckCombinationRestriction());
+        return true;
+    } else {
+        return NextCombination();
     }
-  } while (!CheckCombinationRestriction());
-  return true;
 }
 
 /**********************************************************************
@@ -2928,13 +2947,19 @@ Out: bool, succeeded or not.
 Description: Generates the next featureset of the rule, keeping into
 account any restrictions and Mandatory that were set previously.
 **********************************************************************/
-bool RULE::NextFeatureSetRestriction() {
-  do {
-    if (!NextFeatureSet()) {
-      return false;
+bool RULE::NextFeatureSetGenerator() {
+
+    if (RestrictionSet || MandatorySet) {
+        do {
+            if (!NextFeatureSet()) {
+                return false;
+            }
+        } while (!CheckFeatureSetRestriction() || !CheckFeatureSetMandatory());
+        return true;
+    } else {
+        return NextFeatureSet();
     }
-  } while (!CheckFeatureSetRestriction() || !CheckFeatureSetMandatory());
-  return true;
+
 }
 
 /**********************************************************************
@@ -2946,13 +2971,17 @@ Out: bool, succeeded or not.
 Description: Generates the next instance of the rule, keeping into
 account any restrictions that were set previously.
 **********************************************************************/
-bool RULE::NextCutoffSetRestriction() {
-  do {
-    if (!NextCutoffSet()) {
-      return false;
+bool RULE::NextCutoffSetGenerator() {
+    if (RestrictionSet || MandatorySet) {
+        do {
+            if (!NextCutoffSet()) {
+                return false;
+            }
+        } while (!CheckCutoffSetRestriction());
+        return true;
+    } else {
+        return NextCutoffSet();
     }
-  } while (!CheckCutoffSetRestriction());
-  return true;
 }
 
 
@@ -2998,4 +3027,28 @@ float RULE::factln(int n) {
 
 float RULE::bico(int n, int k) {
   return floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
+}
+
+/**********************************************************************
+Function: Reset()
+Category: Modifiers
+Scope: public
+In: -
+Out: -
+Description: Resets complexity measures.
+**********************************************************************/
+void RULE::ResetComplexity() {
+#ifdef DEBUG_TIMING
+    clock_t Start, End;
+  Start = clock();
+#endif
+
+    CombinationGenerated = false;
+    FeatureSetGenerated = false;
+    CutoffSetGenerated = false;
+
+    CombinationsGenerated = 0;
+    FeatureSetsGenerated = 0;
+    CutoffSetsGenerated = 0;
+
 }

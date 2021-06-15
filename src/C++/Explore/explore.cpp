@@ -59,8 +59,8 @@ Explore::Explore() {
     // Output
     IsUpdateRealtime            = false;
 
-    IsSavePartitions            = true; // added
-    IsPrintSettings             = true;
+    IsSavePartitions            = false; // added
+    IsPrintSettings             = false;
     IsPrintPartitions           = false;
 
     IsPrintCombinations         = false;
@@ -207,66 +207,6 @@ list<string>* Explore::GetClassNames() {
 }
 
 /**********************************************************************
-Function: TestBestCandidate()
-Category: Modifiers
-Scope: public
-In: -
-Out: -
-Description: Retrieves the best candidate, sets up the rule and tests
-performance of the candidate on the testpartition.
-**********************************************************************/
-void Explore::TestBestCandidate() {
-#ifdef DEBUG_TIMING
-  clock_t Start, End;
-  Start = clock();
-#endif
-
-  if (Initialised) {
-
-	Rule.SetTestMode(TEST);
-
-	if (PartitionCandidates.size()>0) {
-	  cout << "INTERNAL TESTING" << endl;
-	  cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
-	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
-		cout << "RULELENGTH " << i << endl << endl;
-		if (ChooseBestCandidate(i)){
-		  if (Rule.SetRule(BestCandidate)) {
-			cout << "Best candidate: ";
-			Rule.PrintCutoffSet();
-			cout << endl;
-			cout << "Learn-set: ";
-			BestCandidate.Performance.Print();
-			cout << endl;
-
-			if (!(GetPartitionMethod()==RESUBSTITUTION)){
-			  BestCandidate.Performance = Rule.CalculatePerformance();          // Test BestCandidate on test partition
-			  cout << "test-set: ";
-			  BestCandidate.Performance.Print();
-			  cout << endl;
-			}
-			//ProjectCandidates.push_back(BestCandidate);
-
-		  }
-		} else {
-		  cout << "None." << endl << endl;
-		}
-	  }
-	  //PartitionCandidates.clear();
-	} else {
-	  #if defined(EXPLORE_MPI_DEBUG)
-	  cout << "--> No Candidates" << endl;
-	  #endif
-	}
-  }
-
-#ifdef DEBUG_TIMING
-  End = clock();
-  ExploreTiming.AddTime("EXPLORE::TestBestCandidate", Start, End);
-#endif
-}
-
-/**********************************************************************
 Function: ValidateBestCandidate()
 Category: Modifiers
 Scope: public
@@ -281,17 +221,22 @@ void Explore::ValidateBestCandidate() {
   Start = clock();
 #endif
 
-  if (Initialised) {
+  if (Initialised) { // TODO: adjust this to train instead of split validation/learn
 
-	Rule.SetTestMode(VALIDATION);
+	if (!Final) {
+        Rule.SetTestMode(VALIDATION);
+	} else {
+        Rule.SetTestMode(LEARN); // TODO: don't need new type train, remove?
+	}
+
+	cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
 
 	if (PartitionCandidates.size()>0) {
-	  cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
 	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
 		cout << "RULELENGTH " << i << endl << endl;
 		if (ChooseBestCandidate(i)){
 		  if (Rule.SetRule(BestCandidate)) {
-			cout << "Best candidate: ";
+			cout << "Best candidate (overall): ";
 			Rule.PrintCutoffSet();
 			cout << endl;
 			cout << "Learn-set: ";
@@ -313,6 +258,8 @@ void Explore::ValidateBestCandidate() {
 	  }
 	  PartitionCandidates.clear();
 	} else {
+
+
 	  #if defined(EXPLORE_MPI_DEBUG)
 	  cout << "--> No Candidates" << endl;
 	  #endif
@@ -925,7 +872,7 @@ void Explore::PrintCombination() {
 }
 
 /**********************************************************************
-Function: PrintFeatureSet()
+Function: PrintFeatu()
 Category: Selectors
 Scope: public
 In: -
@@ -1033,12 +980,13 @@ In: -
 Out: -
 Description: Test a rule against the current learning partition.
 **********************************************************************/
-void Explore::TestRule() {
+bool Explore::TestRule() {
 #ifdef DEBUG_TIMING
   clock_t Start, End;
   Start = clock();
 #endif
   bool Found = false;
+  bool Candidate = false;
 
   if (Initialised) {
     CurrentPerformance = Rule.CalculatePerformance();
@@ -1048,6 +996,7 @@ void Explore::TestRule() {
       // Does rule satisfy constraints?
       if (CompareConstraints()) {
         // Is rule-performance best until now?
+        Candidate = true;
         if (CompareBestCandidate()) {
 		  SaveCandidate();
           Found = true;
@@ -1057,6 +1006,7 @@ void Explore::TestRule() {
       // Does rule satisfy constraints?
       if (CompareConstraints()) {
 		SaveCandidate();
+		Candidate = true;
         Found = true;
       }
     }
@@ -1089,6 +1039,7 @@ void Explore::TestRule() {
   End = clock();
   ExploreTiming.AddTime("EXPLORE::TestRule", Start, End);
 #endif
+  return Candidate;
 }
 
 /**********************************************************************
@@ -1343,7 +1294,7 @@ bool Explore::CheckSettings() {
   if (PartitionMethodSet && CutoffMethodSet && OperatorMethodSet && PositiveClassSet && MaximizeMeasureSet) {
 
     if (PartitionMethod==HOLDOUT && !LearnTestRatioSet) return false;           // If HOLDOUT, LEARNRATIO set?
-    if ((PartitionMethod==CROSS_VALIDATION || PartitionMethod==HOLDOUT_RANDOM_SUBSAMPLING) && !NoPartitionsSet) return false;
+    if (PartitionMethod==CROSS_VALIDATION && !NoPartitionsSet) return false;
                                                                                 // Number of partitions set?
 
     if (Rule.GetMinRuleLength() <= 0 || Rule.GetMinRuleLength() > Rule.GetMaxRuleLength()) {
@@ -1396,7 +1347,7 @@ Out: -
 Description: Partition the population of explore.
 **********************************************************************/
 bool Explore::Partition() {
-  ValidateBestCandidate();                                                          // Do not remove! Is needed for summarising best candidates at the end of projects (ie. HOLDOUT)
+   // ValidateBestCandidate();                                                          // Do not remove! Is needed for summarising best candidates at the end of projects (ie. HOLDOUT)
 
   if (Population.Partition()) {                                                 // Will return false with holdout on second call!
 
@@ -1410,9 +1361,9 @@ bool Explore::Partition() {
 	SetRerun();                                                                 // Prepare for new Run
 
     NoPartitionsDone++;                                                         // Increment number of partitions covered
-	if (PartitionMethod == CROSS_VALIDATION) {                                  // In case of cross-validation
-	  SummarisePerformance();                                                   // Summarise performances of candidates that were found
-	}
+	//if (PartitionMethod == CROSS_VALIDATION) {                                  // In case of cross-validation
+	//   SummarisePerformance();                                                   // Summarise performances of candidates that were found
+	// }
   }
   return false;
 }
@@ -2304,6 +2255,19 @@ bool Explore::GetPrintCutoffSets() {
 }
 
 /**********************************************************************
+Function: GetPrintCutoffSets()
+Category: Selectors
+Scope: public
+In: -
+Out: bool
+Description:
+**********************************************************************/
+bool Explore::GetPrintCutoffSetsBestLength() {
+    return IsPrintCutoffSetsBestLength;
+}
+
+
+/**********************************************************************
 Function: GetPrintPerformance()
 Category: Selectors
 Scope: public
@@ -2647,6 +2611,19 @@ void Explore::SetPrintCutoffSets(bool Setting) {
 }
 
 /**********************************************************************
+Function: SetPrintconditionSets()
+Category: Modifiers
+Scope: public
+In: bool, yes or no
+Out: -
+Description: Indicate whether explore has to cout conditionsets.
+**********************************************************************/
+void Explore::SetPrintCutoffSetsBestLength(bool Setting) {
+    IsPrintCutoffSetsBestLength = Setting;
+    Rule.SetPrintCutoffSetsBestLength(Setting);
+}
+
+/**********************************************************************
 Function: SetPrintPerformance()
 Category: Modifiers
 Scope: public
@@ -2787,11 +2764,20 @@ void Explore::Start() {
 
 	PrintSummary();
 
-
+	// TODO: decide which complexity to report
 	cout << endl << "COMPLEXITY" << endl << endl;
 	cout << "Combinations: " <<  Rule.GetCombinationsGenerated() << endl;
 	cout << "Feature sets: " << Rule.GetFeatureSetsGenerated() << endl;
 	cout << "Cutoff sets: " << Rule.GetCutoffSetsGenerated() << endl << endl;
+
+    cout << "Complexity combinations: " <<  Explore::CombinationComplexity() << endl;
+    cout << "Complexity featureset: " <<  Explore::FeatureSetComplexityLimit() << endl;
+      cout << "Featureset: " <<  Explore::GetFeatureSetComplexity() << endl;
+	cout << "Complexity entire rule: " <<  Explore::RuleComplexity() << endl;
+
+	cout << "Rule limit: " <<   Explore::GetRulesComplexityLimit() << endl;
+	cout << "Feature set limit: " <<  Explore::GetFeatureSetComplexityLimit() << endl;
+	cout << "Exponential limit: " <<  Explore::GetExponentialComplexityLimit() << endl;
 
 	cout << endl << "TIMING" << endl << endl;
 	time(&endtime);
@@ -2904,7 +2890,7 @@ int Explore::Stop() {
 	unsigned int last=0;
 	if (Initialised) {
 
-	Rule.SetTestMode(TEST);
+	Rule.SetTestMode(VALIDATION);
 	if (PartitionCandidates.size()>0) {
 	  cout << "Checking Stop Criterium" << endl;
 	  cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
@@ -2980,24 +2966,27 @@ int Explore::FindBestLength() {
 	float current;
 	int Opt=0;
 	if (Initialised) {
+        Rule.SetTestMode(VALIDATION);
 
-	Rule.SetTestMode(TEST);
 	if (PartitionCandidates.size()>0) {
 	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
 		if (ChooseBestCandidate(i)){
 		  if (Rule.SetRule(BestCandidate))
 		  {
 		    cout << "RULELENGTH " << i << endl << endl;
-			cout << "Best candidate: ";
+			cout << "Best candidate (within this partition): ";
 			Rule.PrintCutoffSet();
 			cout << endl;
 			cout << "Learn-set: ";
 			BestCandidate.Performance.Print();
 			cout << endl;
-			BestCandidate.Performance = Rule.CalculatePerformance();          // Test BestCandidate on test partition
-			cout << "test-set: ";
-			BestCandidate.Performance.Print();
 
+              if (!(GetPartitionMethod()==RESUBSTITUTION)){
+                  BestCandidate.Performance = Rule.CalculatePerformance();          // Test BestCandidate on validation partition
+                  cout << "Validation-set: ";
+                  BestCandidate.Performance.Print();
+                  cout << endl;
+              }
 			switch (MaximizeMeasure){
 
 			case ACCURACY:
@@ -3011,8 +3000,8 @@ int Explore::FindBestLength() {
 			  break;
 			}
 			if (i==1) {
-			  best= current;
-			  Opt= 1;
+			  best = current;
+			  Opt = 1;
 			}
 			else {
 			 if (current > best) {
@@ -3048,64 +3037,27 @@ bool Explore::RunProject() {
   unsigned int Partitionnr = 0;
   time_t dummy;
   unsigned int ActiveRuleLength;
-  int BestLength;
+    int CountPartition;
+  int BestLengthPartition;
+  int BestLengthFinal = 0;
+  vector<int> BestLength(Rule.GetMaxRuleLength());
+
   #ifdef HYPER
    Jibu::Manager::initialize();
    cout << "There are " << Jibu::Manager::getProcessorCount()
       << " processors available to Jibu." << std::endl;
-
   #endif
-  if (RestrictionSet || Rule.IsMandatorySet()) {
-	do {
-	  // Print settings for this partition
-	  Partitionnr++;
-      cout << "PARTITION: " << Partitionnr << endl;
-      if (IsSavePartitions)      SavePartitions(Partitionnr);
-	  if (IsPrintPartitions)     Population.PrintPartitions();
-      if (IsPrintOperatorMethod) Population.PrintOperatorMethod();
-      if (IsPrintOperatorValues) Population.PrintOperators();
-      if (IsPrintCutoffMethod)   Population.PrintCutoffMethod();
-      if (IsPrintCutoffValues)   Population.PrintCutoffs();
 
-	  while (Rule.NextCombinationRestriction()) {
-        if (IsPrintCombinations) Rule.PrintCombination();
-        while (Rule.NextFeatureSetRestriction()) {
-          if (IsPrintFeatureSets) Rule.PrintFeatureSet();
-		  CalculateProgress();
-          while (Rule.NextCutoffSetRestriction()) {
-			TestRule();                                                         // Calculate performance of current rule
-			if (IsPrintCutoffSets) Rule.PrintCutoffSet();
-            if (IsUpdateRealtime) CalculateProgress();
-#ifndef COMMANDVERSION
-			   // BreatheCount++;                                                     // Increment breathe counter
-            if (BreatheCount>BREATHE_INTERVAL) {
-			  if (PauseFunction()) {                                            // User paused the project
-				PrintSummary();
-                return false;
-              }
-              if (CancelFunction()) {                                           // User cancelled the project
-                PrintSummary();
-                CloseFunction();
-                return false;
-			  }
-              BreatheCount = 0;
-			}
-#endif
-		  }
-        }
-      }
-	} while (Partition());
-  } else {
 	do {
-	 if ((GetPartitionMethod())==CROSS_VALIDATION) {
-		Population.GenerateTestPartition();
-		Population.InitialisePartitions();
-	 }
-	  BestLength = 0;
-	  ActiveRuleLength = Rule.GetMinRuleLength();
+
+	    CountPartition = 0;
+	  BestLengthPartition = 0;
+	  Final = false;
+
    	  // Print settings for this partition
 	  Partitionnr++;
 	  cout << "PARTITION: " << Partitionnr << endl;
+	  cout << endl;
 	  if (IsSavePartitions)      SavePartitions(Partitionnr);
       if (IsPrintPartitions)     Population.PrintPartitions();
 	  if (IsPrintOperatorMethod) Population.PrintOperatorMethod();
@@ -3113,30 +3065,22 @@ bool Explore::RunProject() {
       if (IsPrintCutoffMethod)   Population.PrintCutoffMethod();
 	  if (IsPrintCutoffValues)   Population.PrintCutoffs();
 
-		  while (Rule.NextCombination() && BestLength==0) {
-			if (Rule.GetCurrentRuleLength() > ActiveRuleLength) {
-			  //Save timing
-			  std::stringstream sstr;
-			  sstr << "RuleLength:" << Rule.GetCurrentRuleLength()-1;
-			  RuleLengthTiming.AddTime(sstr.str(),StartRuleLength,clock());
-			  StartRuleLength = clock();
-			  ActiveRuleLength = Rule.GetCurrentRuleLength();
-			  cout << RuleLengthTiming.PrintAll();
-			  cout.flush();
-
-			  // check if we need to stop
-			  //BestLength = Stop ();
-			  //Rule.SetReset(Population.GetFeatures());
-			  //Rule.StartRuleLength(ActiveRuleLength);
-			  //Rule.SetTestMode(LEARN);
-			}
+		  while (Rule.NextCombinationGenerator()) {
 			if (IsPrintCombinations) Rule.PrintCombination();
-			while (Rule.NextFeatureSet() && BestLength==0) {
+			while (Rule.NextFeatureSetGenerator()) {
 			  if (IsPrintFeatureSets) Rule.PrintFeatureSet();
 			  CalculateProgress();
-			  while (Rule.NextCutoffSet()) {
-				TestRule();                                                         // Calculate performance of current rule
-				if (IsPrintCutoffSets) Rule.PrintCutoffSet();
+			  while (Rule.NextCutoffSetGenerator()) {
+                  if (TestRule()) {
+                      CountPartition++;
+                  }
+
+// TODO: check if inside or outside TestRule
+                  if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
+                      cout << "Candidate model: ";
+                      Rule.PrintCutoffSet();
+                  }
+
 				if (IsUpdateRealtime) CalculateProgress();
  #ifndef COMMANDVERSION
 				// BreatheCount++;// Increment breathe counter
@@ -3157,22 +3101,54 @@ bool Explore::RunProject() {
 			  }
 			}
 		  }
-		  // set all test partitions back to Learn
-		  if ((GetPartitionMethod())==CROSS_VALIDATION) {
-			  BestLength = FindBestLength();
-			  Population.ResetTestPartitions();
-			  Population.InitialisePartitions();
-			  PartitionCandidates.clear();                                          // remove all the partition candidates used to find BestLength
-			  cout << endl << endl;
-			  cout << "====================================================" << endl;
-			  cout << "Best Length:" << BestLength << endl;
-			  cout << "Start Inducing rule on validation set" << endl;
-			  SetRerun();
-			  Induce(BestLength, BestLength);
-			  ValidateBestCandidate();                                              // print results on validation set and save best rule
-		  }
-	} while (Partition());
-  }
+
+		  BestLengthPartition = FindBestLength();
+		  ++BestLength[BestLengthPartition - 1]; // Calculate performance of current rule in validation set
+
+        cout << endl << endl;
+        cout << "Best Length:" << BestLengthPartition << endl;
+        cout << "====================================================" << endl;
+
+    } while (Partition());
+
+	// Choose most frequently occurring Best Length
+	auto MostFrequent = std::max_element(BestLength.begin(), BestLength.end());
+    BestLengthFinal = std::distance(std::begin(BestLength), MostFrequent) + 1;
+
+    cout << "Results EXPLORE with BestLength " << BestLengthFinal << " on full train set" << endl;
+    if ((GetPartitionMethod())==CROSS_VALIDATION || (GetPartitionMethod())==HOLDOUT) {
+        // Re-train model with full train set (learn + validate)
+        Population.ResetTestPartitions(); // Sets all partitions to LEARN
+        PartitionCandidates.clear(); // Remove all the partition candidates used to find BestLength
+
+        SetRerun();
+
+        Induce(BestLengthFinal, BestLengthFinal);
+
+        Final = true;
+        ValidateBestCandidate(); // Print results on full train set and save best rule
+
+    } else {
+        // Directly print results on full train set and save best rule
+        if (PartitionCandidates.size()>0) {
+
+                if (ChooseBestCandidate(BestLengthFinal)){
+                    if (Rule.SetRule(BestCandidate)) {
+                        cout << "Best candidate (overall): ";
+                        Rule.PrintCutoffSet();
+                        cout << endl;
+                        cout << "Train-set: ";
+                        BestCandidate.Performance.Print();
+                        cout << endl;
+
+                        ProjectCandidates.push_back(BestCandidate);
+
+                        cout << "Count Candidates:" << CountPartition << endl;
+                    }
+                }
+            }
+        }
+
   return true;
 }
 
@@ -3185,17 +3161,31 @@ Out: bool, project finished or not
 Description: Resumes an Explore project.
 **********************************************************************/
 void Explore::Induce(int nStart, int nEnd) {
-  int SaveMin, SaveMax;
+     Rule.ResetComplexity();
+
+     int Count = 0;
+
+    // int SaveMin, SaveMax;
   unsigned int BreatheCount = 0;
 
-  SaveMin = Rule.GetMinRuleLength();
-  SaveMax = Rule.GetMaxRuleLength();
+  // SaveMin = Rule.GetMinRuleLength();
+  // SaveMax = Rule.GetMaxRuleLength();
   SetMinRuleLength(nStart);
   SetMaxRuleLength(nEnd);
-  while (Rule.NextCombination()) {
-	while (Rule.NextFeatureSet()) {
-	  while (Rule.NextCutoffSet()) {
-		TestRule();                                                             // Calculate performance of current rule
+  while (Rule.NextCombinationGenerator()) {
+	while (Rule.NextFeatureSetGenerator()) {
+	  while (Rule.NextCutoffSetGenerator()) {
+
+          if (TestRule()) { // Calculate performance of current rule
+              Count++;
+
+          }
+
+          if (IsPrintCutoffSetsBestLength) {
+              cout << "Candidate model BestLength: ";
+              Rule.PrintCutoffSet();
+          }
+          
 		#ifndef COMMANDVERSION
 		// BreatheCount++;                                                     	// Increment breathe counter
 		if (BreatheCount>BREATHE_INTERVAL) {
@@ -3214,8 +3204,10 @@ void Explore::Induce(int nStart, int nEnd) {
 	  }
 	}
   }
-  SetMinRuleLength(SaveMin);
-  SetMaxRuleLength(SaveMax);
+
+  cout << "Count Candidates:" << Count << endl;
+  //SetMinRuleLength(SaveMin);
+  // SetMaxRuleLength(SaveMax);
 }
 
 
@@ -3257,8 +3249,8 @@ bool Explore::ResumeProject() {
 		  BreatheCount = 0;
 		}
 #endif
-	  } while (Rule.NextCutoffSetRestriction());
-    } while (Rule.NextFeatureSetRestriction());
+	  } while (Rule.NextCutoffSetGenerator()); // NextCutoffSetRestriction
+    } while (Rule.NextFeatureSetGenerator()); // NextFeatureSetRestriction
 	return RunProject();
   } else {
     do {
@@ -3286,8 +3278,8 @@ bool Explore::ResumeProject() {
 		  BreatheCount = 0;
 		}
 #endif
-      } while (Rule.NextCutoffSet());
-    } while (Rule.NextFeatureSet());
+      } while (Rule.NextCutoffSet()); // TODO: check if should be generator
+    } while (Rule.NextFeatureSet()); // TODO: check if should be generator
     return RunProject();
   }
 }
@@ -3342,7 +3334,7 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
     do {
 
       if (!Rule.IsFeatureSetGenerated()) {
-        Rule.NextFeatureSet();
+        Rule.NextFeatureSetGenerator();
       }
 
       if (IsPrintFeatureSets) {
@@ -3360,7 +3352,7 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
           TestRule();
 
         }
-      } while (Rule.NextCutoffSet());                                           // Create next cutoff-set
+      } while (Rule.NextCutoffSetGenerator());                                           // Create next cutoff-set
 
       if (CheckStopFeature()) {
         ManualStop = true;
@@ -3398,7 +3390,7 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
         }
         #endif
         
-        if (!Rule.NextFeatureSet()) ManualContinue = false;
+        if (!Rule.NextFeatureSet()) ManualContinue = false; // TODO: check if should be generator
       }
       
     } while (ManualContinue && !ManualStop);
@@ -3406,13 +3398,14 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
     if (ManualStop || CheckStopCombination()) {
       ManualContinue = false;
     } else {
-      if (Rule.NextCombination()) ManualContinue = true;
+      if (Rule.NextCombinationGenerator()) ManualContinue = true;
       else ManualContinue = false;
     }
     
   } while (ManualContinue);
 
-  ValidateBestCandidate();     //PR was testbestcandidate checken!!
+  Final = false; // TODO: AM check
+  ValidateBestCandidate();     // TODO: PR was testbestcandidate checken!!
 
   #if defined(EXPLORE_MPI_DEBUG)
   cout << "***************************************************************" << endl;  
@@ -3606,7 +3599,7 @@ Description: Generates the next combination of the rule.
 bool Explore::NextCombination() {
   if (Initialised) {
     if (RestrictionSet) {
-      return Rule.NextCombinationRestriction();
+      return Rule.NextCombinationGenerator(); // Rule.NextCombinationRestriction();
     } else {
       return Rule.NextCombination();
     }
@@ -3625,7 +3618,7 @@ Description: Generates the next featureset of the rule.
 bool Explore::NextFeatureSet() {
   if (Initialised) {
     if (RestrictionSet) {
-      return Rule.NextFeatureSetRestriction();
+      return Rule.NextFeatureSetGenerator(); // Rule.NextFeatureSetRestriction();
     } else {
       return Rule.NextFeatureSet();
     }

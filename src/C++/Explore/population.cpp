@@ -469,13 +469,10 @@ void POPULATION::PrintPartitions() {
 	cout << "OBSERVATIONS PARTITION " << i << " (Type: ";
     if ((*CurrentPartition).GetType()==LEARN) {
       cout << "LEARN";
-	} else if ((*CurrentPartition).GetType()==TEST) {
-	  cout << "TEST";
 	} else if ((*CurrentPartition).GetType()==VALIDATION) {
 	  cout << "VALIDATION";
-	}
-	 else {
-	  cout << "LEARN and TEST";
+	} else if ((*CurrentPartition).GetType()==TRAIN) {
+        cout << "TRAIN";
     }
     cout << ")" << endl << endl;
 
@@ -1059,10 +1056,6 @@ bool POPULATION::Partition() {                                                  
       Stratify();
       Result = Holdout();
       break;
-    case HOLDOUT_RANDOM_SUBSAMPLING:
-      Stratify();
-      Result = HoldoutRandomSubsampling();
-	  break;
     case LEAVE_ONE_OUT:
       Result = LeaveOneOut();                                                   // Create learn partition based on N - 1 observations, decrease partition by one each time, test on leftover
       break;
@@ -1300,7 +1293,7 @@ bool POPULATION::Resubstitute() {                                               
     return false;
   } else {
     Partitions.clear();                                                         // Clear any partitions
-	AddPartition(LEARNTEST);                                                    // Add a single learn and test partition
+	AddPartition(LEARN);  //TRAIN                                                  // Add a single learn and test partition
 	vector<PARTITION>::iterator CurrentPartition(Partitions.begin());
 
     for (unsigned int i=0; i < NoObservations; i++) {                           // Add each observation to the partition
@@ -1398,23 +1391,6 @@ Category: Modifiers
 Scope: private
 In: -
 Out: -
-Description: Partition the population according to the 'holdout random
-subsampling' method.
-**********************************************************************/
-bool POPULATION::HoldoutRandomSubsampling() {
-  if (IsPartitioned) {
-    return false;
-  } else {
-    return false;
-  }
-}
-
-/**********************************************************************
-Function: LeaveOneOut()
-Category: Modifiers
-Scope: private
-In: -
-Out: -
 Description: Partition the population according to the 'leave-one-out'
 method.
 **********************************************************************/
@@ -1436,7 +1412,7 @@ bool POPULATION::LeaveOneOut() {                                                
       (*CurrentPartition).AddObservation(i);
     }
 
-    AddPartition(TEST);                                                         // Create testing partition
+    AddPartition(VALIDATION);                                                         // Create testing partition
     CurrentPartition = Partitions.end();                                        // Set partition iterator to the next partition
     (*CurrentPartition).AddObservation(NoObservations);                         // Add last observation
     return true;
@@ -1475,7 +1451,7 @@ bool POPULATION::CrossValidate() {                                              
 		  (*CurrentPartition).SetType(VALIDATION);
 		} else {
 		  if (*Randomize) {
-			IsPartitioned = false;                                              // randomize partitions again for next run
+			IsPartitioned = false;                                              // Randomize partitions again for next run
 			CrossValidate();                                                    // Call CrossValidate again to make first sets
 		  }
 		  else ResetPartitions();                                               // Cross-validation: reset partitions without re-partitioning for other runs
@@ -1546,13 +1522,13 @@ bool POPULATION::CrossValidate() {                                              
 
     while (CurrentClass != LastClass) {
       Partitionlist.clear();
-	  for (unsigned int i=0;i< (*NoPartitions);i++)                                      // fill left partition list
+	  for (unsigned int i=0;i< (*NoPartitions);i++)                                      // Fill left partition list
         Partitionlist.push_back(i);
 
 	  CurrentObservation = (*CurrentClass).Observations.begin();
 	  LastObservation = (*CurrentClass).Observations.end();
 	  while (CurrentObservation != LastObservation) {
-	   RandomNumber = GetRandomNumber(Partitionlist.size()-1);                  // Choose a random number in the range of the number of left partiotions to fill
+	   RandomNumber = GetRandomNumber(Partitionlist.size()-1);                  // Choose a random number in the range of the number of left partitions to fill
        list<int>::iterator CurrentLeftPartition(Partitionlist.begin());         // Iterator for left partitions
        vector<PARTITION>::iterator CurrentPartition(Partitions.begin());        // Iterator for partitions
        for (int j=0; j<RandomNumber; j++)
@@ -1612,7 +1588,7 @@ void POPULATION::GenerateTestPartition() {
 		i++;
 		if ((i==t1) || (i==t2) || (i==t3)) {
 //		if ((i==t1)) {
-		 (*CurrentPartition).SetType(TEST);
+		 (*CurrentPartition).SetType(VALIDATION);
 		}
 	  }
 	}
@@ -1636,7 +1612,7 @@ void POPULATION::ResetTestPartitions() {
   vector<PARTITION>::iterator LastPartition(Partitions.end());
 
    for (CurrentPartition; CurrentPartition != LastPartition; CurrentPartition++) {
-	 if ((*CurrentPartition).GetType()==TEST)
+	 if ((*CurrentPartition).GetType()==VALIDATION)
 		(*CurrentPartition).SetType(LEARN);
    }
 }

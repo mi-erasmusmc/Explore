@@ -82,6 +82,7 @@ class RULE {
     bool IsPrintCombinations;
     bool IsPrintFeatureSets;
     bool IsPrintCutoffSets;
+    bool IsPrintCutoffSetsBestLength;
 
     vector<ROC> ROCCurves;
 
@@ -167,6 +168,7 @@ class RULE {
     void SetPrintCombinations(bool Setting);
     void SetPrintFeatureSets(bool Setting);
     void SetPrintCutoffSets(bool Setting);
+    void SetPrintCutoffSetsBestLength(bool Setting);
 
     void PrintSettings();
     void PrintCombination();                                                    // Print partition information of the rule
@@ -207,9 +209,9 @@ class RULE {
     bool NextCandidateCutoffSet_Conjunction(int ConjunctionNo, PERFORMANCE_MEASURE Optimize,
                                             bool Reset);                        // Generate next cutoff set for a conjunction (FPCP optimisation)
 
-    bool NextCombinationRestriction();
-    bool NextFeatureSetRestriction();
-    bool NextCutoffSetRestriction();    
+    bool NextCombinationGenerator();
+    bool NextFeatureSetGenerator();
+    bool NextCutoffSetGenerator();
 
     PERFORMANCE CalculatePerformance();                                         // Calculate the performance of this rule on the current Test or Learn partition
 
@@ -228,6 +230,7 @@ class RULE {
     void SetCTBest(float Accuracy);
     void SetMaximizeMeasure(PERFORMANCE_MEASURE* Measure);
 
+    void ResetComplexity();
 };
 
 #endif

@@ -136,14 +136,11 @@ string PARTITION::PrintObservations() {
     case LEARN:
       Result << "LEARN";
       break;
-    case TEST:
-      Result << "TEST";
-      break;
 	case VALIDATION:
 	  Result << "VALIDATION";
 	  break;
-	case LEARNTEST:
-      Result << "LEARN and TEST";
+	case TRAIN:
+      Result << "TRAIN: LEARN AND VALIDATE";
       break;
   }
   Result << endl;
