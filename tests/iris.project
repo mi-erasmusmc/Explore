@@ -43,3 +43,6 @@ PrintSets=no
 SavePartitions=no
 [Run]
 OptimizeRules=yes
+Subsumption=no
+BranchBound=no
+
