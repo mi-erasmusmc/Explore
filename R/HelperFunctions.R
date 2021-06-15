@@ -1,6 +1,6 @@
 #' @export
 getSetting <- function(settings, parameter, type = "value") {
-  extraction <- stringr::str_extract(settings, paste0(parameter , "=.*?\u000A"))[[1]] # check if it works with  multiple best candidates
+  extraction <- stringr::str_extract(settings, paste0(parameter , "=.*?\u000A"))[[1]] 
   extraction <- stringr::str_replace_all(extraction, "\\n", "")
   
   parameter_value <- stringr::str_replace(extraction, paste0(parameter, "="), "")
@@ -19,6 +19,10 @@ getSetting <- function(settings, parameter, type = "value") {
 changeSetting <- function(settings, parameter, input, default_setting) {
   
   current_setting <- getSetting(settings, parameter, type = "complete")
+  
+  if (is.na(current_setting)) {
+    warning(paste0("Current setting for ", parameter, " not correctly retrieved from file."))
+  }
   
   if (!is.null(input)) { # If input has a value -> update parameter in settings
     settings <- sub(current_setting, paste0(parameter, "=", input, ""), settings)
