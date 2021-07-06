@@ -22,7 +22,7 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
       stop("Data is NULL, but is required when settings_path is not entered.")
     } else {
       # Load template
-      settings <- paste0(paste(readLines("inst/template.project"), collapse="\n"),"\n")
+      settings <- paste0(paste(readLines(paste0(system.file(package="Explore"),"/template.project")), collapse="\n"),"\n")
     }
   }
   else {
@@ -72,6 +72,7 @@ settingsExplore <- function(settings,
                             output_path,
                             file_name,
                             train_data = NULL,
+                            StartRulelength = NULL,
                             EndRulelength = NULL,
                             OperatorMethod = NULL,
                             CutoffMethod = NULL,
@@ -99,6 +100,7 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "OutputFile", input = NULL, default_setting = paste0(output_path, file_name, ".result"))
   
   # Insert other settings if given and default if @ in template
+  settings <- changeSetting(settings, parameter = "StartRulelength", input = StartRulelength, default_setting = 1)
   settings <- changeSetting(settings, parameter = "EndRulelength", input = EndRulelength, default_setting = 3)
   settings <- changeSetting(settings, parameter = "OperatorMethod", input = OperatorMethod, default_setting = "ROCAREA")
   settings <- changeSetting(settings, parameter = "CutoffMethod", input = CutoffMethod, default_setting = "RVAC")
