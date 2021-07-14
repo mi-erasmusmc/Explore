@@ -1,9 +1,9 @@
 [General]
 Name=test
 Remarks=test
-DataFile=/Users/aniekmarkus/Documents/Git/Explore/data/iris.arff
+DataFile=/Users/aniekmarkus/Documents/Git/Explore/tests/testthat/examples/iris.arff
 Output=File
-OutputFile=/Users/aniekmarkus/Documents/Git/Explore/tests/iris.result
+OutputFile=/Users/aniekmarkus/Documents/Git/Explore/tests/testthat/results/iris.result
 IncrementalOutputFile=false
 [Setup]
 PartitionMethod=RESUBSTITUTION
@@ -14,7 +14,7 @@ LearnRatio=0.8
 NumberofPartitions=1
 OperatorMethod=EXHAUSTIVE
 CutoffMethod=RVAC
-CutoffFile=/Users/aniekmarkus/Documents/Git/Explore/test/iris.cutoff
+CutoffFile=/Users/aniekmarkus/Documents/Git/Explore/tests/testthat/examples/iris.cutoff
 ClassFeature=class
 PositiveClass=Iris-versicolor
 [Restrictions]
@@ -45,20 +45,4 @@ SavePartitions=no
 OptimizeRules=yes
 Subsumption=yes
 BranchBound=yes
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -8,8 +8,8 @@ IncrementalOutputFile=false
 [Setup]
 PartitionMethod=CROSS_VALIDATION
 Randomize=no
-StartRulelength=1
-EndRulelength=3
+StartRulelength=4
+EndRulelength=4
 LearnRatio=0.9
 NumberofPartitions=3
 OperatorMethod=ROCAREA
@@ -43,5 +43,5 @@ PrintSets=no
 SavePartitions=no
 [Run]
 OptimizeRules=yes
-Subsumption=no
-BranchBound=no
+Subsumption=yes
+BranchBound=yes
