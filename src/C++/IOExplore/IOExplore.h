@@ -68,6 +68,7 @@ struct ExploreSettings {
   bool                        SavePartitions;
   bool                        BranchBound;
   bool						  SubSumption;
+  bool                        Parallel;
 };
 
 class IOExplore {

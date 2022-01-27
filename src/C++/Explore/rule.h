@@ -25,10 +25,10 @@ class RULE {
     
     PARTITION_TYPE TestMode;
     
-    unsigned int NoFeatures;                                                    // Number of features
+    unsigned int NoFeatures{};                                                    // Number of features
 
     vector<CONJUNCTION> Conjunctions;                                           // Conjunctions which make up a rule
-    vector<FEATURE>* Features;                                                  // Pointer to a list of features
+    vector<FEATURE>* Features{};                                                  // Pointer to a list of features
 
     vector<CONDITION> FeatureOperators;                                         // List of FeatureOperators per Feature
 
@@ -37,8 +37,8 @@ class RULE {
     bool CutoffSetGenerated;
 
     bool LastCombination;                                                       // Is this the last partition?
-    bool LastFeatureSet;                                                        // Is this the last featureset?
-    bool LastConditionSet;                                                      // Is this the last instance?
+    bool LastFeatureSet{};                                                        // Is this the last featureset?
+    bool LastConditionSet{};                                                      // Is this the last instance?
 
     bool BranchBound;                                                           // Should optimization be used when generating rules
 
@@ -46,9 +46,11 @@ class RULE {
     long FeatureSetsGenerated;                                                  // Number of featuresets generated until now
     long CutoffSetsGenerated;                                                   // Number of conditionsets generated until now
 
-    unsigned int CombinationsTotal;
-    double TotalComplexityLimit;                                                // Total number of rules without branch and bound for this partition
-    double TotalExponentialLimit;
+    long CountCandidates;                                                   // Number of candidate rules found until now
+
+    unsigned int CombinationsTotal{};
+    double TotalComplexityLimit{};                                                // Total number of rules without branch and bound for this partition
+    double TotalExponentialLimit{};
 
     // Private selectors
     long double Faculty(long double a);                                // Calculates the faculty
@@ -79,22 +81,22 @@ class RULE {
     bool MatchConjunctionFeatureSet(unsigned int RestrictionIndex, unsigned int ConjunctionNumber);
     bool MatchConjunctionCutoffSet(unsigned int RestrictionIndex, unsigned int ConjunctionNumber);
 
-    bool IsPrintCombinations;
-    bool IsPrintFeatureSets;
-    bool IsPrintCutoffSets;
-    bool IsPrintCutoffSetsBestLength;
+    bool IsPrintCombinations{};
+    bool IsPrintFeatureSets{};
+    bool IsPrintCutoffSets{};
+    bool IsPrintCutoffSetsBestLength{};
 
     vector<ROC> ROCCurves;
 
 //------------------------------------------------------------------------------
 
-    unsigned int NoFeatureOperators;                                            // Easy access to total (real total - 1)!!!
+    unsigned int NoFeatureOperators{};                                            // Easy access to total (real total - 1)!!!
 
 //------------------------------------------------------------------------------
 
     CANDIDATE Restriction;                                                      // Restriction for the rule
 
-    PERFORMANCE_MEASURE* MaximizeMeasure;
+    PERFORMANCE_MEASURE* MaximizeMeasure{};
 
     // Mathematical functions from 'Numerical Recipes'
     float gammln(float xx);
@@ -110,7 +112,7 @@ class RULE {
     int CTBest;                                                                 // Best CorrectPositive + CorrectNegative until now (Accuracy optimisation)
 
     int FPConstraint;                                                           // Specificity optimisation
-    bool FPCPOptimization;
+    bool FPCPOptimization{};
 
     //--------------------------------------------------------------------------
 
@@ -122,6 +124,7 @@ class RULE {
     unsigned int Size();                                                        // Get size of rule (number of subsets)
     double CombinationComplexity();                                             // Calculate the number of featuresets that can be generated in this combination (without optimization)
     double RuleComplexity(unsigned int NoPartitions);                           // Calculate the total number of featuresets that can be generated (without optimization)
+    int CalculateCombinationsTotal();
     double TimeComplexity(unsigned int NoPartitions);
     double FeatureSetComplexityLimit();                                          // Calculate the total number of rule in a featureset
     unsigned int GetCurrentRuleLength();                                        // Get the current rule length
@@ -149,6 +152,8 @@ class RULE {
     unsigned int GetCombinationsGenerated();                                    // Get the number of combinations generated
     long GetFeatureSetsGenerated();                                             // Get the number of featuresets generated
     long GetCutoffSetsGenerated();                                              // Get the number of conditionsets generated
+
+    long GetCountCandidates();                                                  // Get the number of candidate rules found until now
 
     unsigned int GetCombinationsTotal();                                        // Get total amount of combinations
     double GetTotalComplexityLimit();                                           // Get limit of number of rules
@@ -231,6 +236,19 @@ class RULE {
     void SetMaximizeMeasure(PERFORMANCE_MEASURE* Measure);
 
     void ResetComplexity();
+    void ResetCountCandidates();
+
+    bool TestRule(bool Initialised, vector<CONSTRAINT> Constraints,
+                  CANDIDATE CurrentCandidate, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet,
+                               RULE_OUTPUT_METHOD RuleOutputMethod, bool IsPrintPerformance, bool IsPrintSets);                                                            // Test current rule
+   // TODO: below 3 could be private
+    bool CompareConstraints(PERFORMANCE CurrentPerformance, bool Initialised, vector<CONSTRAINT> Constraints);          // Compare current performance with constraints
+    bool CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised, CANDIDATE CurrentCandidate, PERFORMANCE_MEASURE MaximizeMeasure);                                                // Compare current performance with best previous performance
+    vector<CANDIDATE> SaveCandidate(vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet);                                                       // Save the current candidate (current rule + performance)
+
+    int FindBestLength(bool Initialised, vector<CANDIDATE> PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure);
+    CANDIDATE ChooseBestCandidate(unsigned int RuleLength, bool Initialised, vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure);
+
 };
 
 #endif

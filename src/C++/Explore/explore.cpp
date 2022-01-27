@@ -10,6 +10,11 @@
 #include <math.h>
 #include <iostream>
 #include <ostream>
+#include <mutex>
+
+#include <tbb/parallel_for.h>
+std::mutex m1;
+std::mutex m2;
 
 #define COMMANDVERSION
 
@@ -55,6 +60,7 @@ Explore::Explore() {
 
     BranchBound                 = true;
 	SubSumption                 = true;
+	Parallel                    = false;
 
     // Output
     IsUpdateRealtime            = false;
@@ -667,6 +673,13 @@ void Explore::PrintSettings() {
   else {
     cout << "No" << endl;
   }
+    cout << "Parallel: ";
+    if (Parallel){
+        cout << "Yes" << endl;
+    }
+    else {
+        cout << "No" << endl;
+    }
 
 
   Population.PrintSettings();
@@ -973,205 +986,6 @@ void Explore::RemoveRestriction() {
 }
 
 /**********************************************************************
-Function: TestRule()
-Category: Modifiers
-Scope: public
-In: -
-Out: -
-Description: Test a rule against the current learning partition.
-**********************************************************************/
-bool Explore::TestRule() {
-#ifdef DEBUG_TIMING
-  clock_t Start, End;
-  Start = clock();
-#endif
-  bool Found = false;
-  bool Candidate = false;
-
-  if (Initialised) {
-    CurrentPerformance = Rule.CalculatePerformance();
-
-    // Are there any candidates?
-    if (PartitionCandidates.size()>0) {
-      // Does rule satisfy constraints?
-      if (CompareConstraints()) {
-        // Is rule-performance best until now?
-        Candidate = true;
-        if (CompareBestCandidate()) {
-		  SaveCandidate();
-          Found = true;
-        }
-      }
-    } else {
-      // Does rule satisfy constraints?
-      if (CompareConstraints()) {
-		SaveCandidate();
-		Candidate = true;
-        Found = true;
-      }
-    }
-  }
-
-  switch (RuleOutputMethod) {
-    case EVERY:
-      Rule.PrintCutoffSet();
-      if (IsPrintPerformance) {
-        PrintPerformance();
-      }
-      if (IsPrintSets) {
-        Rule.PrintSets();
-      }
-      break;
-    case INCREMENT:
-      if (Found) {
-        Rule.PrintCutoffSet();
-        if (IsPrintPerformance) {
-          PrintPerformance();
-        }
-        if (IsPrintSets) {
-          Rule.PrintSets();
-        }
-      }
-      break;
-  }
-
-#ifdef DEBUG_TIMING
-  End = clock();
-  ExploreTiming.AddTime("EXPLORE::TestRule", Start, End);
-#endif
-  return Candidate;
-}
-
-/**********************************************************************
-Function: CompareConstraints()
-Category: Modifiers
-Scope: public
-In: -
-Out: bool, performance is/is not above prerequisites
-Description: Compares current performance with any prerequisites.
-**********************************************************************/
-bool Explore::CompareConstraints() {
-#ifdef DEBUG_TIMING
-  clock_t Start, End;
-  Start = clock();
-#endif
-
-  if (Initialised) {
-    vector<CONSTRAINT>::iterator CurrentConstraint(Constraints.begin());
-    vector<CONSTRAINT>::iterator LastConstraint(Constraints.end());
-
-    float RuleValue,ConstraintValue;
-
-    for (; CurrentConstraint != LastConstraint; CurrentConstraint++) {
-      if ((*CurrentConstraint).Value>0) {
-        switch ((*CurrentConstraint).Measure) {
-          case SENSITIVITY:
-            RuleValue = CurrentPerformance.Sensitivity.Value;
-            break;
-          case SPECIFICITY:
-            RuleValue = CurrentPerformance.Specificity.Value;
-            break;
-          case NPV:
-            RuleValue = CurrentPerformance.NPV.Value;
-            break;
-          case PPV:
-            RuleValue = CurrentPerformance.PPV.Value;
-            break;
-          case ACCURACY:
-            RuleValue = CurrentPerformance.Accuracy.Value;
-        }
-        ConstraintValue = (*CurrentConstraint).Value;
-        if (ConstraintValue > RuleValue) {
-          #ifdef DEBUG_TIMING
-            End = clock();
-            ExploreTiming.AddTime("EXPLORE::CompareConstraints", Start, End);
-          #endif
-          return false;
-        }
-      }        
-    }
-    #ifdef DEBUG_TIMING
-      End = clock();
-      ExploreTiming.AddTime("EXPLORE::CompareConstraints", Start, End);
-    #endif
-    return true;
-  }
-  #ifdef DEBUG_TIMING
-    End = clock();
-    ExploreTiming.AddTime("EXPLORE::CompareConstraints", Start, End);
-  #endif
-  return false;
-}
-
-/**********************************************************************
-Function: CompareBestCandidate()
-Category: Modifiers
-Scope: public
-In: -
-Out: bool, performance is/is not above best performance.
-Description: Compares the current performance with the best performing
-rule found by then.
-**********************************************************************/
-bool Explore::CompareBestCandidate() {
-#ifdef DEBUG_TIMING
-  clock_t Start, End;
-  Start = clock();
-#endif
-
-  if (Initialised) {
-    vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.end());
-    CurrentCandidate--;
-
-    float RuleValue;
-    float CandidateValue;
-
-    switch (MaximizeMeasure) {
-      case SENSITIVITY:
-        CandidateValue = (*CurrentCandidate).Performance.Sensitivity.Value;
-        RuleValue = CurrentPerformance.Sensitivity.Value;
-        break;
-      case SPECIFICITY:
-        CandidateValue = (*CurrentCandidate).Performance.Specificity.Value;
-        RuleValue = CurrentPerformance.Specificity.Value;
-        break;
-      case NPV:
-        CandidateValue = (*CurrentCandidate).Performance.NPV.Value;
-        RuleValue = CurrentPerformance.NPV.Value;
-        break;
-      case PPV:
-        CandidateValue = (*CurrentCandidate).Performance.PPV.Value;
-        RuleValue = CurrentPerformance.PPV.Value;
-        break;
-      case ACCURACY:
-        CandidateValue = (*CurrentCandidate).Performance.Accuracy.Value;
-        RuleValue = CurrentPerformance.Accuracy.Value;
-        break;
-    }
-
-    if (CandidateValue<=RuleValue) {
-      #ifdef DEBUG_TIMING
-        End = clock();
-        ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
-      #endif
-      return true;
-    }
-
-    if (CandidateValue>RuleValue) {
-      #ifdef DEBUG_TIMING
-        End = clock();
-        ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
-      #endif
-      return false;
-    }
-  }
-  #ifdef DEBUG_TIMING
-    End = clock();
-    ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
-  #endif
-  return false;
-}
-
-/**********************************************************************
 Function: ClearCandidates()
 Category: Modifiers
 Scope: public
@@ -1206,50 +1020,6 @@ Description: Clears the population.
 **********************************************************************/
 void Explore::ClearPopulation() {
   Population.Clear();
-}
-
-/**********************************************************************
-Function: SaveCandidate()
-Category: Modifiers
-Scope: public
-In: -
-Out: -
-Description: Saves the current rule and performance.
-**********************************************************************/
-void Explore::SaveCandidate() {
-#ifdef DEBUG_TIMING
-  clock_t Start, End;
-  Start = clock();
-#endif
-
-  CANDIDATE Dummy;
-
-  Dummy.Performance = CurrentPerformance;                                       // Save the performance of the rule
-
-  Dummy.FeatureNames = Rule.GetFeatureNames();
-  Dummy.Conjunctions = Rule.GetConjunctions();                                  // Save a list of partitions (subset sizes)
-  Dummy.Features = Rule.GetFeatures();                                          // Save a list of current features used
-  Dummy.Cutoffs = Rule.GetCutoffs();                                            // Save a list of current cutoffs used
-  Dummy.Operators = Rule.GetOperators();                                        // Save a list of current operators used
-
-  PartitionCandidates.push_back(Dummy);                                         // Save the performance + rule
-
-  if (MaximizeMeasure==SENSITIVITY && !RestrictionSet) {
-    if (Rule.RuleSet.CorrectPositive>Rule.CPBest) {
-      Rule.CPBest = Rule.RuleSet.CorrectPositive;
-    }
-  }
-
-  if (MaximizeMeasure==ACCURACY && !RestrictionSet) {
-    if ((Rule.RuleSet.CorrectPositive + Rule.RuleSet.CorrectNegative) > Rule.CTBest) {
-      Rule.CTBest = Rule.RuleSet.CorrectPositive + Rule.RuleSet.CorrectNegative;
-    }
-  }
-
-  #ifdef DEBUG_TIMING
-    End = clock();
-    ExploreTiming.AddTime("EXPLORE::SaveCandidate", Start, End);
-  #endif
 }
 
 /**********************************************************************
@@ -2401,6 +2171,18 @@ bool Explore::GetSubSumption() {
 }
 
 /**********************************************************************
+Function: GetParallel()
+Category: Selectors
+Scope: public
+In: -
+Out: bool, rules will be optimized or not when possible
+Description: Returns whether explore will use parallelization
+**********************************************************************/
+bool Explore::GetParallel() {
+    return Parallel;
+}
+
+/**********************************************************************
 Function: AddFeature()
 Category: Modifiers
 Scope: public
@@ -2485,6 +2267,18 @@ remove unnecessary cutoffs
 **********************************************************************/
 void Explore::SetSubSumption(bool Value) {
   SubSumption = Value;
+}
+
+/**********************************************************************
+Function: SetParallel()
+Category: Modifiers
+Scope: public
+In: bool, Parallel should/should not be used if applicable
+Out: -
+Description: Determines whether Explore will use parallelization
+**********************************************************************/
+void Explore::SetParallel(bool Value) {
+    Parallel = Value;
 }
 
 /**********************************************************************
@@ -2764,20 +2558,11 @@ void Explore::Start() {
 
 	PrintSummary();
 
-	// TODO: decide which complexity to report
+	// TODO: decide which complexity to report (update for parallel options)
 	cout << endl << "COMPLEXITY" << endl << endl;
 	cout << "Combinations: " <<  Rule.GetCombinationsGenerated() << endl;
 	cout << "Feature sets: " << Rule.GetFeatureSetsGenerated() << endl;
 	cout << "Cutoff sets: " << Rule.GetCutoffSetsGenerated() << endl << endl;
-
-    cout << "Complexity combinations: " <<  Explore::CombinationComplexity() << endl;
-    cout << "Complexity featureset: " <<  Explore::FeatureSetComplexityLimit() << endl;
-      cout << "Featureset: " <<  Explore::GetFeatureSetComplexity() << endl;
-	cout << "Complexity entire rule: " <<  Explore::RuleComplexity() << endl;
-
-	cout << "Rule limit: " <<   Explore::GetRulesComplexityLimit() << endl;
-	cout << "Feature set limit: " <<  Explore::GetFeatureSetComplexityLimit() << endl;
-	cout << "Exponential limit: " <<  Explore::GetExponentialComplexityLimit() << endl;
 
 	cout << endl << "TIMING" << endl << endl;
 	time(&endtime);
@@ -2785,6 +2570,7 @@ void Explore::Start() {
 	
 	std::stringstream sstr;
 	sstr << "RuleLength:" << Rule.GetMaxRuleLength();
+	RuleLengthTiming.Clear();
 	RuleLengthTiming.AddTime(sstr.str(),StartRuleLength,clock());
 	cout << RuleLengthTiming.PrintAll();
 
@@ -3037,10 +2823,15 @@ bool Explore::RunProject() {
   unsigned int Partitionnr = 0;
   time_t dummy;
   unsigned int ActiveRuleLength;
-    int CountPartition;
+  int CountCandidatesPartition;
   int BestLengthPartition;
   int BestLengthFinal = 0;
   vector<int> BestLength(Rule.GetMaxRuleLength());
+  int CPBest_global = 0;
+  int CTBest_global = 0;
+
+  TIMING TermTupleTiming;
+  clock_t StartTimeTermTuple;
 
   #ifdef HYPER
    Jibu::Manager::initialize();
@@ -3049,8 +2840,7 @@ bool Explore::RunProject() {
   #endif
 
 	do {
-
-	    CountPartition = 0;
+	    CountCandidatesPartition = 0;
 	  BestLengthPartition = 0;
 	  Final = false;
 
@@ -3065,45 +2855,250 @@ bool Explore::RunProject() {
       if (IsPrintCutoffMethod)   Population.PrintCutoffMethod();
 	  if (IsPrintCutoffValues)   Population.PrintCutoffs();
 
-		  while (Rule.NextCombinationGenerator()) {
-			if (IsPrintCombinations) Rule.PrintCombination();
-			while (Rule.NextFeatureSetGenerator()) {
-			  if (IsPrintFeatureSets) Rule.PrintFeatureSet();
-			  CalculateProgress();
-			  while (Rule.NextCutoffSetGenerator()) {
-                  if (TestRule()) {
-                      CountPartition++;
-                  }
+if (!Parallel) {
 
-// TODO: check if inside or outside TestRule
-                  if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
-                      cout << "Candidate model: ";
-                      Rule.PrintCutoffSet();
-                  }
+    while (Rule.NextCombinationGenerator()) {
+        if (IsPrintCombinations) Rule.PrintCombination();
 
-				if (IsUpdateRealtime) CalculateProgress();
- #ifndef COMMANDVERSION
-				// BreatheCount++;// Increment breathe counter
+        StartTimeTermTuple = clock();
 
-				if (BreatheCount>BREATHE_INTERVAL) {
-				 if (PauseFunction()) {                                            // User paused the project
-					PrintSummary();
-					return false;
-				  }
-				  if (CancelFunction()) {                                           // User cancelled the project
-					PrintSummary();
-					CloseFunction();
-					return false;
-				  }
-				  BreatheCount = 0;
-				}
- #endif
-			  }
-			}
-		  }
+        while (Rule.NextFeatureSetGenerator()) {
+            if (IsPrintFeatureSets) Rule.PrintFeatureSet();
+            // CalculateProgress();
+            while (Rule.NextCutoffSetGenerator()) {
 
-		  BestLengthPartition = FindBestLength();
-		  ++BestLength[BestLengthPartition - 1]; // Calculate performance of current rule in validation set
+                CANDIDATE CurrentCandidate;
+                if (PartitionCandidates.size() > 0) {
+                    vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+                    GetCandidate--;
+                    CurrentCandidate = (*GetCandidate);
+                }
+
+                if (Rule.TestRule(Initialised, Constraints,
+                                  CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                                  RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+
+                    PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
+                }
+
+                // TODO: check if inside or outside TestRule
+                if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
+                    cout << "Candidate model: ";
+                    Rule.PrintCutoffSet();
+                }
+
+                // if (IsUpdateRealtime) CalculateProgress();
+
+#ifndef COMMANDVERSION
+                // BreatheCount++;// Increment breathe counter
+
+                                        if (BreatheCount>BREATHE_INTERVAL) {
+                                         if (PauseFunction()) {                                            // User paused the project
+                                            PrintSummary();
+                                            return false;
+                                          }
+                                          if (CancelFunction()) {                                           // User cancelled the project
+                                            PrintSummary();
+                                            CloseFunction();
+                                            return false;
+                                          }
+                                          BreatheCount = 0;
+                                        }
+#endif
+            }
+        }
+
+        std::stringstream sstr;
+        TermTupleTiming.Clear();
+        TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
+        Rule.PrintCombination();
+        cout << TermTupleTiming.PrintTotal();
+        cout << "Candidates: " <<  Rule.GetCountCandidates() << endl << endl;
+        CountCandidatesPartition += Rule.GetCountCandidates();
+        Rule.ResetCountCandidates();
+    }
+
+} else {
+
+    int end_loop = Rule.CalculateCombinationsTotal();
+
+    string ParallelMethod = "Global";
+    if (ParallelMethod == "Global") {
+
+        tbb::parallel_for(tbb::blocked_range<int>(0, end_loop), [&](tbb::blocked_range<int> r) {
+            for (int i = r.begin(); i < r.end(); ++i) {
+                StartTimeTermTuple = clock();
+
+                m1.lock();
+                if (Rule.NextCombinationGenerator()) {
+                    RULE Rule_i = this->Rule;
+                    m1.unlock();
+
+                    if (IsPrintCombinations) Rule_i.PrintCombination();
+
+                    while (Rule_i.NextFeatureSetGenerator()) {
+                        if (IsPrintFeatureSets) Rule_i.PrintFeatureSet();
+                        // CalculateProgress();
+                        while (Rule_i.NextCutoffSetGenerator()) {
+
+                            Rule_i.CPBest = CPBest_global;
+                            Rule_i.CTBest = CTBest_global;
+
+                            CANDIDATE CurrentCandidate;
+                            if (PartitionCandidates.size() > 0) {
+                                vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+                                GetCandidate--;
+                                CurrentCandidate = (*GetCandidate);
+                            }
+
+                            if (Rule_i.TestRule(Initialised, Constraints,
+                                                CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                                                RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+
+                                m2.lock();
+                                PartitionCandidates = Rule_i.SaveCandidate(PartitionCandidates, MaximizeMeasure,
+                                                                           RestrictionSet);
+
+                                CPBest_global = Rule_i.CPBest;
+                                CTBest_global = Rule_i.CTBest;
+
+                                m2.unlock();
+                            }
+
+                            // TODO: check if inside or outside TestRule
+                            if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
+                                cout << "Candidate model: ";
+                                Rule_i.PrintCutoffSet();
+                            }
+
+                            // if (IsUpdateRealtime) CalculateProgress();
+
+#ifndef COMMANDVERSION
+                            // BreatheCount++;// Increment breathe counter
+
+                            if (BreatheCount>BREATHE_INTERVAL) {
+                             if (PauseFunction()) {                                            // User paused the project
+                                PrintSummary();
+                                return false;
+                              }
+                              if (CancelFunction()) {                                           // User cancelled the project
+                                PrintSummary();
+                                CloseFunction();
+                                return false;
+                              }
+                              BreatheCount = 0;
+                            }
+#endif
+                        }
+                    }
+
+                    std::stringstream sstr;
+                    TermTupleTiming.Clear();
+                    TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
+                    Rule_i.PrintCombination();
+                    cout << TermTupleTiming.PrintTotal();
+                    cout << "Candidates: " <<  Rule_i.GetCountCandidates() << endl << endl;
+                    CountCandidatesPartition += Rule_i.GetCountCandidates();
+
+                }
+            }
+        });
+
+
+    } else if (ParallelMethod == "Multiple") {
+
+        tbb::parallel_for(tbb::blocked_range<int>(0, end_loop), [&](tbb::blocked_range<int> r) {
+            for (int i = r.begin(); i < r.end(); ++i) {
+                StartTimeTermTuple = clock();
+
+                vector<CANDIDATE> PartitionCandidates_i;
+
+                m1.lock();
+                if (Rule.NextCombinationGenerator()) {
+                    RULE Rule_i = this->Rule;
+                    m1.unlock();
+
+                    if (IsPrintCombinations) Rule_i.PrintCombination();
+
+                    while (Rule_i.NextFeatureSetGenerator()) {
+                        if (IsPrintFeatureSets) Rule_i.PrintFeatureSet();
+                        // CalculateProgress();
+
+                        while (Rule_i.NextCutoffSetGenerator()) {
+
+                            CANDIDATE CurrentCandidate;
+                            if (PartitionCandidates_i.size() > 0) {
+                                vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates_i.end());
+                                GetCandidate--;
+                                CurrentCandidate = (*GetCandidate);
+                            }
+
+
+                            if (Rule_i.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                                                RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+
+                                m2.lock();
+                                PartitionCandidates_i = Rule_i.SaveCandidate(PartitionCandidates_i, MaximizeMeasure,
+                                                                           RestrictionSet);
+                                m2.unlock();
+                            }
+
+                            // TODO: check if inside or outside TestRule
+                            if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
+                                cout << "Candidate model: ";
+                                Rule_i.PrintCutoffSet();
+                            }
+
+                            // if (IsUpdateRealtime) CalculateProgress();
+
+#ifndef COMMANDVERSION
+                            // BreatheCount++;// Increment breathe counter
+
+                            if (BreatheCount>BREATHE_INTERVAL) {
+                             if (PauseFunction()) {                                            // User paused the project
+                                PrintSummary();
+                                return false;
+                              }
+                              if (CancelFunction()) {                                           // User cancelled the project
+                                PrintSummary();
+                                CloseFunction();
+                                return false;
+                              }
+                              BreatheCount = 0;
+                            }
+#endif
+                        }
+                    }
+
+                    std::stringstream sstr;
+                    TermTupleTiming.Clear();
+                    TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
+                    Rule_i.PrintCombination();
+                    cout << TermTupleTiming.PrintTotal();
+                    cout << "Candidates: " <<  Rule_i.GetCountCandidates() << endl << endl;
+                    CountCandidatesPartition += Rule_i.GetCountCandidates();
+
+                }
+                                    m2.lock();
+
+                                    vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates_i.begin());
+                                    vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates_i.end());
+
+                                    for (; CurrentCandidate != LastCandidate; CurrentCandidate++) {
+                                        CANDIDATE SaveCandidate = (*CurrentCandidate);
+                                        PartitionCandidates.push_back(SaveCandidate);
+                                    }
+
+                                    m2.unlock();
+            }
+        });
+    }
+
+}
+
+// TODO: is "Rule" needed?
+        BestLengthPartition = Rule.FindBestLength(Initialised,PartitionCandidates, PartitionMethod, MaximizeMeasure);
+        ++BestLength[BestLengthPartition - 1]; // Calculate performance of current rule in validation set
 
         cout << endl << endl;
         cout << "Best Length:" << BestLengthPartition << endl;
@@ -3129,25 +3124,43 @@ bool Explore::RunProject() {
         ValidateBestCandidate(); // Print results on full train set and save best rule
 
     } else {
+
+#ifndef PARALLEL
         // Directly print results on full train set and save best rule
         if (PartitionCandidates.size()>0) {
 
-                if (ChooseBestCandidate(BestLengthFinal)){
+            CANDIDATE BestCandidate = Rule.ChooseBestCandidate(BestLengthFinal, Initialised, PartitionCandidates, MaximizeMeasure);
+               // if (ChooseBestCandidate(BestLengthFinal)){
                     if (Rule.SetRule(BestCandidate)) {
                         cout << "Best candidate (overall): ";
                         Rule.PrintCutoffSet();
                         cout << endl;
-                        cout << "Train-set: ";
+                        cout << "Learn-set: ";
                         BestCandidate.Performance.Print();
                         cout << endl;
 
                         ProjectCandidates.push_back(BestCandidate);
 
-                        cout << "Count Candidates:" << CountPartition << endl;
+                        cout << "Total Count Candidates:" << CountCandidatesPartition << endl;
                     }
-                }
+               // }
             }
-        }
+
+
+# else
+        Population.ResetTestPartitions(); // Sets all partitions to LEARN
+        PartitionCandidates.clear(); // Remove all the partition candidates used to find BestLength
+
+        SetRerun();
+
+        Induce(BestLengthFinal, BestLengthFinal);
+
+        Final = true;
+        ValidateBestCandidate(); // Print results on full train set and save best rule
+
+# endif
+
+    }
 
   return true;
 }
@@ -3163,8 +3176,6 @@ Description: Resumes an Explore project.
 void Explore::Induce(int nStart, int nEnd) {
      Rule.ResetComplexity();
 
-     int Count = 0;
-
     // int SaveMin, SaveMax;
   unsigned int BreatheCount = 0;
 
@@ -3176,10 +3187,21 @@ void Explore::Induce(int nStart, int nEnd) {
 	while (Rule.NextFeatureSetGenerator()) {
 	  while (Rule.NextCutoffSetGenerator()) {
 
-          if (TestRule()) { // Calculate performance of current rule
-              Count++;
-
+          CANDIDATE CurrentCandidate;
+          if (PartitionCandidates.size() > 0) {
+              vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+              GetCandidate--;
+              CurrentCandidate = (*GetCandidate);
           }
+
+
+          if (Rule.TestRule(Initialised, Constraints,
+                            CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                            RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+
+              PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
+          }
+
 
           if (IsPrintCutoffSetsBestLength) {
               cout << "Candidate model BestLength: ";
@@ -3205,7 +3227,7 @@ void Explore::Induce(int nStart, int nEnd) {
 	}
   }
 
-  cout << "Count Candidates:" << Count << endl;
+  cout << "Total Count Candidates:" << Rule.GetCountCandidates() << endl;
   //SetMinRuleLength(SaveMin);
   // SetMaxRuleLength(SaveMax);
 }
@@ -3227,8 +3249,19 @@ bool Explore::ResumeProject() {
     do {
       CalculateProgress();
       do {
-        TestRule();                                                             // Calculate performance of current rule
-        if (IsPrintCutoffSets) {
+       // TestRule();                                                             // Calculate performance of current rule
+
+          CANDIDATE CurrentCandidate;
+          if (PartitionCandidates.size() > 0) {
+              vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+              GetCandidate--;
+              CurrentCandidate = (*GetCandidate);
+          }
+
+          Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
+          PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
+
+           if (IsPrintCutoffSets) {
           Rule.PrintCutoffSet();
         }
         if (IsUpdateRealtime) {
@@ -3256,8 +3289,18 @@ bool Explore::ResumeProject() {
     do {
 	  CalculateProgress();
       do {
-        TestRule();                                                             // Calculate performance of current rule
-        if (IsPrintCutoffSets) {
+       // TestRule();                                                             // Calculate performance of current rule
+
+          CANDIDATE CurrentCandidate;
+          if (PartitionCandidates.size() > 0) {
+              vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+              GetCandidate--;
+              CurrentCandidate = (*GetCandidate);
+          }
+
+          Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
+          PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
+          if (IsPrintCutoffSets) {
           Rule.PrintCutoffSet();
         }
         if (IsUpdateRealtime) {
@@ -3349,8 +3392,18 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
           }
           
           // Test current rule (Branch-and-bound values could be updated)
-          TestRule();
+          // TestRule();
 
+            CANDIDATE CurrentCandidate;
+            if (PartitionCandidates.size() > 0) {
+                vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+                GetCandidate--;
+                CurrentCandidate = (*GetCandidate);
+            }
+
+
+            Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
+            PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
         }
       } while (Rule.NextCutoffSetGenerator());                                           // Create next cutoff-set
 

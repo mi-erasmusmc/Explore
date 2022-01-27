@@ -1,3 +1,4 @@
+# TODO: add descriptions for package manual
 
 #' trainExplore
 #'
@@ -34,6 +35,9 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
     # Load settings
     settings <- paste0(paste(readLines(settings_path), collapse="\n"),"\n")
   }
+  
+  # TODO: check train_data and correct if necessary?
+  # drop nearly constant or extremely sparse values
   
   # Save train_data if entered
   if (!is.null(train_data)) {
@@ -74,10 +78,10 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
 #'
 #' @return
 settingsExplore <- function(settings,
-                            output_path,
+                            output_path, # C++ cannot handle spaces in file path well, avoid those
                             file_name,
                             train_data = NULL,
-                            OutputFile = NULL,
+                            OutputFile = NULL, 
                             StartRulelength = NULL,
                             EndRulelength = NULL,
                             OperatorMethod = NULL,
@@ -91,7 +95,8 @@ settingsExplore <- function(settings,
                             PrintSettings = NULL,
                             PrintPerformance = NULL,
                             Subsumption = NULL,
-                            BranchBound = NULL) {
+                            BranchBound = NULL,
+                            Parallel = NULL) {
   
   # Insert location training data and cutoff file if train_data is entered
   if (!is.null(train_data)) {
@@ -106,7 +111,7 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "OutputFile", input = OutputFile, default_setting = paste0(output_path, file_name, ".result"))
   settings <- changeSetting(settings, parameter = "StartRulelength", input = StartRulelength, default_setting = 1)
   settings <- changeSetting(settings, parameter = "EndRulelength", input = EndRulelength, default_setting = 3)
-  settings <- changeSetting(settings, parameter = "OperatorMethod", input = OperatorMethod, default_setting = "ROCAREA")
+  settings <- changeSetting(settings, parameter = "OperatorMethod", input = OperatorMethod, default_setting = "EXHAUSTIVE")
   settings <- changeSetting(settings, parameter = "CutoffMethod", input = CutoffMethod, default_setting = "RVAC")
   settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude, default_setting = "")
   settings <- changeSetting(settings, parameter = "Maximize", input = Maximize, default_setting = "ACCURACY")
@@ -114,8 +119,9 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity, default_setting = "")
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings, default_setting = "yes")
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance, default_setting = "yes")
-  settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption, default_setting = "no")
-  settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound, default_setting = "no")
+  settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption, default_setting = "yes")
+  settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound, default_setting = "yes")
+  settings <- changeSetting(settings, parameter = "Parallel", input = BranchBound, default_setting = "no")
   
   # Save settings file
   settings_path <- paste0(output_path, file_name,".project")

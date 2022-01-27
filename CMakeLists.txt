@@ -1,13 +1,19 @@
 cmake_minimum_required(VERSION 3.17)
 project(Explore)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -stdlib=libc++")
 
+# MAC
 set(Boost_INCLUDE_DIR /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0)
 set(Boost_LIBRARY_DIR /Users/aniekmarkus/Documents/Documents/Code/C++/boost_1_74_0/libs)
+
+# LINUX
+# set(Boost_INCLUDE_DIR /data/home/amarkus/Documents/boost_1_74_0)
+# set(Boost_LIBRARY_DIR /data/home/amarkus/Documents/boost_1_74_0/boost_1_74_0/libs)
+
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
@@ -17,6 +23,19 @@ include_directories(CMExplore/Debug)
 include_directories(Explore)
 include_directories(IOExplore)
 
+# MAC
+include_directories(include /usr/local/include/)
+link_directories(/usr/local/lib)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb")
+
+# LINUX
+# set(CMAKE_PREFIX_PATH "/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8")
+# find_library(TBB_LIB tbb)
+# find_path(TBB_PATH
+ #       HINTS /opt/intel/oneapi/tbb/latest/include
+ #       NAMES tbb/parallel_for.h)
+ 
+ 
 set(SOURCE_FILES
         Clion/main.cpp
         src/C++/CMExplore/cmdline.h
@@ -80,6 +99,10 @@ set(SOURCE_FILES
         src/C++/stlpmt.lib)
 
 add_executable(Explore ${SOURCE_FILES})
+
+# LINUX
+target_link_libraries(Explore PRIVATE "${TBB_LIB}")
+target_include_directories(Explore PRIVATE "${TBB_PATH}")
 
 # add_library(ExploreLib SHARED ${SOURCE_FILES})
 # add_library(ExploreLib SHARED ${SOURCE_FILES})

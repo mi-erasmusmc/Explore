@@ -1,11 +1,14 @@
 # Makevars
-CXX_STD = CXX14
+CXX_STD = CXX11 -mmacosx-version-min=10.15
 
 SOURCES=$(wildcard C++/*.cpp C++/IOExplore/*.cpp C++/Explore/*.cpp C++/CMExplore/*.cpp)
 
 OBJECTS = ExploreInterface.o RcppExports.o $(SOURCES:.cpp=.o)
 
-PKG_CPPFLAGS=-I.
+LDFLAGS = -L/opt/intel/oneapi/tbb/latest/lib
+LD_LIBRARY_PATH = -L/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8 
+PKG_CXXFLAGS= -I. -I/opt/intel/oneapi/tbb/latest/include -O3 -g3 -Wall -c
+PKG_LIBS = -L/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8  -ltbb -ltbbmalloc -std=c++11
 
 all: $(SHLIB)
 

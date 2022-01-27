@@ -26,6 +26,7 @@ class TIMING {
 
     void AddTime(string TDescription, clock_t StartTime, clock_t EndTime);
     string PrintAll();
+    string PrintTotal();
 	string PrintLast();
 	void Clear();
 };

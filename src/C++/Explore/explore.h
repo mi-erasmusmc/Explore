@@ -85,6 +85,7 @@ class Explore {
 
 	bool BranchBound;                                                           // Optimize rule generation process?
 	bool SubSumption;                                                           // Use SubSumption Pruning to remove cutoffs
+    bool Parallel;                                                              // Use parallelization
     bool IsUpdateRealtime;                                                      // Print summary information in real-time
 
 	TIMING RuleLengthTiming;
@@ -114,10 +115,7 @@ class Explore {
     bool IsPrintFeatureOperators;                                               // Should FeatureOperators be printed at the start of rule generation?
 
     // Private modifiers
-    bool CompareBestCandidate();                                                // Compare current performance with best previous performance
-    bool CompareConstraints();                                                  // Compare current performance with constraints
-    void SaveCandidate();                                                       // Save the current candidate (current rule + performance)
-    bool ChooseBestCandidate(unsigned int RuleLength);                          // Select the best candidate, depending on the maximising feature and constraints, of the list of candidates
+    bool ChooseBestCandidate(unsigned int RuleLength);
 
     // Output functions
     void PrintSettings();                                                       // Print settings (debug settings)
@@ -202,6 +200,7 @@ class Explore {
     RULE_OUTPUT_METHOD GetRuleOutputMethod();                                   // Returns the output method of rules for this project
     bool GetBranchBound();                                                      // Returns whether Explore will optimize rules when it has the chance
     bool GetSubSumption();                                                      // Returns whether Explore will use subsumption
+    bool GetParallel();                                                      // Returns whether Explore will use parallelization
 
     bool GetPrintSettings();                                                    // Should settings be printed to output
     bool GetPrintPartitions();                                                  // Should population be printed to output
@@ -289,8 +288,6 @@ class Explore {
 	bool AddFeature(string FeatureName, unsigned int Nom);                      // Add a feature to the population
 	void AddObservation(list<string> Values, unsigned int Class);               // Add an observation to the population
 
-    bool TestRule();                                                            // Test current rule
-
 	bool SetPartitionMethod(const PARTITION_METHOD PMethod);                    // Partitioning method to be used
     bool SetCutoffMethod(const CUTOFF_METHOD CMethod);                          // Cutoff method to be used
     bool SetOperatorMethod(const OPERATOR_METHOD OMethod);                      // Operator method to be used
@@ -319,6 +316,7 @@ class Explore {
 
 	void SetBranchBound(bool Optimize);                                         // Optimize on accuracy/sensitivity or specificity depending on constraints and maximize measure
 	void SetSubSumption(bool Value);                                            // Prune Cutoffs by SubSumption
+    void SetParallel(bool Value);                                               // Use parallelization
 
     // Interfacing
     void   SetOutput(streambuf *OutputBuffer);                                  // Redirect explore output

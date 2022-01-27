@@ -146,6 +146,7 @@ void IOExplore::ClearSettings() {
   ProjectSettings.PrintSets              = false;
   ProjectSettings.BranchBound            = false;
   ProjectSettings.SubSumption            = false;
+  ProjectSettings.Parallel               = false;
 }
 
 /**********************************************************************
@@ -692,8 +693,12 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
 	if (Project->GetSubSumption()) {
 	  ProjectSettings.SubSumption = true;
 	}
+    ProjectSettings.Parallel = false;
+    if (Project->GetParallel()) {
+        ProjectSettings.Parallel = true;
+    }
 
-	return SaveSettingsToFile(IOFilename);
+    return SaveSettingsToFile(IOFilename);
 }
 
 bool IOExplore::SaveSettingsToFile(string IOFilename) {
@@ -933,6 +938,11 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
 	} else {
 	  ProjectFile << "SubSumption=no" << endl;
 	}
+      if (ProjectSettings.Parallel) {
+          ProjectFile << "Parallel=yes" << endl;
+      } else {
+          ProjectFile << "Parallel=no" << endl;
+      }
 	ProjectFile.flush();
 	ProjectFile.close();
 	return true;
@@ -1467,6 +1477,16 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
 		  return false;
 		}
 	  }
+        if (CurrentHeading.compare("Parallel")==0) {
+            if (CurrentValue.compare("yes")==0) {
+                ProjectSettings.Parallel = true;
+            } else if (CurrentValue.compare("no")==0) {
+                ProjectSettings.Parallel = false;
+            } else {
+                ProjectLoadErrors.push_back("Invalid value for parallel optimization.");
+                return false;
+            }
+        }
 	  ProjectFile.getline(Buffer,MAX_LINESIZE,ENDL_SEPARATOR);
 	}
     ProjectFile.close();
@@ -1587,6 +1607,7 @@ bool IOExplore::SetupExploreFromStruct() {
   Project->SetSavePartitions(ProjectSettings.SavePartitions);
   Project->SetBranchBound(ProjectSettings.BranchBound);
   Project->SetSubSumption(ProjectSettings.SubSumption);
+  Project->SetParallel(ProjectSettings.Parallel);
 
   return true;
 }

@@ -7,7 +7,6 @@
 
 #include "rule.h"
 #include "../common.h"
-                                
 #ifdef DEBUG_TIMING
 extern TIMING ExploreTiming;
 #endif
@@ -36,6 +35,8 @@ RULE::RULE() {
   FeatureSetsGenerated = 0;
   CutoffSetsGenerated = 0;
 
+    CountCandidates = 0;
+
   CurrentLength = NULL;
   MinLength = NULL;
   MaxLength = NULL;
@@ -56,6 +57,7 @@ Description: Destructor for a rule.
 **********************************************************************/
 RULE::~RULE() {
 }
+
 
 /**********************************************************************
 Function: Size()
@@ -688,6 +690,19 @@ long RULE::GetCutoffSetsGenerated() {
   return CutoffSetsGenerated;
 }
 
+
+/**********************************************************************
+Function: GetCountCandidates()
+Category: Selectors
+Scope: public
+In: -
+Out: double, number of instances
+Description: Returns the number of candidates found.
+**********************************************************************/
+long RULE::GetCountCandidates() {
+    return CountCandidates;
+}
+
 /**********************************************************************
 Function: GetCombinationsTotal()
 Category: Selectors
@@ -780,12 +795,33 @@ double RULE::RuleComplexity(unsigned int NoPartitions) {
   FeatureSetsGenerated = 0;
   CutoffSetsGenerated = 0;
 
+  CountCandidates = 0;
+
 #ifdef DEBUG_TIMING
   End = clock();
   ExploreTiming.AddTime("RULE::Initialise", Start, End);
 #endif
 
   return RuleComplexity;
+}
+
+
+/**********************************************************************
+Function: CombinationsTotal()
+Category: Selectors
+Scope: public
+In: -
+Out: long double, complexity of the rule.
+Description: Calculates the complexity of a given rulelength.
+**********************************************************************/
+int RULE::CalculateCombinationsTotal() {
+    while (NextCombinationGenerator()) {
+        CombinationsTotal++;
+    }
+
+    Reset();                                                                      // Reset the rule
+
+    return (int) CombinationsTotal;
 }
 
 /**********************************************************************
@@ -1233,6 +1269,8 @@ void RULE::Initialise(vector<FEATURE>* RFeatures) {
   FeatureSetsGenerated = 0;
   CutoffSetsGenerated = 0;
 
+    CountCandidates = 0;
+
   CombinationGenerated = false;
 
 #ifdef DEBUG_TIMING
@@ -1260,6 +1298,8 @@ void RULE::LimitedInitialise() {
   CombinationsGenerated = 0;
   FeatureSetsGenerated = 0;
   CutoffSetsGenerated = 0;
+
+    CountCandidates = 0;
 
   CombinationGenerated = false;
 
@@ -2925,12 +2965,13 @@ Description: Generates the next partition of the rule, keeping into
 account any restrictions that were set previously.
 **********************************************************************/
 bool RULE::NextCombinationGenerator() {
-
     if (RestrictionSet || MandatorySet) { // || Rule.IsMandatorySet()
         do {
+
             if (!NextCombination()) {
                 return false;
             }
+
         } while (!CheckCombinationRestriction());
         return true;
     } else {
@@ -3051,4 +3092,420 @@ void RULE::ResetComplexity() {
     FeatureSetsGenerated = 0;
     CutoffSetsGenerated = 0;
 
+    CountCandidates = 0;
+
+}
+
+/**********************************************************************
+Function: Reset()
+Category: Modifiers
+Scope: public
+In: -
+Out: -
+Description: Resets complexity measures.
+**********************************************************************/
+void RULE::ResetCountCandidates() {
+#ifdef DEBUG_TIMING
+    clock_t Start, End;
+  Start = clock();
+#endif
+    CountCandidates = 0;
+}
+
+// BELOW functions are moved from explore.cpp.
+
+/**********************************************************************
+Function: TestRule()
+Category: Modifiers
+Scope: public
+In: -
+Out: -
+Description: Test a rule against the current learning partition.
+**********************************************************************/
+bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints,CANDIDATE CurrentCandidate, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet,
+                                 RULE_OUTPUT_METHOD RuleOutputMethod, bool IsPrintPerformance, bool IsPrintSets) {
+#ifdef DEBUG_TIMING
+    clock_t Start, End;
+  Start = clock();
+#endif
+    bool Found = false;
+    bool Candidate = false;
+
+    if (Initialised) {
+        PERFORMANCE CurrentPerformance = CalculatePerformance();
+
+        // Does rule satisfy constraints?
+        if (CompareConstraints(CurrentPerformance, Initialised, Constraints)) {
+
+            // Are there any candidates?
+            if (CurrentCandidate.IsValid()) {
+
+                // Is rule-performance best until now?
+                Candidate = true;
+                CountCandidates++;
+
+                if (CompareBestCandidate(CurrentPerformance, Initialised, CurrentCandidate, MaximizeMeasure)) {
+                   // PartitionCandidates = SaveCandidate(CurrentPerformance, PartitionCandidates, MaximizeMeasure, RestrictionSet);
+                    Found = true;
+                }
+            } else {
+               // PartitionCandidates = SaveCandidate(CurrentPerformance, PartitionCandidates, MaximizeMeasure, RestrictionSet);
+
+                Candidate = true;
+                CountCandidates++;
+                Found = true;
+            }
+        }
+    }
+
+    switch (RuleOutputMethod) {
+        case EVERY:
+            PrintCutoffSet();
+            if (IsPrintPerformance) {
+                PrintPerformance();
+            }
+            if (IsPrintSets) {
+                PrintSets();
+            }
+            break;
+        case INCREMENT:
+            if (Found) {
+                PrintCutoffSet();
+                if (IsPrintPerformance) {
+                    PrintPerformance();
+                }
+                if (IsPrintSets) {
+                    PrintSets();
+                }
+            }
+            break;
+    }
+
+#ifdef DEBUG_TIMING
+    End = clock();
+    ExploreTiming.AddTime("EXPLORE::TestRule", Start, End);
+#endif
+    // TODO: indicate when partition candidates NOT updated or return Candidate instead?
+    // return Candidate;
+    return Found;
+}
+
+
+/**********************************************************************
+Function: CompareConstraints()
+Category: Modifiers
+Scope: public
+In: -
+Out: bool, performance is/is not above prerequisites
+Description: Compares current performance with any prerequisites.
+**********************************************************************/
+bool RULE::CompareConstraints(PERFORMANCE CurrentPerformance, bool Initialised, vector<CONSTRAINT> Constraints) {
+#ifdef DEBUG_TIMING
+    clock_t Start, End;
+  Start = clock();
+#endif
+
+    if (Initialised) {
+        vector<CONSTRAINT>::iterator CurrentConstraint(Constraints.begin());
+        vector<CONSTRAINT>::iterator LastConstraint(Constraints.end());
+
+        float RuleValue,ConstraintValue;
+
+        for (; CurrentConstraint != LastConstraint; CurrentConstraint++) {
+            if ((*CurrentConstraint).Value>0) {
+                switch ((*CurrentConstraint).Measure) {
+                    case SENSITIVITY:
+                        RuleValue = CurrentPerformance.Sensitivity.Value;
+                        break;
+                    case SPECIFICITY:
+                        RuleValue = CurrentPerformance.Specificity.Value;
+                        break;
+                    case NPV:
+                        RuleValue = CurrentPerformance.NPV.Value;
+                        break;
+                    case PPV:
+                        RuleValue = CurrentPerformance.PPV.Value;
+                        break;
+                    case ACCURACY:
+                        RuleValue = CurrentPerformance.Accuracy.Value;
+                }
+                ConstraintValue = (*CurrentConstraint).Value;
+                if (ConstraintValue > RuleValue) {
+#ifdef DEBUG_TIMING
+                    End = clock();
+            ExploreTiming.AddTime("EXPLORE::CompareConstraints", Start, End);
+#endif
+                    return false;
+                }
+            }
+        }
+#ifdef DEBUG_TIMING
+        End = clock();
+      ExploreTiming.AddTime("EXPLORE::CompareConstraints", Start, End);
+#endif
+        return true;
+    }
+#ifdef DEBUG_TIMING
+    End = clock();
+    ExploreTiming.AddTime("EXPLORE::CompareConstraints", Start, End);
+#endif
+    return false;
+}
+
+/**********************************************************************
+Function: CompareBestCandidate()
+Category: Modifiers
+Scope: public
+In: -
+Out: bool, performance is/is not above best performance.
+Description: Compares the current performance with the best performing
+rule found by then.
+**********************************************************************/
+bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised, CANDIDATE CurrentCandidate, PERFORMANCE_MEASURE MaximizeMeasure) {
+#ifdef DEBUG_TIMING
+    clock_t Start, End;
+  Start = clock();
+#endif
+
+    if (Initialised) {
+        float RuleValue;
+        float CandidateValue;
+
+        switch (MaximizeMeasure) {
+            case SENSITIVITY:
+                CandidateValue = CurrentCandidate.Performance.Sensitivity.Value;
+                RuleValue = CurrentPerformance.Sensitivity.Value;
+                break;
+            case SPECIFICITY:
+                CandidateValue = CurrentCandidate.Performance.Specificity.Value;
+                RuleValue = CurrentPerformance.Specificity.Value;
+                break;
+            case NPV:
+                CandidateValue = CurrentCandidate.Performance.NPV.Value;
+                RuleValue = CurrentPerformance.NPV.Value;
+                break;
+            case PPV:
+                CandidateValue = CurrentCandidate.Performance.PPV.Value;
+                RuleValue = CurrentPerformance.PPV.Value;
+                break;
+            case ACCURACY:
+                CandidateValue = CurrentCandidate.Performance.Accuracy.Value;
+                RuleValue = CurrentPerformance.Accuracy.Value;
+                break;
+        }
+
+        if (CandidateValue<=RuleValue) { // TODO: why = included here?
+#ifdef DEBUG_TIMING
+            End = clock();
+        ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
+#endif
+            return true;
+        }
+
+        if (CandidateValue>RuleValue) {
+#ifdef DEBUG_TIMING
+            End = clock();
+        ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
+#endif
+            return false;
+        }
+    }
+#ifdef DEBUG_TIMING
+    End = clock();
+    ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
+#endif
+    return false;
+}
+
+
+/**********************************************************************
+Function: SaveCandidate()
+Category: Modifiers
+Scope: public
+In: -
+Out: -
+Description: Saves the current rule and performance.
+**********************************************************************/
+vector<CANDIDATE> RULE::SaveCandidate(vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet) {
+#ifdef DEBUG_TIMING
+    clock_t Start, End;
+  Start = clock();
+#endif
+
+    CANDIDATE Dummy;
+
+    Dummy.Performance = GetPerformance();                                       // Save the performance of the rule
+
+    Dummy.FeatureNames = GetFeatureNames();
+    Dummy.Conjunctions = GetConjunctions();                                  // Save a list of partitions (subset sizes)
+    Dummy.Features = GetFeatures();                                          // Save a list of current features used
+    Dummy.Cutoffs = GetCutoffs();                                            // Save a list of current cutoffs used
+    Dummy.Operators = GetOperators();                                        // Save a list of current operators used
+
+    PartitionCandidates.push_back(Dummy);                                         // Save the performance + rule
+
+    if (MaximizeMeasure==SENSITIVITY && !RestrictionSet) {
+        if (RuleSet.CorrectPositive>CPBest) {
+           CPBest = RuleSet.CorrectPositive;
+        }
+    }
+
+    if (MaximizeMeasure==ACCURACY && !RestrictionSet) {
+        if ((RuleSet.CorrectPositive + RuleSet.CorrectNegative) > CTBest) {
+           CTBest = RuleSet.CorrectPositive + RuleSet.CorrectNegative;
+        }
+    }
+
+    return PartitionCandidates;
+
+#ifdef DEBUG_TIMING
+    End = clock();
+    ExploreTiming.AddTime("EXPLORE::SaveCandidate", Start, End);
+#endif
+}
+
+/**********************************************************************
+Function: BestLength()
+Category: Modifiers
+Scope: public
+In: -
+Out: -
+Description: is stop criterium met?
+**********************************************************************/
+int RULE::FindBestLength(bool Initialised, vector<CANDIDATE> PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure) {
+    float best;
+    float current;
+    int Opt=0;
+
+    CANDIDATE BestCandidate;
+
+    if (Initialised) {
+        SetTestMode(VALIDATION);
+
+        if (PartitionCandidates.size()>0) {
+            for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
+                BestCandidate = ChooseBestCandidate(i, Initialised, PartitionCandidates, MaximizeMeasure);
+
+                if (BestCandidate.Performance.Accuracy.Value != 0) {  // Check if BestCandidate not empty
+                    if (SetRule(BestCandidate))
+                    {
+                        cout << "RULELENGTH " << i << endl << endl;
+                        cout << "Best candidate (within this partition): ";
+                        PrintCutoffSet();
+                        cout << endl;
+                        cout << "Learn-set: ";
+                        BestCandidate.Performance.Print();
+                        cout << endl;
+
+                        if (!(PartitionMethod==RESUBSTITUTION)){
+                            BestCandidate.Performance = CalculatePerformance();          // Test BestCandidate on validation partition
+                            cout << "Validation-set: ";
+                            BestCandidate.Performance.Print();
+                            cout << endl;
+                        }
+                        switch (MaximizeMeasure){
+
+                            case ACCURACY:
+                                current = BestCandidate.Performance.Accuracy.Value;
+                                break;
+                            case SENSITIVITY:
+                                current = BestCandidate.Performance.Sensitivity.Value;
+                                break;
+                            case SPECIFICITY:
+                                current = BestCandidate.Performance.Specificity.Value;
+                                break;
+                        }
+                        if (i==1) {
+                            best = current;
+                            Opt = 1;
+                        }
+                        else {
+                            if (current > best) {
+                                best = current;
+                                Opt = i;
+                            }
+                        }
+                    }
+                }
+            }
+            return Opt;
+        } else {
+#if defined(EXPLORE_MPI_DEBUG)
+            cout << "--> No Candidates" << endl;
+#endif
+        }
+    }
+    return 0;
+}
+
+
+
+/**********************************************************************
+Function: ChooseBestCandidate()
+Category: Modifiers
+Scope: public
+In: insigned int, rule length
+Out: -
+Description: Retrieves the best candidate and puts it in
+BestCandidate.
+**********************************************************************/
+CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure) {
+#ifdef DEBUG_TIMING
+    clock_t Start, End;
+  Start = clock();
+#endif
+    bool Found = false;
+    CANDIDATE BestCandidate;
+
+    if (Initialised) {
+        vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
+        vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
+
+        // TODO: check if better place to create variable
+        BestCandidate = (*CurrentCandidate);
+
+        float CurrentValue;
+        float BestValue;
+
+        while (CurrentCandidate != LastCandidate) {
+            CurrentValue = BestValue = 0;
+            if ((*CurrentCandidate).Features.size()==RuleLength){
+                switch (MaximizeMeasure) {
+                    case SENSITIVITY:
+                        CurrentValue = (*CurrentCandidate).Performance.Sensitivity.Value;
+                        break;
+                    case SPECIFICITY:
+                        CurrentValue = (*CurrentCandidate).Performance.Specificity.Value;
+                        break;
+                    case NPV:
+                        CurrentValue = (*CurrentCandidate).Performance.NPV.Value;
+                        break;
+                    case PPV:
+                        CurrentValue = (*CurrentCandidate).Performance.PPV.Value;
+                        break;
+                    case ACCURACY:
+                        CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
+                        break;
+                }
+
+                if (BestValue<=CurrentValue) {
+                    BestCandidate = (*CurrentCandidate);
+                    BestValue = CurrentValue;
+                    Found = true;
+                }
+            }
+            CurrentCandidate++;
+        }
+    }
+
+#ifdef DEBUG_TIMING
+    End = clock();
+  ExploreTiming.AddTime("EXPLORE::ChooseBestCandidate", Start, End);
+#endif
+
+  if (Found) {
+      return BestCandidate;
+  } else {
+      return CANDIDATE();
+  }
 }

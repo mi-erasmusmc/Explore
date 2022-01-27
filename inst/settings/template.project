@@ -27,7 +27,7 @@ Accuracy=
 Specificity=
 [Output]
 OutputMethod=BEST
-PrintSettings=no
+PrintSettings=yes
 PrintPartitions=no
 PrintFeatureOperators=no
 PrintCutoffMethod=no
@@ -38,10 +38,11 @@ PrintCombinations=no
 PrintFeatureSets=no
 PrintCutoffSets=no
 PrintCutOffsetsBestLength=no
-PrintPerformance=no
+PrintPerformance=yes
 PrintSets=no
 SavePartitions=no
 [Run]
 OptimizeRules=yes
 Subsumption=yes
 BranchBound=yes
+Parallel=no
