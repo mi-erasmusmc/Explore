@@ -11,7 +11,7 @@
 #include <iostream>
 #include <ostream>
 #include <mutex>
-
+#include <tbb/concurrent_vector.h>
 #include <tbb/parallel_for.h>
 std::mutex m1;
 std::mutex m2;
@@ -296,8 +296,8 @@ bool Explore::ChooseBestCandidate(unsigned int RuleLength) {
   bool Found = false;
 
   if (Initialised) {
-	vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
-	vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
+       tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
+       tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
 
 	BestCandidate = (*CurrentCandidate);
 
@@ -2869,7 +2869,9 @@ if (!Parallel) {
 
                 CANDIDATE CurrentCandidate;
                 if (PartitionCandidates.size() > 0) {
-                    vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+                    //                    CurrentCandidate =  *(std::end(PartitionCandidates)-1);
+                    // CurrentCandidate = (*PartitionCandidates.back().c);
+                    tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
                     GetCandidate--;
                     CurrentCandidate = (*GetCandidate);
                 }
@@ -2946,7 +2948,9 @@ if (!Parallel) {
 
                             CANDIDATE CurrentCandidate;
                             if (PartitionCandidates.size() > 0) {
-                                vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+                                //                    CurrentCandidate =  *(std::end(PartitionCandidates)-1);
+                                // CurrentCandidate = (*PartitionCandidates.back().c);
+                                tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
                                 GetCandidate--;
                                 CurrentCandidate = (*GetCandidate);
                             }
@@ -3011,7 +3015,7 @@ if (!Parallel) {
             for (int i = r.begin(); i < r.end(); ++i) {
                 StartTimeTermTuple = clock();
 
-                vector<CANDIDATE> PartitionCandidates_i;
+                tbb::concurrent_vector<CANDIDATE> PartitionCandidates_i;
 
                 m1.lock();
                 if (Rule.NextCombinationGenerator()) {
@@ -3028,11 +3032,10 @@ if (!Parallel) {
 
                             CANDIDATE CurrentCandidate;
                             if (PartitionCandidates_i.size() > 0) {
-                                vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates_i.end());
+                                tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates_i.end());
                                 GetCandidate--;
                                 CurrentCandidate = (*GetCandidate);
                             }
-
 
                             if (Rule_i.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet,
                                                 RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
@@ -3081,8 +3084,8 @@ if (!Parallel) {
                 }
                                     m2.lock();
 
-                                    vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates_i.begin());
-                                    vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates_i.end());
+                tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates_i.begin());
+                tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates_i.end());
 
                                     for (; CurrentCandidate != LastCandidate; CurrentCandidate++) {
                                         CANDIDATE SaveCandidate = (*CurrentCandidate);
@@ -3189,7 +3192,7 @@ void Explore::Induce(int nStart, int nEnd) {
 
           CANDIDATE CurrentCandidate;
           if (PartitionCandidates.size() > 0) {
-              vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+              tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
               GetCandidate--;
               CurrentCandidate = (*GetCandidate);
           }
@@ -3253,7 +3256,7 @@ bool Explore::ResumeProject() {
 
           CANDIDATE CurrentCandidate;
           if (PartitionCandidates.size() > 0) {
-              vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+              tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
               GetCandidate--;
               CurrentCandidate = (*GetCandidate);
           }
@@ -3293,7 +3296,7 @@ bool Explore::ResumeProject() {
 
           CANDIDATE CurrentCandidate;
           if (PartitionCandidates.size() > 0) {
-              vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+              tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
               GetCandidate--;
               CurrentCandidate = (*GetCandidate);
           }
@@ -3396,7 +3399,7 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
 
             CANDIDATE CurrentCandidate;
             if (PartitionCandidates.size() > 0) {
-                vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
+                tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
                 GetCandidate--;
                 CurrentCandidate = (*GetCandidate);
             }
@@ -3807,7 +3810,7 @@ vector<CANDIDATE> *Explore::GetProjectCandidates() {
   return NULL;
 }
 
-vector<CANDIDATE> *Explore::GetPartitionCandidates() {
+tbb::concurrent_vector<CANDIDATE> *Explore::GetPartitionCandidates() {
   if (Initialised) {
     return &PartitionCandidates;
   }

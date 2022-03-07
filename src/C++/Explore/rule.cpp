@@ -7,6 +7,7 @@
 
 #include "rule.h"
 #include "../common.h"
+#include <tbb/concurrent_vector.h>
 #ifdef DEBUG_TIMING
 extern TIMING ExploreTiming;
 #endif
@@ -3326,7 +3327,7 @@ In: -
 Out: -
 Description: Saves the current rule and performance.
 **********************************************************************/
-vector<CANDIDATE> RULE::SaveCandidate(vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet) {
+tbb::concurrent_vector<CANDIDATE> RULE::SaveCandidate(tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet) {
 #ifdef DEBUG_TIMING
     clock_t Start, End;
   Start = clock();
@@ -3372,7 +3373,7 @@ In: -
 Out: -
 Description: is stop criterium met?
 **********************************************************************/
-int RULE::FindBestLength(bool Initialised, vector<CANDIDATE> PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure) {
+int RULE::FindBestLength(bool Initialised, tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure) {
     float best;
     float current;
     int Opt=0;
@@ -3449,7 +3450,7 @@ Out: -
 Description: Retrieves the best candidate and puts it in
 BestCandidate.
 **********************************************************************/
-CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure) {
+CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure) {
 #ifdef DEBUG_TIMING
     clock_t Start, End;
   Start = clock();
@@ -3458,8 +3459,8 @@ CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, v
     CANDIDATE BestCandidate;
 
     if (Initialised) {
-        vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
-        vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
+        tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
+        tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
 
         // TODO: check if better place to create variable
         BestCandidate = (*CurrentCandidate);

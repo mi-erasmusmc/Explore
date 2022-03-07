@@ -13,6 +13,7 @@
 #include "conjunction.h"
 #include "roc.h"
 #include "mandatory.h"
+#include <tbb/concurrent_vector.h>
 
 class RULE {
   private:
@@ -244,10 +245,10 @@ class RULE {
    // TODO: below 3 could be private
     bool CompareConstraints(PERFORMANCE CurrentPerformance, bool Initialised, vector<CONSTRAINT> Constraints);          // Compare current performance with constraints
     bool CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised, CANDIDATE CurrentCandidate, PERFORMANCE_MEASURE MaximizeMeasure);                                                // Compare current performance with best previous performance
-    vector<CANDIDATE> SaveCandidate(vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet);                                                       // Save the current candidate (current rule + performance)
+    tbb::concurrent_vector<CANDIDATE> SaveCandidate(tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet);                                                       // Save the current candidate (current rule + performance)
 
-    int FindBestLength(bool Initialised, vector<CANDIDATE> PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure);
-    CANDIDATE ChooseBestCandidate(unsigned int RuleLength, bool Initialised, vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure);
+    int FindBestLength(bool Initialised, tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure);
+    CANDIDATE ChooseBestCandidate(unsigned int RuleLength, bool Initialised, tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure);
 
 };
 

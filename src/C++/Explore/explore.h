@@ -14,7 +14,7 @@
 //#include "../UIExplore/events.h"
 // !!!
 //#include "../../MPIExplore/Control.h"                                           // Needed for EXPONENTIAL_COMPLEXITY settings
-
+#include <tbb/concurrent_vector.h>
 
 #include "timing.h"
 
@@ -46,7 +46,7 @@ class Explore {
     PERFORMANCE_MEASURE MaximizeMeasure;                                        // Measure which has to be maximized
     vector<CONSTRAINT> Constraints;                                             // Measures to constraint performances
 
-    vector<CANDIDATE> PartitionCandidates;                                      // Best rules with corresponding performances for the current partition
+    tbb::concurrent_vector<CANDIDATE> PartitionCandidates;                                      // Best rules with corresponding performances for the current partition
     vector<CANDIDATE> ProjectCandidates;                                        // Best rules with corresponding performances for the complete project
 
     CANDIDATE BestCandidate;                                                    // The best rule and performance
@@ -372,7 +372,7 @@ class Explore {
 
     // Exchanging information
     vector<CANDIDATE> *GetProjectCandidates();
-    vector<CANDIDATE> *GetPartitionCandidates();
+    tbb::concurrent_vector<CANDIDATE> *GetPartitionCandidates();
 
     int *GetCTBest();
     int *GetCPBest();
