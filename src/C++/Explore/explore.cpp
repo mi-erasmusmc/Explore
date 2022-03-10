@@ -2869,11 +2869,7 @@ if (!Parallel) {
 
                 CANDIDATE CurrentCandidate;
                 if (PartitionCandidates.size() > 0) {
-                    //                    CurrentCandidate =  *(std::end(PartitionCandidates)-1);
-                    // CurrentCandidate = (*PartitionCandidates.back().c);
-                    tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
-                    GetCandidate--;
-                    CurrentCandidate = (*GetCandidate);
+                    CurrentCandidate = PartitionCandidates.back();
                 }
 
                 if (Rule.TestRule(Initialised, Constraints,
@@ -2948,11 +2944,9 @@ if (!Parallel) {
 
                             CANDIDATE CurrentCandidate;
                             if (PartitionCandidates.size() > 0) {
-                                //                    CurrentCandidate =  *(std::end(PartitionCandidates)-1);
-                                // CurrentCandidate = (*PartitionCandidates.back().c);
-                                tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
-                                GetCandidate--;
-                                CurrentCandidate = (*GetCandidate);
+                                m2.lock();
+                                CurrentCandidate = PartitionCandidates.back();
+                                m2.unlock();
                             }
 
                             if (Rule_i.TestRule(Initialised, Constraints,
@@ -3015,7 +3009,7 @@ if (!Parallel) {
             for (int i = r.begin(); i < r.end(); ++i) {
                 StartTimeTermTuple = clock();
 
-                tbb::concurrent_vector<CANDIDATE> PartitionCandidates_i;
+                tbb::concurrent_vector<CANDIDATE> PartitionCandidates_i; // doesn't need to be concurrent vector
 
                 m1.lock();
                 if (Rule.NextCombinationGenerator()) {
@@ -3032,18 +3026,14 @@ if (!Parallel) {
 
                             CANDIDATE CurrentCandidate;
                             if (PartitionCandidates_i.size() > 0) {
-                                tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates_i.end());
-                                GetCandidate--;
-                                CurrentCandidate = (*GetCandidate);
+                                CurrentCandidate = PartitionCandidates_i.back();
                             }
 
                             if (Rule_i.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet,
                                                 RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
 
-                                m2.lock();
                                 PartitionCandidates_i = Rule_i.SaveCandidate(PartitionCandidates_i, MaximizeMeasure,
                                                                            RestrictionSet);
-                                m2.unlock();
                             }
 
                             // TODO: check if inside or outside TestRule

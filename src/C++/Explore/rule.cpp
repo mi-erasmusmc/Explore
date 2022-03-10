@@ -3469,7 +3469,7 @@ CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, t
         float BestValue;
 
         while (CurrentCandidate != LastCandidate) {
-            CurrentValue = BestValue = 0;
+            CurrentValue = 0;
             if ((*CurrentCandidate).Features.size()==RuleLength){
                 switch (MaximizeMeasure) {
                     case SENSITIVITY:
