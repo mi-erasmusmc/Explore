@@ -235,12 +235,16 @@ void Explore::ValidateBestCandidate() {
         Rule.SetTestMode(LEARN); // TODO: don't need new type train, remove?
 	}
 
-	cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
+	// cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
+    cout << endl << "BEST RULES" << endl << endl;
 
-	if (PartitionCandidates.size()>0) {
-	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
-		cout << "RULELENGTH " << i << endl << endl;
-		if (ChooseBestCandidate(i)){
+    if(PartitionCandidates.IsValid()) {
+	// if (PartitionCandidates.size()>0) {
+        CANDIDATE BestCandidate = PartitionCandidates;
+
+	//  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
+		cout << "RULELENGTH " << BestCandidate.Size() << endl << endl;
+		// if (ChooseBestCandidate(i)){
 		  if (Rule.SetRule(BestCandidate)) {
 			cout << "Best candidate (overall): ";
 			Rule.PrintCutoffSet();
@@ -258,14 +262,13 @@ void Explore::ValidateBestCandidate() {
 			ProjectCandidates.push_back(BestCandidate);
 
 		  }
-		} else {
-		  cout << "None." << endl << endl;
-		}
-	  }
-	  PartitionCandidates.clear();
+//		} else {
+//		  cout << "None." << endl << endl;
+//		}
+	//  }
+      PartitionCandidates.Clear();
+	  // PartitionCandidates.clear();
 	} else {
-
-
 	  #if defined(EXPLORE_MPI_DEBUG)
 	  cout << "--> No Candidates" << endl;
 	  #endif
@@ -288,60 +291,60 @@ Out: -
 Description: Retrieves the best candidate and puts it in
 BestCandidate.
 **********************************************************************/
-bool Explore::ChooseBestCandidate(unsigned int RuleLength) {
-#ifdef DEBUG_TIMING
-  clock_t Start, End;
-  Start = clock();
-#endif
-  bool Found = false;
-
-  if (Initialised) {
-       tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
-       tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
-
-	BestCandidate = (*CurrentCandidate);
-
-    float CurrentValue;
-    float BestValue;
-
-    while (CurrentCandidate != LastCandidate) {
-      CurrentValue = BestValue = 0;
-      if ((*CurrentCandidate).Features.size()==RuleLength){
-        switch (MaximizeMeasure) {
-          case SENSITIVITY:
-            CurrentValue = (*CurrentCandidate).Performance.Sensitivity.Value;
-            break;
-          case SPECIFICITY:
-            CurrentValue = (*CurrentCandidate).Performance.Specificity.Value;
-            break;
-          case NPV:
-            CurrentValue = (*CurrentCandidate).Performance.NPV.Value;
-            break;
-          case PPV:
-            CurrentValue = (*CurrentCandidate).Performance.PPV.Value;
-            break;
-          case ACCURACY:
-            CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
-            break;
-        }
-
-        if (BestValue<=CurrentValue) {
-          BestCandidate = (*CurrentCandidate);
-          BestValue = CurrentValue;
-          Found = true;
-		}
-	  }
-	  CurrentCandidate++;
-    }
-  }
-
-#ifdef DEBUG_TIMING
-  End = clock();
-  ExploreTiming.AddTime("EXPLORE::ChooseBestCandidate", Start, End);
-#endif
-
-  return Found;
-}
+//bool Explore::ChooseBestCandidate(unsigned int RuleLength) {
+//#ifdef DEBUG_TIMING
+//  clock_t Start, End;
+//  Start = clock();
+//#endif
+//  bool Found = false;
+//
+//  if (Initialised) {
+//       tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
+//       tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
+//
+//	BestCandidate = (*CurrentCandidate);
+//
+//    float CurrentValue;
+//    float BestValue;
+//
+//    while (CurrentCandidate != LastCandidate) {
+//      CurrentValue = 0;
+//      if ((*CurrentCandidate).Features.size()==RuleLength){
+//        switch (MaximizeMeasure) {
+//          case SENSITIVITY:
+//            CurrentValue = (*CurrentCandidate).Performance.Sensitivity.Value;
+//            break;
+//          case SPECIFICITY:
+//            CurrentValue = (*CurrentCandidate).Performance.Specificity.Value;
+//            break;
+//          case NPV:
+//            CurrentValue = (*CurrentCandidate).Performance.NPV.Value;
+//            break;
+//          case PPV:
+//            CurrentValue = (*CurrentCandidate).Performance.PPV.Value;
+//            break;
+//          case ACCURACY:
+//            CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
+//            break;
+//        }
+//
+//        if (BestValue<=CurrentValue) {
+//          BestCandidate = (*CurrentCandidate);
+//          BestValue = CurrentValue;
+//          Found = true;
+//		}
+//	  }
+//	  CurrentCandidate++;
+//    }
+//  }
+//
+//#ifdef DEBUG_TIMING
+//  End = clock();
+//  ExploreTiming.AddTime("EXPLORE::ChooseBestCandidate", Start, End);
+//#endif
+//
+//  return Found;
+//}
 
 /**********************************************************************
 Function: SummarisePerformance()
@@ -532,13 +535,13 @@ In: unsigned int, order of the candidate
 Out: -
 Description: Returns a candidate from the list of partition-candidates.
 **********************************************************************/
-CANDIDATE Explore::GetPartitionCandidate(unsigned int COrder) {
-  if (COrder<GetNoPartitionCandidates()) {
-    return PartitionCandidates.at(COrder);
-  }
-  CANDIDATE Dummy;
-  return Dummy;
-}
+//CANDIDATE Explore::GetPartitionCandidate(unsigned int COrder) {
+//  if (COrder<GetNoPartitionCandidates()) {
+//    return PartitionCandidates.at(COrder);
+//  }
+//  CANDIDATE Dummy;
+//  return Dummy;
+//}
 
 /**********************************************************************
 Function: GetNoProjectCandidates()
@@ -565,7 +568,8 @@ Description: Get the number of rules which outperform the prerequisites.
 **********************************************************************/
 unsigned int Explore::GetNoPartitionCandidates() {
   if (Initialised) {
-    return PartitionCandidates.size();
+   // return PartitionCandidates.size();
+      return 1;
   }
   return 0;
 }
@@ -995,7 +999,8 @@ Description: Clears all rules and their corresponding performances
 that have been saved previously.
 **********************************************************************/
 void Explore::ClearCandidates() {
-  PartitionCandidates.clear();
+  // PartitionCandidates.clear();
+    PartitionCandidates.Clear();
 }
 
 /**********************************************************************
@@ -1184,13 +1189,13 @@ bool Explore::Initialise() {
     }
 
     NoPartitionsDone = 0;
-	//PR ExploreComplexity = RuleComplexity();                                  // Calculate complexity for progress indication
+	// PR ExploreComplexity = RuleComplexity();                                  // Calculate complexity for progress indication
 	if (PartitionMethod == CROSS_VALIDATION) {
 		ExploreComplexity = Population.GetNoPartitions()*10; 							// make progressbar count the folds
 	}
 	InitialiseCPFP();
 
-	//Print project settings
+	// Print project settings
     if (IsPrintSettings) {
       PrintSettings();
     }
@@ -2670,74 +2675,74 @@ In: -
 Out: -
 Description: is stop criterium met?
 **********************************************************************/
-int Explore::Stop() {
-	float best;
-	float current;
-	unsigned int last=0;
-	if (Initialised) {
-
-	Rule.SetTestMode(VALIDATION);
-	if (PartitionCandidates.size()>0) {
-	  cout << "Checking Stop Criterium" << endl;
-	  cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
-	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
-		if (ChooseBestCandidate(i)){
-		  cout << "RULELENGTH " << i << endl << endl;
-		  if (Rule.SetRule(BestCandidate))
-		  {
-			last++;
-			cout << "Best candidate: ";
-			Rule.PrintCutoffSet();
-			cout << endl;
-			cout << "Learn-set: ";
-			BestCandidate.Performance.Print();
-			cout << endl;
-			BestCandidate.Performance = Rule.CalculatePerformance();          // Test BestCandidate on test partition
-			cout << "test-set: ";
-			BestCandidate.Performance.Print();
-
-			switch (MaximizeMeasure){
-
-			case ACCURACY:
-			  current = BestCandidate.Performance.Accuracy.Value;
-			  break;
-			case SENSITIVITY:
-			  current = BestCandidate.Performance.Sensitivity.Value;
-			  break;
-			case SPECIFICITY:
-			  current = BestCandidate.Performance.Specificity.Value;
-			  break;
-			}
-			if (i==1) {
-			  best = current;
-			}
-			else {
-			 if (current < best) {
-			   cout << "Stopped at " << i-1 << endl;
-			   return i-1;
-			 }
-			}
-		  }
-		}
-	  }
-
-	  if (last==GetMaxRuleLength()){
-		if (current > best) {
-		  return GetMaxRuleLength();
-		} else {
-		 return GetMaxRuleLength()-1;
-		}
-	  }
-	  //PartitionCandidates.clear();
-	} else {
-	  #if defined(EXPLORE_MPI_DEBUG)
-	  cout << "--> No Candidates" << endl;
-	  #endif
-	}
-  }
-   Rule.SetTestMode(LEARN);
-   return 0;
-}
+//int Explore::Stop() {
+//	float best;
+//	float current;
+//	unsigned int last=0;
+//	if (Initialised) {
+//
+//	Rule.SetTestMode(VALIDATION);
+//	if (PartitionCandidates.size()>0) {
+//	  cout << "Checking Stop Criterium" << endl;
+//	  cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
+//	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
+//		if (ChooseBestCandidate(i)){
+//		  cout << "RULELENGTH " << i << endl << endl;
+//		  if (Rule.SetRule(BestCandidate))
+//		  {
+//			last++;
+//			cout << "Best candidate: ";
+//			Rule.PrintCutoffSet();
+//			cout << endl;
+//			cout << "Learn-set: ";
+//			BestCandidate.Performance.Print();
+//			cout << endl;
+//			BestCandidate.Performance = Rule.CalculatePerformance();          // Test BestCandidate on test partition
+//			cout << "test-set: ";
+//			BestCandidate.Performance.Print();
+//
+//			switch (MaximizeMeasure){
+//
+//			case ACCURACY:
+//			  current = BestCandidate.Performance.Accuracy.Value;
+//			  break;
+//			case SENSITIVITY:
+//			  current = BestCandidate.Performance.Sensitivity.Value;
+//			  break;
+//			case SPECIFICITY:
+//			  current = BestCandidate.Performance.Specificity.Value;
+//			  break;
+//			}
+//			if (i==1) {
+//			  best = current;
+//			}
+//			else {
+//			 if (current < best) {
+//			   cout << "Stopped at " << i-1 << endl;
+//			   return i-1;
+//			 }
+//			}
+//		  }
+//		}
+//	  }
+//
+//	  if (last==GetMaxRuleLength()){
+//		if (current > best) {
+//		  return GetMaxRuleLength();
+//		} else {
+//		 return GetMaxRuleLength()-1;
+//		}
+//	  }
+//	  //PartitionCandidates.clear();
+//	} else {
+//	  #if defined(EXPLORE_MPI_DEBUG)
+//	  cout << "--> No Candidates" << endl;
+//	  #endif
+//	}
+//  }
+//   Rule.SetTestMode(LEARN);
+//   return 0;
+//}
 
 /**********************************************************************
 Function: BestLength()
@@ -2747,67 +2752,67 @@ In: -
 Out: -
 Description: is stop criterium met?
 **********************************************************************/
-int Explore::FindBestLength() {
-	float best;
-	float current;
-	int Opt=0;
-	if (Initialised) {
-        Rule.SetTestMode(VALIDATION);
-
-	if (PartitionCandidates.size()>0) {
-	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
-		if (ChooseBestCandidate(i)){
-		  if (Rule.SetRule(BestCandidate))
-		  {
-		    cout << "RULELENGTH " << i << endl << endl;
-			cout << "Best candidate (within this partition): ";
-			Rule.PrintCutoffSet();
-			cout << endl;
-			cout << "Learn-set: ";
-			BestCandidate.Performance.Print();
-			cout << endl;
-
-              if (!(GetPartitionMethod()==RESUBSTITUTION)){
-                  BestCandidate.Performance = Rule.CalculatePerformance();          // Test BestCandidate on validation partition
-                  cout << "Validation-set: ";
-                  BestCandidate.Performance.Print();
-                  cout << endl;
-              }
-			switch (MaximizeMeasure){
-
-			case ACCURACY:
-			  current = BestCandidate.Performance.Accuracy.Value;
-			  break;
-			case SENSITIVITY:
-			  current = BestCandidate.Performance.Sensitivity.Value;
-			  break;
-			case SPECIFICITY:
-			  current = BestCandidate.Performance.Specificity.Value;
-			  break;
-			}
-			if (i==1) {
-			  best = current;
-			  Opt = 1;
-			}
-			else {
-			 if (current > best) {
-			   best = current;
-			   Opt = i;
-			 }
-			}
-		  }
-		}
-	  }
-	  return Opt;
-	} else {
-	  #if defined(EXPLORE_MPI_DEBUG)
-	  cout << "--> No Candidates" << endl;
-	  #endif
-	}
-  }
-  return 0;
-}
-
+//int Explore::FindBestLength() {
+//	float best;
+//	float current;
+//	int Opt=0;
+//	if (Initialised) {
+//        Rule.SetTestMode(VALIDATION);
+//
+//	if (PartitionCandidates.size()>0) {
+//	  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
+//		if (ChooseBestCandidate(i)){
+//		  if (Rule.SetRule(BestCandidate))
+//		  {
+//		    cout << "RULELENGTH " << i << endl << endl;
+//			cout << "Best candidate (within this partition): ";
+//			Rule.PrintCutoffSet();
+//			cout << endl;
+//			cout << "Learn-set: ";
+//			BestCandidate.Performance.Print();
+//			cout << endl;
+//
+//              if (!(GetPartitionMethod()==RESUBSTITUTION)){
+//                  BestCandidate.Performance = Rule.CalculatePerformance();          // Test BestCandidate on validation partition
+//                  cout << "Validation-set: ";
+//                  BestCandidate.Performance.Print();
+//                  cout << endl;
+//              }
+//			switch (MaximizeMeasure){
+//
+//			case ACCURACY:
+//			  current = BestCandidate.Performance.Accuracy.Value;
+//			  break;
+//			case SENSITIVITY:
+//			  current = BestCandidate.Performance.Sensitivity.Value;
+//			  break;
+//			case SPECIFICITY:
+//			  current = BestCandidate.Performance.Specificity.Value;
+//			  break;
+//			}
+//			if (i==1) {
+//			  best = current;
+//			  Opt = 1;
+//			}
+//			else {
+//			 if (current > best) {
+//			   best = current;
+//			   Opt = i;
+//			 }
+//			}
+//		  }
+//		}
+//	  }
+//	  return Opt;
+//	} else {
+//	  #if defined(EXPLORE_MPI_DEBUG)
+//	  cout << "--> No Candidates" << endl;
+//	  #endif
+//	}
+//  }
+//  return 0;
+//}
+//
 
 
 /**********************************************************************
@@ -2868,8 +2873,11 @@ if (!Parallel) {
             while (Rule.NextCutoffSetGenerator()) {
 
                 CANDIDATE CurrentCandidate;
-                if (PartitionCandidates.size() > 0) {
-                    CurrentCandidate = PartitionCandidates.back();
+//                if (PartitionCandidates.size() > 0) {
+//                    CurrentCandidate = PartitionCandidates.back();
+//                }
+                if (PartitionCandidates.IsValid()) {
+                    CurrentCandidate = PartitionCandidates;
                 }
 
                 if (Rule.TestRule(Initialised, Constraints,
@@ -2943,11 +2951,12 @@ if (!Parallel) {
                             Rule_i.CTBest = CTBest_global;
 
                             CANDIDATE CurrentCandidate;
-                            if (PartitionCandidates.size() > 0) {
-                                m2.lock();
-                                CurrentCandidate = PartitionCandidates.back();
-                                m2.unlock();
-                            }
+//                            if (PartitionCandidates.size() > 0) {
+                              //  m2.lock();
+//                                CurrentCandidate = PartitionCandidates.back();
+                                  CurrentCandidate = PartitionCandidates;
+                                // m2.unlock();
+//                            }
 
                             if (Rule_i.TestRule(Initialised, Constraints,
                                                 CurrentCandidate, MaximizeMeasure, RestrictionSet,
@@ -3009,7 +3018,7 @@ if (!Parallel) {
             for (int i = r.begin(); i < r.end(); ++i) {
                 StartTimeTermTuple = clock();
 
-                tbb::concurrent_vector<CANDIDATE> PartitionCandidates_i; // doesn't need to be concurrent vector
+                CANDIDATE PartitionCandidates_i; // doesn't need to be concurrent vector
 
                 m1.lock();
                 if (Rule.NextCombinationGenerator()) {
@@ -3025,8 +3034,11 @@ if (!Parallel) {
                         while (Rule_i.NextCutoffSetGenerator()) {
 
                             CANDIDATE CurrentCandidate;
-                            if (PartitionCandidates_i.size() > 0) {
-                                CurrentCandidate = PartitionCandidates_i.back();
+//                            if (PartitionCandidates_i.size() > 0) {
+//                                CurrentCandidate = PartitionCandidates_i.back();
+//                            }
+                            if (PartitionCandidates_i.IsValid()) {
+                                CurrentCandidate = PartitionCandidates_i;
                             }
 
                             if (Rule_i.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet,
@@ -3073,15 +3085,8 @@ if (!Parallel) {
 
                 }
                                     m2.lock();
-
-                tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates_i.begin());
-                tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates_i.end());
-
-                                    for (; CurrentCandidate != LastCandidate; CurrentCandidate++) {
-                                        CANDIDATE SaveCandidate = (*CurrentCandidate);
-                                        PartitionCandidates.push_back(SaveCandidate);
-                                    }
-
+                    // TODO: figure out what to do with this!!
+                                        ProjectCandidates.push_back(PartitionCandidates_i);
                                     m2.unlock();
             }
         });
@@ -3090,7 +3095,8 @@ if (!Parallel) {
 }
 
 // TODO: is "Rule" needed?
-        BestLengthPartition = Rule.FindBestLength(Initialised,PartitionCandidates, PartitionMethod, MaximizeMeasure);
+        BestLengthPartition = PartitionCandidates.Size();
+        // BestLengthPartition = Rule.FindBestLength(Initialised,PartitionCandidates, PartitionMethod, MaximizeMeasure);
         ++BestLength[BestLengthPartition - 1]; // Calculate performance of current rule in validation set
 
         cout << endl << endl;
@@ -3107,7 +3113,8 @@ if (!Parallel) {
     if ((GetPartitionMethod())==CROSS_VALIDATION || (GetPartitionMethod())==HOLDOUT) {
         // Re-train model with full train set (learn + validate)
         Population.ResetTestPartitions(); // Sets all partitions to LEARN
-        PartitionCandidates.clear(); // Remove all the partition candidates used to find BestLength
+        // PartitionCandidates.clear(); // Remove all the partition candidates used to find BestLength
+        PartitionCandidates.Clear();
 
         SetRerun();
 
@@ -3120,9 +3127,10 @@ if (!Parallel) {
 
 #ifndef PARALLEL
         // Directly print results on full train set and save best rule
-        if (PartitionCandidates.size()>0) {
-
-            CANDIDATE BestCandidate = Rule.ChooseBestCandidate(BestLengthFinal, Initialised, PartitionCandidates, MaximizeMeasure);
+        if (PartitionCandidates.IsValid()) {
+        // if (PartitionCandidates.size()>0) {
+            CANDIDATE BestCandidate = PartitionCandidates;
+            // CANDIDATE BestCandidate = Rule.ChooseBestCandidate(BestLengthFinal, Initialised, PartitionCandidates, MaximizeMeasure);
                // if (ChooseBestCandidate(BestLengthFinal)){
                     if (Rule.SetRule(BestCandidate)) {
                         cout << "Best candidate (overall): ";
@@ -3138,8 +3146,6 @@ if (!Parallel) {
                     }
                // }
             }
-
-
 # else
         Population.ResetTestPartitions(); // Sets all partitions to LEARN
         PartitionCandidates.clear(); // Remove all the partition candidates used to find BestLength
@@ -3169,11 +3175,8 @@ Description: Resumes an Explore project.
 void Explore::Induce(int nStart, int nEnd) {
      Rule.ResetComplexity();
 
-    // int SaveMin, SaveMax;
   unsigned int BreatheCount = 0;
 
-  // SaveMin = Rule.GetMinRuleLength();
-  // SaveMax = Rule.GetMaxRuleLength();
   SetMinRuleLength(nStart);
   SetMaxRuleLength(nEnd);
   while (Rule.NextCombinationGenerator()) {
@@ -3181,12 +3184,9 @@ void Explore::Induce(int nStart, int nEnd) {
 	  while (Rule.NextCutoffSetGenerator()) {
 
           CANDIDATE CurrentCandidate;
-          if (PartitionCandidates.size() > 0) {
-              tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
-              GetCandidate--;
-              CurrentCandidate = (*GetCandidate);
-          }
-
+        if (PartitionCandidates.IsValid()) {
+            CurrentCandidate = PartitionCandidates;
+        }
 
           if (Rule.TestRule(Initialised, Constraints,
                             CurrentCandidate, MaximizeMeasure, RestrictionSet,
@@ -3221,8 +3221,6 @@ void Explore::Induce(int nStart, int nEnd) {
   }
 
   cout << "Total Count Candidates:" << Rule.GetCountCandidates() << endl;
-  //SetMinRuleLength(SaveMin);
-  // SetMaxRuleLength(SaveMax);
 }
 
 
@@ -3245,10 +3243,8 @@ bool Explore::ResumeProject() {
        // TestRule();                                                             // Calculate performance of current rule
 
           CANDIDATE CurrentCandidate;
-          if (PartitionCandidates.size() > 0) {
-              tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
-              GetCandidate--;
-              CurrentCandidate = (*GetCandidate);
+          if (PartitionCandidates.IsValid()) {
+              CurrentCandidate = PartitionCandidates;
           }
 
           Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
@@ -3285,10 +3281,8 @@ bool Explore::ResumeProject() {
        // TestRule();                                                             // Calculate performance of current rule
 
           CANDIDATE CurrentCandidate;
-          if (PartitionCandidates.size() > 0) {
-              tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
-              GetCandidate--;
-              CurrentCandidate = (*GetCandidate);
+          if (PartitionCandidates.IsValid()) {
+              CurrentCandidate = PartitionCandidates;
           }
 
           Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
@@ -3388,12 +3382,9 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
           // TestRule();
 
             CANDIDATE CurrentCandidate;
-            if (PartitionCandidates.size() > 0) {
-                tbb::concurrent_vector<CANDIDATE>::iterator GetCandidate(PartitionCandidates.end());
-                GetCandidate--;
-                CurrentCandidate = (*GetCandidate);
+            if (PartitionCandidates.IsValid()) {
+                CurrentCandidate = PartitionCandidates;
             }
-
 
             Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
             PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
@@ -3800,7 +3791,7 @@ vector<CANDIDATE> *Explore::GetProjectCandidates() {
   return NULL;
 }
 
-tbb::concurrent_vector<CANDIDATE> *Explore::GetPartitionCandidates() {
+CANDIDATE *Explore::GetPartitionCandidates() {
   if (Initialised) {
     return &PartitionCandidates;
   }

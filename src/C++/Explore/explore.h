@@ -46,7 +46,7 @@ class Explore {
     PERFORMANCE_MEASURE MaximizeMeasure;                                        // Measure which has to be maximized
     vector<CONSTRAINT> Constraints;                                             // Measures to constraint performances
 
-    tbb::concurrent_vector<CANDIDATE> PartitionCandidates;                                      // Best rules with corresponding performances for the current partition
+    CANDIDATE PartitionCandidates;                                      // Best rules with corresponding performances for the current partition
     vector<CANDIDATE> ProjectCandidates;                                        // Best rules with corresponding performances for the complete project
 
     CANDIDATE BestCandidate;                                                    // The best rule and performance
@@ -115,7 +115,7 @@ class Explore {
     bool IsPrintFeatureOperators;                                               // Should FeatureOperators be printed at the start of rule generation?
 
     // Private modifiers
-    bool ChooseBestCandidate(unsigned int RuleLength);
+  //  bool ChooseBestCandidate(unsigned int RuleLength);
 
     // Output functions
     void PrintSettings();                                                       // Print settings (debug settings)
@@ -134,8 +134,8 @@ class Explore {
 
     void SetRerun();                                                            // Set project for rerun of project or partition
 	bool RunProject();                                                          // Run a new project (start rule-generation)
-	int  Stop();                                                                // Stop criterium for internal testing
-	int  FindBestLength();                                                          // Return the best length on internal testing
+	// int  Stop();                                                                // Stop criterium for internal testing
+	// int  FindBestLength();                                                          // Return the best length on internal testing
 	void Induce(int nStart, int nEnd);											// Induce rule on learn parition form start tot end
 	bool ResumeProject();
 
@@ -223,7 +223,7 @@ class Explore {
 
 
     CANDIDATE GetProjectCandidate(unsigned int COrder);                         // Get a candidate from the project list
-    CANDIDATE GetPartitionCandidate(unsigned int COrder);                       // Get a candidate from the partition list
+ //   CANDIDATE GetPartitionCandidate(unsigned int COrder);                       // Get a candidate from the partition list
     unsigned int GetNoProjectCandidates();                                      // Get the number of current best-performing rules of the project list
     unsigned int GetNoPartitionCandidates();                                    // Get the number of current best-performing rules of the partition list
 
@@ -372,7 +372,7 @@ class Explore {
 
     // Exchanging information
     vector<CANDIDATE> *GetProjectCandidates();
-    tbb::concurrent_vector<CANDIDATE> *GetPartitionCandidates();
+    CANDIDATE *GetPartitionCandidates();
 
     int *GetCTBest();
     int *GetCPBest();

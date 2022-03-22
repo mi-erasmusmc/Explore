@@ -121,7 +121,7 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance, default_setting = "yes")
   settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption, default_setting = "yes")
   settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound, default_setting = "yes")
-  settings <- changeSetting(settings, parameter = "Parallel", input = BranchBound, default_setting = "no")
+  settings <- changeSetting(settings, parameter = "Parallel", input = Parallel, default_setting = "no")
   
   # Save settings file
   settings_path <- paste0(output_path, file_name,".project")

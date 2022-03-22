@@ -3327,7 +3327,7 @@ In: -
 Out: -
 Description: Saves the current rule and performance.
 **********************************************************************/
-tbb::concurrent_vector<CANDIDATE> RULE::SaveCandidate(tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet) {
+CANDIDATE RULE::SaveCandidate(CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet) {
 #ifdef DEBUG_TIMING
     clock_t Start, End;
   Start = clock();
@@ -3343,7 +3343,8 @@ tbb::concurrent_vector<CANDIDATE> RULE::SaveCandidate(tbb::concurrent_vector<CAN
     Dummy.Cutoffs = GetCutoffs();                                            // Save a list of current cutoffs used
     Dummy.Operators = GetOperators();                                        // Save a list of current operators used
 
-    PartitionCandidates.push_back(Dummy);                                         // Save the performance + rule
+    // PartitionCandidates.push_back(Dummy);                                         // Save the performance + rule
+    PartitionCandidates = Dummy;
 
     if (MaximizeMeasure==SENSITIVITY && !RestrictionSet) {
         if (RuleSet.CorrectPositive>CPBest) {
@@ -3373,7 +3374,7 @@ In: -
 Out: -
 Description: is stop criterium met?
 **********************************************************************/
-int RULE::FindBestLength(bool Initialised, tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure) {
+int RULE::FindBestLength(bool Initialised, CANDIDATE PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure) {
     float best;
     float current;
     int Opt=0;
@@ -3383,7 +3384,8 @@ int RULE::FindBestLength(bool Initialised, tbb::concurrent_vector<CANDIDATE> Par
     if (Initialised) {
         SetTestMode(VALIDATION);
 
-        if (PartitionCandidates.size()>0) {
+        if (PartitionCandidates.IsValid()) {
+       // if (PartitionCandidates.size()>0) {
             for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
                 BestCandidate = ChooseBestCandidate(i, Initialised, PartitionCandidates, MaximizeMeasure);
 
@@ -3450,63 +3452,65 @@ Out: -
 Description: Retrieves the best candidate and puts it in
 BestCandidate.
 **********************************************************************/
-CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, tbb::concurrent_vector<CANDIDATE> PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure) {
+CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure) {
 #ifdef DEBUG_TIMING
     clock_t Start, End;
   Start = clock();
 #endif
-    bool Found = false;
-    CANDIDATE BestCandidate;
+//    bool Found = false;
+//    CANDIDATE BestCandidate;
+//
+//    if (Initialised) {
+//        tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
+//        tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
+//
+//        // TODO: check if better place to create variable
+//        BestCandidate = (*CurrentCandidate);
+//
+//        float CurrentValue;
+//        float BestValue;
+//
+//        while (CurrentCandidate != LastCandidate) {
+//            CurrentValue = 0;
+//            if ((*CurrentCandidate).Features.size()==RuleLength){
+//                switch (MaximizeMeasure) {
+//                    case SENSITIVITY:
+//                        CurrentValue = (*CurrentCandidate).Performance.Sensitivity.Value;
+//                        break;
+//                    case SPECIFICITY:
+//                        CurrentValue = (*CurrentCandidate).Performance.Specificity.Value;
+//                        break;
+//                    case NPV:
+//                        CurrentValue = (*CurrentCandidate).Performance.NPV.Value;
+//                        break;
+//                    case PPV:
+//                        CurrentValue = (*CurrentCandidate).Performance.PPV.Value;
+//                        break;
+//                    case ACCURACY:
+//                        CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
+//                        break;
+//                }
+//
+//                if (BestValue<=CurrentValue) {
+//                    BestCandidate = (*CurrentCandidate);
+//                    BestValue = CurrentValue;
+//                    Found = true;
+//                }
+//            }
+//            CurrentCandidate++;
+//        }
+//    }
+//
+//#ifdef DEBUG_TIMING
+//    End = clock();
+//  ExploreTiming.AddTime("EXPLORE::ChooseBestCandidate", Start, End);
+//#endif
+//
+//  if (Found) {
+//      return BestCandidate;
+//  } else {
+//      return CANDIDATE();
+//  }
 
-    if (Initialised) {
-        tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
-        tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
-
-        // TODO: check if better place to create variable
-        BestCandidate = (*CurrentCandidate);
-
-        float CurrentValue;
-        float BestValue;
-
-        while (CurrentCandidate != LastCandidate) {
-            CurrentValue = 0;
-            if ((*CurrentCandidate).Features.size()==RuleLength){
-                switch (MaximizeMeasure) {
-                    case SENSITIVITY:
-                        CurrentValue = (*CurrentCandidate).Performance.Sensitivity.Value;
-                        break;
-                    case SPECIFICITY:
-                        CurrentValue = (*CurrentCandidate).Performance.Specificity.Value;
-                        break;
-                    case NPV:
-                        CurrentValue = (*CurrentCandidate).Performance.NPV.Value;
-                        break;
-                    case PPV:
-                        CurrentValue = (*CurrentCandidate).Performance.PPV.Value;
-                        break;
-                    case ACCURACY:
-                        CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
-                        break;
-                }
-
-                if (BestValue<=CurrentValue) {
-                    BestCandidate = (*CurrentCandidate);
-                    BestValue = CurrentValue;
-                    Found = true;
-                }
-            }
-            CurrentCandidate++;
-        }
-    }
-
-#ifdef DEBUG_TIMING
-    End = clock();
-  ExploreTiming.AddTime("EXPLORE::ChooseBestCandidate", Start, End);
-#endif
-
-  if (Found) {
-      return BestCandidate;
-  } else {
-      return CANDIDATE();
-  }
+return PartitionCandidates;
 }
