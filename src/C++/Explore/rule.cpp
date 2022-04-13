@@ -3123,7 +3123,7 @@ In: -
 Out: -
 Description: Test a rule against the current learning partition.
 **********************************************************************/
-bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints,CANDIDATE CurrentCandidate, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet,
+bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float CandidatePerformance, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet,
                                  RULE_OUTPUT_METHOD RuleOutputMethod, bool IsPrintPerformance, bool IsPrintSets) {
 #ifdef DEBUG_TIMING
     clock_t Start, End;
@@ -3139,13 +3139,13 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints,CANDIDATE C
         if (CompareConstraints(CurrentPerformance, Initialised, Constraints)) {
 
             // Are there any candidates?
-            if (CurrentCandidate.IsValid()) {
+            if (CandidatePerformance != -1) {
 
                 // Is rule-performance best until now?
                 Candidate = true;
                 CountCandidates++;
 
-                if (CompareBestCandidate(CurrentPerformance, Initialised, CurrentCandidate, MaximizeMeasure)) {
+                if (CompareBestCandidate(CurrentPerformance, Initialised, CandidatePerformance, MaximizeMeasure)) {
                    // PartitionCandidates = SaveCandidate(CurrentPerformance, PartitionCandidates, MaximizeMeasure, RestrictionSet);
                     Found = true;
                 }
@@ -3262,7 +3262,7 @@ Out: bool, performance is/is not above best performance.
 Description: Compares the current performance with the best performing
 rule found by then.
 **********************************************************************/
-bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised, CANDIDATE CurrentCandidate, PERFORMANCE_MEASURE MaximizeMeasure) {
+bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised, float CandidatePerformance, PERFORMANCE_MEASURE MaximizeMeasure) {
 #ifdef DEBUG_TIMING
     clock_t Start, End;
   Start = clock();
@@ -3272,25 +3272,27 @@ bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised
         float RuleValue;
         float CandidateValue;
 
+        CandidateValue = CandidatePerformance;
+
         switch (MaximizeMeasure) {
             case SENSITIVITY:
-                CandidateValue = CurrentCandidate.Performance.Sensitivity.Value;
+               // CandidateValue = CurrentCandidate.Performance.Sensitivity.Value;
                 RuleValue = CurrentPerformance.Sensitivity.Value;
                 break;
             case SPECIFICITY:
-                CandidateValue = CurrentCandidate.Performance.Specificity.Value;
+             //   CandidateValue = CurrentCandidate.Performance.Specificity.Value;
                 RuleValue = CurrentPerformance.Specificity.Value;
                 break;
             case NPV:
-                CandidateValue = CurrentCandidate.Performance.NPV.Value;
+              //  CandidateValue = CurrentCandidate.Performance.NPV.Value;
                 RuleValue = CurrentPerformance.NPV.Value;
                 break;
             case PPV:
-                CandidateValue = CurrentCandidate.Performance.PPV.Value;
+               // CandidateValue = CurrentCandidate.Performance.PPV.Value;
                 RuleValue = CurrentPerformance.PPV.Value;
                 break;
             case ACCURACY:
-                CandidateValue = CurrentCandidate.Performance.Accuracy.Value;
+              //  CandidateValue = CurrentCandidate.Performance.Accuracy.Value;
                 RuleValue = CurrentPerformance.Accuracy.Value;
                 break;
         }

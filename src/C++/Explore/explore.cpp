@@ -2872,16 +2872,16 @@ if (!Parallel) {
             // CalculateProgress();
             while (Rule.NextCutoffSetGenerator()) {
 
-                CANDIDATE CurrentCandidate;
+                float CandidatePerformance;
 //                if (PartitionCandidates.size() > 0) {
 //                    CurrentCandidate = PartitionCandidates.back();
 //                }
                 if (PartitionCandidates.IsValid()) {
-                    CurrentCandidate = PartitionCandidates;
+                    CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
                 }
 
                 if (Rule.TestRule(Initialised, Constraints,
-                                  CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                                  CandidatePerformance, MaximizeMeasure, RestrictionSet,
                                   RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
 
                     PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
@@ -2926,7 +2926,13 @@ if (!Parallel) {
 
 } else {
 
-    int end_loop = Rule.CalculateCombinationsTotal();
+    int end_loop = Rule.CalculateCombinationsTotal() - 1;
+
+    vector<RULE> all_rules;
+    for (int s = 0; s < end_loop; ++s) {
+        Rule.NextCombinationGenerator();
+        all_rules.push_back(this->Rule);
+    }
 
     string ParallelMethod = "Global";
     if (ParallelMethod == "Global") {
@@ -2935,10 +2941,10 @@ if (!Parallel) {
             for (int i = r.begin(); i < r.end(); ++i) {
                 StartTimeTermTuple = clock();
 
-                m1.lock();
-                if (Rule.NextCombinationGenerator()) {
-                    RULE Rule_i = this->Rule;
-                    m1.unlock();
+              //  m1.lock();
+              //  if (Rule.NextCombinationGenerator()) {
+                    RULE Rule_i = all_rules.at(i);
+                  //  m1.unlock();
 
                     if (IsPrintCombinations) Rule_i.PrintCombination();
 
@@ -2950,16 +2956,19 @@ if (!Parallel) {
                             Rule_i.CPBest = CPBest_global;
                             Rule_i.CTBest = CTBest_global;
 
-                            CANDIDATE CurrentCandidate;
+                            float CandidatePerformance;
 //                            if (PartitionCandidates.size() > 0) {
                               //  m2.lock();
 //                                CurrentCandidate = PartitionCandidates.back();
-                                  CurrentCandidate = PartitionCandidates;
+                            if (PartitionCandidates.IsValid()) {
+                                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                                // TODO: change to alternative measures (ctrl f = in many places, check if some can be roemoved!)
                                 // m2.unlock();
 //                            }
+                            }
 
                             if (Rule_i.TestRule(Initialised, Constraints,
-                                                CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                                                CandidatePerformance, MaximizeMeasure, RestrictionSet,
                                                 RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
 
                                 m2.lock();
@@ -3008,7 +3017,7 @@ if (!Parallel) {
                     CountCandidatesPartition += Rule_i.GetCountCandidates();
 
                 }
-            }
+           // }
         });
 
 
@@ -3033,15 +3042,15 @@ if (!Parallel) {
 
                         while (Rule_i.NextCutoffSetGenerator()) {
 
-                            CANDIDATE CurrentCandidate;
+                            float CandidatePerformance;
 //                            if (PartitionCandidates_i.size() > 0) {
 //                                CurrentCandidate = PartitionCandidates_i.back();
 //                            }
                             if (PartitionCandidates_i.IsValid()) {
-                                CurrentCandidate = PartitionCandidates_i;
+                                CandidatePerformance = PartitionCandidates_i.Performance.Accuracy.Value;
                             }
 
-                            if (Rule_i.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                            if (Rule_i.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet,
                                                 RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
 
                                 PartitionCandidates_i = Rule_i.SaveCandidate(PartitionCandidates_i, MaximizeMeasure,
@@ -3097,7 +3106,8 @@ if (!Parallel) {
 // TODO: is "Rule" needed?
         BestLengthPartition = PartitionCandidates.Size();
         // BestLengthPartition = Rule.FindBestLength(Initialised,PartitionCandidates, PartitionMethod, MaximizeMeasure);
-        ++BestLength[BestLengthPartition - 1]; // Calculate performance of current rule in validation set
+        // BestLength[BestLengthPartition - 1] = BestLength[BestLengthPartition - 1] + 1; // Calculate performance of current rule in validation set
+        BestLength.at(BestLengthPartition - 1) = BestLength.at(BestLengthPartition - 1) + 1;
 
         cout << endl << endl;
         cout << "Best Length:" << BestLengthPartition << endl;
@@ -3183,13 +3193,13 @@ void Explore::Induce(int nStart, int nEnd) {
 	while (Rule.NextFeatureSetGenerator()) {
 	  while (Rule.NextCutoffSetGenerator()) {
 
-          CANDIDATE CurrentCandidate;
+          float CandidatePerformance;
         if (PartitionCandidates.IsValid()) {
-            CurrentCandidate = PartitionCandidates;
+            CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
         }
 
           if (Rule.TestRule(Initialised, Constraints,
-                            CurrentCandidate, MaximizeMeasure, RestrictionSet,
+                            CandidatePerformance, MaximizeMeasure, RestrictionSet,
                             RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
 
               PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
@@ -3242,12 +3252,12 @@ bool Explore::ResumeProject() {
       do {
        // TestRule();                                                             // Calculate performance of current rule
 
-          CANDIDATE CurrentCandidate;
+          float CandidatePerformance;
           if (PartitionCandidates.IsValid()) {
-              CurrentCandidate = PartitionCandidates;
+              CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
           }
 
-          Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
+          Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
           PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
 
            if (IsPrintCutoffSets) {
@@ -3280,12 +3290,12 @@ bool Explore::ResumeProject() {
       do {
        // TestRule();                                                             // Calculate performance of current rule
 
-          CANDIDATE CurrentCandidate;
+          float CandidatePerformance;
           if (PartitionCandidates.IsValid()) {
-              CurrentCandidate = PartitionCandidates;
+              CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
           }
 
-          Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
+          Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
           PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
           if (IsPrintCutoffSets) {
           Rule.PrintCutoffSet();
@@ -3381,12 +3391,12 @@ bool Explore::ManualRunProject(string StartString, string StopString) {
           // Test current rule (Branch-and-bound values could be updated)
           // TestRule();
 
-            CANDIDATE CurrentCandidate;
+            float CandidatePerformance;
             if (PartitionCandidates.IsValid()) {
-                CurrentCandidate = PartitionCandidates;
+                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
             }
 
-            Rule.TestRule(Initialised, Constraints, CurrentCandidate, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
+            Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
             PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
         }
       } while (Rule.NextCutoffSetGenerator());                                           // Create next cutoff-set
