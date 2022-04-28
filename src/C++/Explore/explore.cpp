@@ -2876,9 +2876,9 @@ if (!Parallel) {
 //                if (PartitionCandidates.size() > 0) {
 //                    CurrentCandidate = PartitionCandidates.back();
 //                }
-                if (PartitionCandidates.IsValid()) {
+              //  if (PartitionCandidates.IsValid()) {
                     CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-                }
+              //  }
 
                 if (Rule.TestRule(Initialised, Constraints,
                                   CandidatePerformance, MaximizeMeasure, RestrictionSet,
@@ -2953,19 +2953,21 @@ if (!Parallel) {
                         // CalculateProgress();
                         while (Rule_i.NextCutoffSetGenerator()) {
 
-                            Rule_i.CPBest = CPBest_global;
-                            Rule_i.CTBest = CTBest_global;
-
                             float CandidatePerformance;
 //                            if (PartitionCandidates.size() > 0) {
-                              //  m2.lock();
+
 //                                CurrentCandidate = PartitionCandidates.back();
-                            if (PartitionCandidates.IsValid()) {
+                            // if (PartitionCandidates.IsValid()) {
+                                m2.lock();
+
+                                Rule_i.CPBest = CPBest_global;
+                                Rule_i.CTBest = CTBest_global;
+
                                 CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-                                // TODO: change to alternative measures (ctrl f = in many places, check if some can be roemoved!)
-                                // m2.unlock();
+                                // TODO: change to alternative measures (ctrl f = in many places, check if some can be removed!)
+                                m2.unlock();
 //                            }
-                            }
+                           // }
 
                             if (Rule_i.TestRule(Initialised, Constraints,
                                                 CandidatePerformance, MaximizeMeasure, RestrictionSet,
@@ -3046,9 +3048,9 @@ if (!Parallel) {
 //                            if (PartitionCandidates_i.size() > 0) {
 //                                CurrentCandidate = PartitionCandidates_i.back();
 //                            }
-                            if (PartitionCandidates_i.IsValid()) {
+                            // if (PartitionCandidates_i.IsValid()) {
                                 CandidatePerformance = PartitionCandidates_i.Performance.Accuracy.Value;
-                            }
+                        //    }
 
                             if (Rule_i.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet,
                                                 RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
@@ -3194,9 +3196,9 @@ void Explore::Induce(int nStart, int nEnd) {
 	  while (Rule.NextCutoffSetGenerator()) {
 
           float CandidatePerformance;
-        if (PartitionCandidates.IsValid()) {
+       // if (PartitionCandidates.IsValid()) {
             CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-        }
+        // }
 
           if (Rule.TestRule(Initialised, Constraints,
                             CandidatePerformance, MaximizeMeasure, RestrictionSet,
@@ -3253,9 +3255,9 @@ bool Explore::ResumeProject() {
        // TestRule();                                                             // Calculate performance of current rule
 
           float CandidatePerformance;
-          if (PartitionCandidates.IsValid()) {
+          // if (PartitionCandidates.IsValid()) {
               CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-          }
+         // }
 
           Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
           PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
@@ -3291,9 +3293,9 @@ bool Explore::ResumeProject() {
        // TestRule();                                                             // Calculate performance of current rule
 
           float CandidatePerformance;
-          if (PartitionCandidates.IsValid()) {
+         // if (PartitionCandidates.IsValid()) {
               CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-          }
+          // }
 
           Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
           PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
@@ -3333,135 +3335,135 @@ Out: bool, project finished or not
 Description: Manually Starts a project from a given starting point and
 returns the bestrule and performance
 **********************************************************************/
-bool Explore::ManualRunProject(string StartString, string StopString) {
-  ManualContinue = true;
-  ManualStop = false;
-
-  LastFeatureSet = "";
-  RulesProcessed = 0;
-  FeatureSetsProcessed = 0;
-
-  #if defined(EXPLORE_MPI_DEBUG)
-  cout << "--> Running project from (" << StartString << ") to (" << StopString << ")" << endl;
-  #endif
-
-  if (!StartRule.Interpret(StartString)) return false;                          // Interpret and set the start-rule
-  if (!StopRule.Interpret(StopString)) return false;                            // Interpret and set the stop-rule
-  if (!Rule.SetRule(StartRule)) return false;                                   // Initialise the rule with the start-rule
-
-  #if defined(EXPLORE_MPI_DEBUG)
-  cout << "--> Started: ";
-  Rule.PrintFeatureSet();
-  cout << "***************************************************************" << endl;  
-  #endif
-
-  #if defined(BRANCH_AND_BOUND_DEBUG)
-  int PreviousCT = 0;
-  int PreviousCP = 0;
-  int PreviousFP = 0;
-  #endif  
-
-  do {                                                                          // Run project
-    if (IsPrintCombinations) {
-      Rule.PrintCombination();
-    }
-
-    #if defined(EXPLORE_MPI_DEBUG)
-    cout << "--> New Combination: ";
-    Rule.PrintCombination();
-    #endif
-
-    do {
-
-      if (!Rule.IsFeatureSetGenerated()) {
-        Rule.NextFeatureSetGenerator();
-      }
-
-      if (IsPrintFeatureSets) {
-        Rule.PrintFeatureSet();
-      }
-      do {
-
-        if (Rule.IsCutoffSetGenerated()) {
-
-          if (IsPrintCutoffSets) {
-            Rule.PrintCutoffSet();
-          }
-          
-          // Test current rule (Branch-and-bound values could be updated)
-          // TestRule();
-
-            float CandidatePerformance;
-            if (PartitionCandidates.IsValid()) {
-                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-            }
-
-            Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
-            PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
-        }
-      } while (Rule.NextCutoffSetGenerator());                                           // Create next cutoff-set
-
-      if (CheckStopFeature()) {
-        ManualStop = true;
-        #if defined(EXPONENTIAL_WORKUNITS)
-        RulesProcessed += (Rule.FeatureSetComplexityLimit() / pow(EXPONENTIAL_BASE,(GetNoConjunctions()-1)));        
-        #else
-        RulesProcessed += Rule.FeatureSetComplexityLimit();
-        #endif
-      } else {
-        // Save last FeatureSet processed and (maximum) number of rules processed until now
-        LastFeatureSet = GetFeatureSet();
-        NewFeatureSet = true;
-        #if defined(EXPONENTIAL_WORKUNITS)
-        RulesProcessed += (Rule.FeatureSetComplexityLimit() / pow(EXPONENTIAL_BASE,(GetNoConjunctions()-1)));        
-        #else
-        RulesProcessed += Rule.FeatureSetComplexityLimit();
-        #endif
-        FeatureSetsProcessed++;
-
-        #if defined(EXPLORE_MPI_DEBUG)
-        cout << "--> FeatureSet processed: " << LastFeatureSet << endl;
-        #endif
-
-        #if defined(BRANCH_AND_BOUND_DEBUG)
-        if ((PreviousCT != Rule.CTBest) || (PreviousCP != Rule.CPBest) || (PreviousFP != Rule.FPConstraint)) {
-          cout << "--> Bound changed: ";
-          cout << "CT (" << Rule.CTBest;
-          cout << ") CP (" << Rule.CPBest;
-          cout << ") FP (" << Rule.FPConstraint;
-          cout << ")" << endl;
-
-          PreviousCT = Rule.CTBest;
-          PreviousCP = Rule.CPBest;
-          PreviousFP = Rule.FPConstraint;
-        }
-        #endif
-        
-        if (!Rule.NextFeatureSet()) ManualContinue = false; // TODO: check if should be generator
-      }
-      
-    } while (ManualContinue && !ManualStop);
-
-    if (ManualStop || CheckStopCombination()) {
-      ManualContinue = false;
-    } else {
-      if (Rule.NextCombinationGenerator()) ManualContinue = true;
-      else ManualContinue = false;
-    }
-    
-  } while (ManualContinue);
-
-  Final = false; // TODO: AM check
-  ValidateBestCandidate();     // TODO: PR was testbestcandidate checken!!
-
-  #if defined(EXPLORE_MPI_DEBUG)
-  cout << "***************************************************************" << endl;  
-  cout << "--> Stopped: ";
-  Rule.PrintFeatureSet();
-  #endif
-
-  return true;
-}
+//bool Explore::ManualRunProject(string StartString, string StopString) {
+//  ManualContinue = true;
+//  ManualStop = false;
+//
+//  LastFeatureSet = "";
+//  RulesProcessed = 0;
+//  FeatureSetsProcessed = 0;
+//
+//  #if defined(EXPLORE_MPI_DEBUG)
+//  cout << "--> Running project from (" << StartString << ") to (" << StopString << ")" << endl;
+//  #endif
+//
+//  if (!StartRule.Interpret(StartString)) return false;                          // Interpret and set the start-rule
+//  if (!StopRule.Interpret(StopString)) return false;                            // Interpret and set the stop-rule
+//  if (!Rule.SetRule(StartRule)) return false;                                   // Initialise the rule with the start-rule
+//
+//  #if defined(EXPLORE_MPI_DEBUG)
+//  cout << "--> Started: ";
+//  Rule.PrintFeatureSet();
+//  cout << "***************************************************************" << endl;
+//  #endif
+//
+//  #if defined(BRANCH_AND_BOUND_DEBUG)
+//  int PreviousCT = 0;
+//  int PreviousCP = 0;
+//  int PreviousFP = 0;
+//  #endif
+//
+//  do {                                                                          // Run project
+//    if (IsPrintCombinations) {
+//      Rule.PrintCombination();
+//    }
+//
+//    #if defined(EXPLORE_MPI_DEBUG)
+//    cout << "--> New Combination: ";
+//    Rule.PrintCombination();
+//    #endif
+//
+//    do {
+//
+//      if (!Rule.IsFeatureSetGenerated()) {
+//        Rule.NextFeatureSetGenerator();
+//      }
+//
+//      if (IsPrintFeatureSets) {
+//        Rule.PrintFeatureSet();
+//      }
+//      do {
+//
+//        if (Rule.IsCutoffSetGenerated()) {
+//
+//          if (IsPrintCutoffSets) {
+//            Rule.PrintCutoffSet();
+//          }
+//
+//          // Test current rule (Branch-and-bound values could be updated)
+//          // TestRule();
+//
+//            float CandidatePerformance;
+//            if (PartitionCandidates.IsValid()) {
+//                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+//            }
+//
+//            Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
+//            PartitionCandidates = Rule.SaveCandidate(PartitionCandidates, MaximizeMeasure, RestrictionSet);
+//        }
+//      } while (Rule.NextCutoffSetGenerator());                                           // Create next cutoff-set
+//
+//      if (CheckStopFeature()) {
+//        ManualStop = true;
+//        #if defined(EXPONENTIAL_WORKUNITS)
+//        RulesProcessed += (Rule.FeatureSetComplexityLimit() / pow(EXPONENTIAL_BASE,(GetNoConjunctions()-1)));
+//        #else
+//        RulesProcessed += Rule.FeatureSetComplexityLimit();
+//        #endif
+//      } else {
+//        // Save last FeatureSet processed and (maximum) number of rules processed until now
+//        LastFeatureSet = GetFeatureSet();
+//        NewFeatureSet = true;
+//        #if defined(EXPONENTIAL_WORKUNITS)
+//        RulesProcessed += (Rule.FeatureSetComplexityLimit() / pow(EXPONENTIAL_BASE,(GetNoConjunctions()-1)));
+//        #else
+//        RulesProcessed += Rule.FeatureSetComplexityLimit();
+//        #endif
+//        FeatureSetsProcessed++;
+//
+//        #if defined(EXPLORE_MPI_DEBUG)
+//        cout << "--> FeatureSet processed: " << LastFeatureSet << endl;
+//        #endif
+//
+//        #if defined(BRANCH_AND_BOUND_DEBUG)
+//        if ((PreviousCT != Rule.CTBest) || (PreviousCP != Rule.CPBest) || (PreviousFP != Rule.FPConstraint)) {
+//          cout << "--> Bound changed: ";
+//          cout << "CT (" << Rule.CTBest;
+//          cout << ") CP (" << Rule.CPBest;
+//          cout << ") FP (" << Rule.FPConstraint;
+//          cout << ")" << endl;
+//
+//          PreviousCT = Rule.CTBest;
+//          PreviousCP = Rule.CPBest;
+//          PreviousFP = Rule.FPConstraint;
+//        }
+//        #endif
+//
+//        if (!Rule.NextFeatureSet()) ManualContinue = false; // TODO: check if should be generator
+//      }
+//
+//    } while (ManualContinue && !ManualStop);
+//
+//    if (ManualStop || CheckStopCombination()) {
+//      ManualContinue = false;
+//    } else {
+//      if (Rule.NextCombinationGenerator()) ManualContinue = true;
+//      else ManualContinue = false;
+//    }
+//
+//  } while (ManualContinue);
+//
+//  Final = false; // TODO: AM check
+//  ValidateBestCandidate();     // TODO: PR was testbestcandidate checken!!
+//
+//  #if defined(EXPLORE_MPI_DEBUG)
+//  cout << "***************************************************************" << endl;
+//  cout << "--> Stopped: ";
+//  Rule.PrintFeatureSet();
+//  #endif
+//
+//  return true;
+//}
 
 /**********************************************************************
 Function: CalculateProgress()

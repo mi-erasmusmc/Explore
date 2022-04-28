@@ -137,7 +137,7 @@ class Explore {
 	// int  Stop();                                                                // Stop criterium for internal testing
 	// int  FindBestLength();                                                          // Return the best length on internal testing
 	void Induce(int nStart, int nEnd);											// Induce rule on learn parition form start tot end
-	bool ResumeProject();
+    bool ResumeProject();
 
 	void CalculateProgress();                                                   // Calculates progress of current project
 	void PrintSummary();                                                        // Prints summary information to summaryfunction
@@ -359,7 +359,7 @@ class Explore {
     void SetBranchBoundValues(int CTBest, int CPBest, int FPConstraint);
 	void ResetRule();
 
-    bool ManualRunProject(string StartString, string StopString);               // Run a project from a given start to a given end
+    // bool ManualRunProject(string StartString, string StopString);               // Run a project from a given start to a given end
     bool CheckStopFeature();
     bool CheckStopCombination();
     bool SetStopRule(string NewStopRule);
