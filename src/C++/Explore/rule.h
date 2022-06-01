@@ -91,7 +91,7 @@ class RULE {
 
 //------------------------------------------------------------------------------
 
-    unsigned int NoFeatureOperators{};                                            // Easy access to total (real total - 1)!!!
+unsigned int NoFeatureOperators{};                                            // Easy access to total (real total - 1)!!!
 
 //------------------------------------------------------------------------------
 
@@ -179,9 +179,10 @@ class RULE {
     void PrintSettings();
     void PrintCombination();                                                    // Print partition information of the rule
     void PrintFeatureSet();                                                     // Print featureset information of the rule
+    void PrintFeatureSet_Thread();
     void PrintCutoffSet();                                                      // Print rule structure
     void PrintPerformance();                                                    // Print the performance
-    void PrintRestriction();                                                    // Print restrictions
+    void PrintRestriction();                                                     // Print restrictions
     void PrintCumulativeSets();                                                 // Print cumulative conjunction sets
 
     string PrintRuleString();                                                   // Prints current rule and returns as string
@@ -207,7 +208,7 @@ class RULE {
 
 
     bool NextCombination();                                                     // Generate next combination
-    bool NextFeatureSet();                                                      // Generate next feature set
+    bool NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end);                                                      // Generate next feature set
 	bool NextCutoffSet();                                                       // Generate next cutoff set
 	bool StartRuleLength(int i);												// Start Rule generation at rulelength i
 
@@ -216,7 +217,7 @@ class RULE {
                                             bool Reset);                        // Generate next cutoff set for a conjunction (FPCP optimisation)
 
     bool NextCombinationGenerator();
-    bool NextFeatureSetGenerator();
+    bool NextFeatureSetGenerator(int FOperatorNr_start, int FOperatorNr_end);
     bool NextCutoffSetGenerator();
 
     PERFORMANCE CalculatePerformance();                                         // Calculate the performance of this rule on the current Test or Learn partition
@@ -250,6 +251,7 @@ class RULE {
     int FindBestLength(bool Initialised, CANDIDATE PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure);
     CANDIDATE ChooseBestCandidate(unsigned int RuleLength, bool Initialised, CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure);
 
+    unsigned int GetFeatureOperatorSize();
 };
 
 #endif

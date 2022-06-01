@@ -115,7 +115,7 @@ class Explore {
     bool IsPrintFeatureOperators;                                               // Should FeatureOperators be printed at the start of rule generation?
 
     // Private modifiers
-  //  bool ChooseBestCandidate(unsigned int RuleLength);
+    //  bool ChooseBestCandidate(unsigned int RuleLength);
 
     // Output functions
     void PrintSettings();                                                       // Print settings (debug settings)
@@ -223,7 +223,7 @@ class Explore {
 
 
     CANDIDATE GetProjectCandidate(unsigned int COrder);                         // Get a candidate from the project list
- //   CANDIDATE GetPartitionCandidate(unsigned int COrder);                       // Get a candidate from the partition list
+    // CANDIDATE GetPartitionCandidate(unsigned int COrder);                       // Get a candidate from the partition list
     unsigned int GetNoProjectCandidates();                                      // Get the number of current best-performing rules of the project list
     unsigned int GetNoPartitionCandidates();                                    // Get the number of current best-performing rules of the partition list
 
@@ -353,7 +353,7 @@ class Explore {
 
 	// Control
 	bool NextCombination();                                                     // Creates the next Combination
-	bool NextFeatureSet();                                                      // Creates the next FeatureSet
+	bool NextFeatureSet(int FOperatorNr_start, unsigned int FOperatorNr_end);                                                      // Creates the next FeatureSet
 
     bool SetRule(CANDIDATE NewRule);
     void SetBranchBoundValues(int CTBest, int CPBest, int FPConstraint);

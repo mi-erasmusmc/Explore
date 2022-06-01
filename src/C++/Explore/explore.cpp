@@ -13,8 +13,12 @@
 #include <mutex>
 #include <tbb/concurrent_vector.h>
 #include <tbb/parallel_for.h>
+
+std::mutex m0;
 std::mutex m1;
 std::mutex m2;
+std::mutex m3;
+
 
 #define COMMANDVERSION
 
@@ -239,7 +243,6 @@ void Explore::ValidateBestCandidate() {
     cout << endl << "BEST RULES" << endl << endl;
 
     if(PartitionCandidates.IsValid()) {
-	// if (PartitionCandidates.size()>0) {
         CANDIDATE BestCandidate = PartitionCandidates;
 
 	//  for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
@@ -267,7 +270,6 @@ void Explore::ValidateBestCandidate() {
 //		}
 	//  }
       PartitionCandidates.Clear();
-	  // PartitionCandidates.clear();
 	} else {
 	  #if defined(EXPLORE_MPI_DEBUG)
 	  cout << "--> No Candidates" << endl;
@@ -1125,16 +1127,11 @@ bool Explore::Partition() {
    // ValidateBestCandidate();                                                          // Do not remove! Is needed for summarising best candidates at the end of projects (ie. HOLDOUT)
 
   if (Population.Partition()) {                                                 // Will return false with holdout on second call!
-
     SetRerun();                                                                 // Reset rule (findcutoffs etc)
-
 	NoPartitionsDone++;
-
     return true;
   } else {
-
 	SetRerun();                                                                 // Prepare for new Run
-
     NoPartitionsDone++;                                                         // Increment number of partitions covered
 	//if (PartitionMethod == CROSS_VALIDATION) {                                  // In case of cross-validation
 	//   SummarisePerformance();                                                   // Summarise performances of candidates that were found
@@ -1349,6 +1346,7 @@ bool Explore::SetMaxRuleLength(const unsigned int ERuleLength) {
 Function: SetMinRuleLength()
 Category: Modifiers
 Scope: public
+In: const unsigned int, rule length
 In: const unsigned int, rule length
 Out: bool, could/could not set maximum rule length
 Description: Set the minimum rule length. Used as a boundary for
@@ -2829,6 +2827,8 @@ bool Explore::RunProject() {
   time_t dummy;
   unsigned int ActiveRuleLength;
   int CountCandidatesPartition;
+  int CountFeatureOperatorPairs;
+  int CountCutoffSets;
   int BestLengthPartition;
   int BestLengthFinal = 0;
   vector<int> BestLength(Rule.GetMaxRuleLength());
@@ -2846,6 +2846,8 @@ bool Explore::RunProject() {
 
 	do {
 	    CountCandidatesPartition = 0;
+        CountFeatureOperatorPairs = 0;
+        CountCutoffSets = 0;
 	  BestLengthPartition = 0;
 	  Final = false;
 
@@ -2861,24 +2863,20 @@ bool Explore::RunProject() {
 	  if (IsPrintCutoffValues)   Population.PrintCutoffs();
 
 if (!Parallel) {
+    float CandidatePerformance;
 
     while (Rule.NextCombinationGenerator()) {
         if (IsPrintCombinations) Rule.PrintCombination();
 
         StartTimeTermTuple = clock();
 
-        while (Rule.NextFeatureSetGenerator()) {
+       while (Rule.NextFeatureSetGenerator(0, Rule.GetFeatureOperatorSize())) {
             if (IsPrintFeatureSets) Rule.PrintFeatureSet();
+            CountFeatureOperatorPairs++;
             // CalculateProgress();
             while (Rule.NextCutoffSetGenerator()) {
 
-                float CandidatePerformance;
-//                if (PartitionCandidates.size() > 0) {
-//                    CurrentCandidate = PartitionCandidates.back();
-//                }
-              //  if (PartitionCandidates.IsValid()) {
-                    CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-              //  }
+                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
 
                 if (Rule.TestRule(Initialised, Constraints,
                                   CandidatePerformance, MaximizeMeasure, RestrictionSet,
@@ -2892,6 +2890,8 @@ if (!Parallel) {
                     cout << "Candidate model: ";
                     Rule.PrintCutoffSet();
                 }
+
+                CountCutoffSets++;
 
                 // if (IsUpdateRealtime) CalculateProgress();
 
@@ -2914,85 +2914,85 @@ if (!Parallel) {
             }
         }
 
-        std::stringstream sstr;
-        TermTupleTiming.Clear();
-        TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
-        Rule.PrintCombination();
-        cout << TermTupleTiming.PrintTotal();
-        cout << "Candidates: " <<  Rule.GetCountCandidates() << endl << endl;
+//        std::stringstream sstr;
+//        TermTupleTiming.Clear();
+//        TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
+//        Rule.PrintCombination();
+//        cout << TermTupleTiming.PrintTotal();
+//        cout << "Candidates: " <<  Rule.GetCountCandidates() << endl << endl;
         CountCandidatesPartition += Rule.GetCountCandidates();
         Rule.ResetCountCandidates();
     }
 
 } else {
 
-    int end_loop = Rule.CalculateCombinationsTotal() - 1;
+    string ParallelMethod = "Global double parallel";
 
-    vector<RULE> all_rules;
-    for (int s = 0; s < end_loop; ++s) {
-        Rule.NextCombinationGenerator();
-        all_rules.push_back(this->Rule);
-    }
+    if (ParallelMethod == "Global single parallel") {
 
-    string ParallelMethod = "Global";
-    if (ParallelMethod == "Global") {
+        vector<RULE> all_rules;
+        while(Rule.NextCombinationGenerator()) {
+            all_rules.push_back(this->Rule);
+        }
 
-        tbb::parallel_for(tbb::blocked_range<int>(0, end_loop), [&](tbb::blocked_range<int> r) {
+        tbb::parallel_for(tbb::blocked_range<int>(0, Rule.GetCombinationsGenerated()), [&](tbb::blocked_range<int> r) {
             for (int i = r.begin(); i < r.end(); ++i) {
                 StartTimeTermTuple = clock();
 
-              //  m1.lock();
-              //  if (Rule.NextCombinationGenerator()) {
-                    RULE Rule_i = all_rules.at(i);
-                  //  m1.unlock();
+                // RULE Rule_i = all_rules.at(i);
 
-                    if (IsPrintCombinations) Rule_i.PrintCombination();
+                RULE Rule_i = RULE(all_rules[i]); // CREATE DEEP COPY
 
-                    while (Rule_i.NextFeatureSetGenerator()) {
-                        if (IsPrintFeatureSets) Rule_i.PrintFeatureSet();
-                        // CalculateProgress();
-                        while (Rule_i.NextCutoffSetGenerator()) {
+                float CandidatePerformance;
 
-                            float CandidatePerformance;
-//                            if (PartitionCandidates.size() > 0) {
+                m2.lock();
 
-//                                CurrentCandidate = PartitionCandidates.back();
-                            // if (PartitionCandidates.IsValid()) {
-                                m2.lock();
+                Rule_i.CPBest = CPBest_global;
+                Rule_i.CTBest = CTBest_global;
 
-                                Rule_i.CPBest = CPBest_global;
-                                Rule_i.CTBest = CTBest_global;
+                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                // TODO: change to alternative measures (ctrl f = in many places, check if some can be removed!)
+                m2.unlock();
 
-                                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-                                // TODO: change to alternative measures (ctrl f = in many places, check if some can be removed!)
-                                m2.unlock();
-//                            }
-                           // }
+                if (IsPrintCombinations) Rule_i.PrintCombination();
 
-                            if (Rule_i.TestRule(Initialised, Constraints,
-                                                CandidatePerformance, MaximizeMeasure, RestrictionSet,
-                                                RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+                // CANDIDATE PartitionCandidates_i; // doesn't need to be concurrent vector
+                // printf("Combination %d and feature operators set %d and address %p and thread id %d \n", i, j, &Rule_i, tbb::this_task_arena::current_thread_index());
 
-                                m2.lock();
-                                PartitionCandidates = Rule_i.SaveCandidate(PartitionCandidates, MaximizeMeasure,
-                                                                           RestrictionSet);
+                while (Rule_i.NextFeatureSetGenerator(0, Rule_i.GetFeatureOperatorSize())) {
+                    if (IsPrintFeatureSets) Rule_i.PrintFeatureSet_Thread();
+                    // CalculateProgress();
+                    m0.lock();
+                    CountFeatureOperatorPairs++;
+                    m0.unlock();
 
-                                CPBest_global = Rule_i.CPBest;
-                                CTBest_global = Rule_i.CTBest;
+                    while (Rule_i.NextCutoffSetGenerator()) {
 
-                                m2.unlock();
-                            }
+                        if (Rule_i.TestRule(Initialised, Constraints,
+                                            CandidatePerformance, MaximizeMeasure, RestrictionSet,
+                                            RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+                            m2.lock();
+                            PartitionCandidates = Rule_i.SaveCandidate(PartitionCandidates, MaximizeMeasure,
+                                                                       RestrictionSet);
 
-                            // TODO: check if inside or outside TestRule
-                            if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
-                                cout << "Candidate model: ";
-                                Rule_i.PrintCutoffSet();
-                            }
+                            CPBest_global = Rule_i.CPBest;
+                            CTBest_global = Rule_i.CTBest;
 
-                            // if (IsUpdateRealtime) CalculateProgress();
+                            m2.unlock();
+                        }
+
+                        // TODO: check if inside or outside TestRule
+                        if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
+                            cout << "Candidate model: ";
+                            Rule_i.PrintCutoffSet();
+                        }
+                        m1.lock();
+                        CountCutoffSets++;
+                        m1.unlock();
+                        // if (IsUpdateRealtime) CalculateProgress();
 
 #ifndef COMMANDVERSION
-                            // BreatheCount++;// Increment breathe counter
+                        // BreatheCount++;// Increment breathe counter
 
                             if (BreatheCount>BREATHE_INTERVAL) {
                              if (PauseFunction()) {                                            // User paused the project
@@ -3007,114 +3007,145 @@ if (!Parallel) {
                               BreatheCount = 0;
                             }
 #endif
-                        }
                     }
-
-                    std::stringstream sstr;
-                    TermTupleTiming.Clear();
-                    TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
-                    Rule_i.PrintCombination();
-                    cout << TermTupleTiming.PrintTotal();
-                    cout << "Candidates: " <<  Rule_i.GetCountCandidates() << endl << endl;
-                    CountCandidatesPartition += Rule_i.GetCountCandidates();
-
                 }
-           // }
+
+//                std::stringstream sstr;
+//                TermTupleTiming.Clear();
+//                TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
+//                Rule_i.PrintCombination();
+//                cout << TermTupleTiming.PrintTotal();
+//                cout << "Candidates: " << Rule_i.GetCountCandidates() << endl << endl;
+                m3.lock();
+                CountCandidatesPartition += Rule_i.GetCountCandidates();
+                m3.unlock();
+            }
+            // }
         });
+    } else if (ParallelMethod == "Global double parallel") {
 
+        vector<RULE> all_rules;
+        while(Rule.NextCombinationGenerator()) {
+            all_rules.push_back(this->Rule);
+        }
 
-    } else if (ParallelMethod == "Multiple") {
+        tbb::parallel_for(tbb::blocked_range<int>(0, Rule.GetCombinationsGenerated()), [&](tbb::blocked_range<int> r) {
 
-        tbb::parallel_for(tbb::blocked_range<int>(0, end_loop), [&](tbb::blocked_range<int> r) {
-            for (int i = r.begin(); i < r.end(); ++i) {
+            // for (int i = r.begin(); i < r.end(); ++i)
+            int i = r.begin();
+            {
                 StartTimeTermTuple = clock();
 
-                CANDIDATE PartitionCandidates_i; // doesn't need to be concurrent vector
+                // NOTE: blocked_range uses open interval [start,end)
+                tbb::parallel_for(tbb::blocked_range<int>(0, Rule.GetFeatureOperatorSize() + 1), [&](tbb::blocked_range<int> s) {
 
-                m1.lock();
-                if (Rule.NextCombinationGenerator()) {
-                    RULE Rule_i = this->Rule;
-                    m1.unlock();
+                    // for (int j = s.begin(); j < s.end(); j++)
+                    {
+                        int j = s.begin();
 
-                    if (IsPrintCombinations) Rule_i.PrintCombination();
+                        RULE Rule_ij = RULE(all_rules[i]); // CREATE DEEP COPY
 
-                    while (Rule_i.NextFeatureSetGenerator()) {
-                        if (IsPrintFeatureSets) Rule_i.PrintFeatureSet();
-                        // CalculateProgress();
+                        float CandidatePerformance;
 
-                        while (Rule_i.NextCutoffSetGenerator()) {
+                        m2.lock();
 
-                            float CandidatePerformance;
-//                            if (PartitionCandidates_i.size() > 0) {
-//                                CurrentCandidate = PartitionCandidates_i.back();
-//                            }
-                            // if (PartitionCandidates_i.IsValid()) {
-                                CandidatePerformance = PartitionCandidates_i.Performance.Accuracy.Value;
-                        //    }
+                        Rule_ij.CPBest = CPBest_global;
+                        Rule_ij.CTBest = CTBest_global;
 
-                            if (Rule_i.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet,
-                                                RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+                        CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                        // TODO: change to alternative measures (ctrl f = in many places, check if some can be removed!)
+                        m2.unlock();
 
-                                PartitionCandidates_i = Rule_i.SaveCandidate(PartitionCandidates_i, MaximizeMeasure,
-                                                                           RestrictionSet);
-                            }
+                        if (IsPrintCombinations) Rule_ij.PrintCombination();
 
-                            // TODO: check if inside or outside TestRule
-                            if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
-                                cout << "Candidate model: ";
-                                Rule_i.PrintCutoffSet();
-                            }
+                        // CANDIDATE PartitionCandidates_ij; // doesn't need to be concurrent vector
+                        // printf("Combination %d and feature operators set %d and address %p and thread id %d \n", i, j, &Rule_ij, tbb::this_task_arena::current_thread_index());
 
-                            // if (IsUpdateRealtime) CalculateProgress();
+                        while (Rule_ij.NextFeatureSetGenerator(j, j)) {
+                            // TODO: create function that releases all print statements of one thread at once
+
+                            if (IsPrintFeatureSets) Rule_ij.PrintFeatureSet_Thread();
+
+//                            m0.lock();
+//                            CountFeatureOperatorPairs++;
+//                            m0.unlock();
+                            // CalculateProgress();
+
+                            while (Rule_ij.NextCutoffSetGenerator()) {
+
+                                if (Rule_ij.TestRule(Initialised, Constraints,
+                                                    CandidatePerformance, MaximizeMeasure, RestrictionSet,
+                                                    RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
+
+                                    m2.lock();
+                                    PartitionCandidates = Rule_ij.SaveCandidate(PartitionCandidates, MaximizeMeasure,
+                                                                               RestrictionSet);
+
+                                    CPBest_global = Rule_ij.CPBest;
+                                    CTBest_global = Rule_ij.CTBest;
+
+                                    m2.unlock();
+                                }
+
+                                // TODO: check if inside or outside TestRule
+                                if (IsPrintCutoffSets) { // Calculate performance of current rule in learn set
+                                    cout << "Candidate model: ";
+                                    Rule_ij.PrintCutoffSet();
+                                }
+//                                m1.lock();
+//                                CountCutoffSets++;
+//                                m1.unlock();
+                                // if (IsUpdateRealtime) CalculateProgress();
 
 #ifndef COMMANDVERSION
-                            // BreatheCount++;// Increment breathe counter
+                                // BreatheCount++;// Increment breathe counter
 
-                            if (BreatheCount>BREATHE_INTERVAL) {
-                             if (PauseFunction()) {                                            // User paused the project
-                                PrintSummary();
-                                return false;
-                              }
-                              if (CancelFunction()) {                                           // User cancelled the project
-                                PrintSummary();
-                                CloseFunction();
-                                return false;
-                              }
-                              BreatheCount = 0;
-                            }
+                                    if (BreatheCount>BREATHE_INTERVAL) {
+                                     if (PauseFunction()) {                                            // User paused the project
+                                        PrintSummary();
+                                        return false;
+                                      }
+                                      if (CancelFunction()) {                                           // User cancelled the project
+                                        PrintSummary();
+                                        CloseFunction();
+                                        return false;
+                                      }
+                                      BreatheCount = 0;
+                                    }
 #endif
+                            }
                         }
+
+//                        std::stringstream sstr;
+//                        TermTupleTiming.Clear();
+//                        TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
+//                        Rule_ij.PrintCombination();
+//                        cout << TermTupleTiming.PrintTotal();
+//                        cout << "Candidates: " << Rule_ij.GetCountCandidates() << endl << endl;
+//                        m3.lock();
+//                        CountCandidatesPartition += Rule_ij.GetCountCandidates();
+//                        m3.unlock();
                     }
-
-                    std::stringstream sstr;
-                    TermTupleTiming.Clear();
-                    TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
-                    Rule_i.PrintCombination();
-                    cout << TermTupleTiming.PrintTotal();
-                    cout << "Candidates: " <<  Rule_i.GetCountCandidates() << endl << endl;
-                    CountCandidatesPartition += Rule_i.GetCountCandidates();
-
-                }
-                                    m2.lock();
-                    // TODO: figure out what to do with this!!
-                                        ProjectCandidates.push_back(PartitionCandidates_i);
-                                    m2.unlock();
+                });
             }
         });
+
+
     }
-
 }
-
 // TODO: is "Rule" needed?
-        BestLengthPartition = PartitionCandidates.Size();
-        // BestLengthPartition = Rule.FindBestLength(Initialised,PartitionCandidates, PartitionMethod, MaximizeMeasure);
-        // BestLength[BestLengthPartition - 1] = BestLength[BestLengthPartition - 1] + 1; // Calculate performance of current rule in validation set
-        BestLength.at(BestLengthPartition - 1) = BestLength.at(BestLengthPartition - 1) + 1;
+
+        BestLengthPartition = PartitionCandidates.Size(); // TODO: for multiple projectcandidates?
 
         cout << endl << endl;
         cout << "Best Length:" << BestLengthPartition << endl;
         cout << "====================================================" << endl;
 
+        if (BestLengthPartition != 0) {
+            // BestLengthPartition = Rule.FindBestLength(Initialised,PartitionCandidates, PartitionMethod, MaximizeMeasure);
+            // BestLength[BestLengthPartition - 1] = BestLength[BestLengthPartition - 1] + 1; // Calculate performance of current rule in validation set
+            BestLength.at(BestLengthPartition - 1) = BestLength.at(BestLengthPartition - 1) + 1;
+        }
     } while (Partition());
 
 	// Choose most frequently occurring Best Length
@@ -3155,6 +3186,9 @@ if (!Parallel) {
                         ProjectCandidates.push_back(BestCandidate);
 
                         cout << "Total Count Candidates:" << CountCandidatesPartition << endl;
+                        cout << "Total Count Feature Operator Pairs:" << CountFeatureOperatorPairs << endl;
+                        cout << "Total Count Cutoff Sets:" << CountCutoffSets << endl;
+
                     }
                // }
             }
@@ -3179,7 +3213,10 @@ if (!Parallel) {
 /**********************************************************************
 Function: Induce()
 Category: Modifiers
-Scope: public
+Scop
+
+
+ e: public
 In: Start rule length, End rule length
 Out: bool, project finished or not
 Description: Resumes an Explore project.
@@ -3192,7 +3229,7 @@ void Explore::Induce(int nStart, int nEnd) {
   SetMinRuleLength(nStart);
   SetMaxRuleLength(nEnd);
   while (Rule.NextCombinationGenerator()) {
-	while (Rule.NextFeatureSetGenerator()) {
+	while (Rule.NextFeatureSetGenerator(0, Rule.GetFeatureOperatorSize())) {
 	  while (Rule.NextCutoffSetGenerator()) {
 
           float CandidatePerformance;
@@ -3284,7 +3321,7 @@ bool Explore::ResumeProject() {
 		}
 #endif
 	  } while (Rule.NextCutoffSetGenerator()); // NextCutoffSetRestriction
-    } while (Rule.NextFeatureSetGenerator()); // NextFeatureSetRestriction
+    } while (Rule.NextFeatureSetGenerator(0, Rule.GetFeatureOperatorSize())); // NextFeatureSetRestriction
 	return RunProject();
   } else {
     do {
@@ -3321,7 +3358,7 @@ bool Explore::ResumeProject() {
 		}
 #endif
       } while (Rule.NextCutoffSet()); // TODO: check if should be generator
-    } while (Rule.NextFeatureSet()); // TODO: check if should be generator
+    } while (Rule.NextFeatureSet(0, Rule.GetFeatureOperatorSize())); // TODO: check if should be generator
     return RunProject();
   }
 }
@@ -3376,7 +3413,7 @@ returns the bestrule and performance
 //    do {
 //
 //      if (!Rule.IsFeatureSetGenerated()) {
-//        Rule.NextFeatureSetGenerator();
+//        Rule.NextFeatureSetGenerator(0, Rule.GetFeatureOperatorSize());
 //      }
 //
 //      if (IsPrintFeatureSets) {
@@ -3439,7 +3476,7 @@ returns the bestrule and performance
 //        }
 //        #endif
 //
-//        if (!Rule.NextFeatureSet()) ManualContinue = false; // TODO: check if should be generator
+//        if (!Rule.NextFeatureSet(0, Rule.GetFeatureOperatorSize())) ManualContinue = false; // TODO: check if should be generator
 //      }
 //
 //    } while (ManualContinue && !ManualStop);
@@ -3664,12 +3701,12 @@ In: -
 Out: bool, was/wasn't able to create a new featureset
 Description: Generates the next featureset of the rule.
 **********************************************************************/
-bool Explore::NextFeatureSet() {
+bool Explore::NextFeatureSet(int FOperatorNr_start, unsigned int FOperatorNr_end) {
   if (Initialised) {
     if (RestrictionSet) {
-      return Rule.NextFeatureSetGenerator(); // Rule.NextFeatureSetRestriction();
+      return Rule.NextFeatureSetGenerator(FOperatorNr_start, FOperatorNr_end); // Rule.NextFeatureSetRestriction();
     } else {
-      return Rule.NextFeatureSet();
+      return Rule.NextFeatureSet(FOperatorNr_start, FOperatorNr_end);
     }
   }
   return false;
