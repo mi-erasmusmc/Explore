@@ -3380,7 +3380,7 @@ In: -
 Out: -
 Description: Saves the current rule and performance.
 **********************************************************************/
-CANDIDATE RULE::SaveCandidate(CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet) {
+CANDIDATE RULE::SaveCandidate(PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet) {
 #ifdef DEBUG_TIMING
     clock_t Start, End;
   Start = clock();
@@ -3397,7 +3397,6 @@ CANDIDATE RULE::SaveCandidate(CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE
     Dummy.Operators = GetOperators();                                        // Save a list of current operators used
 
     // PartitionCandidates.push_back(Dummy);                                         // Save the performance + rule
-    PartitionCandidates = Dummy;
 
     if (MaximizeMeasure==SENSITIVITY && !RestrictionSet) {
         if (RuleSet.CorrectPositive>CPBest) {
@@ -3411,7 +3410,7 @@ CANDIDATE RULE::SaveCandidate(CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE
         }
     }
 
-    return PartitionCandidates;
+    return Dummy;
 
 #ifdef DEBUG_TIMING
     End = clock();

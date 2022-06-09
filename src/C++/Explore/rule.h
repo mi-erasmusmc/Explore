@@ -246,7 +246,7 @@ unsigned int NoFeatureOperators{};                                            //
    // TODO: below 3 could be private
     bool CompareConstraints(PERFORMANCE CurrentPerformance, bool Initialised, vector<CONSTRAINT> Constraints);          // Compare current performance with constraints
     bool CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised, float CandidatePerformance, PERFORMANCE_MEASURE MaximizeMeasure);                                                // Compare current performance with best previous performance
-    CANDIDATE SaveCandidate(CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet);                                                       // Save the current candidate (current rule + performance)
+    CANDIDATE SaveCandidate(PERFORMANCE_MEASURE MaximizeMeasure, bool RestrictionSet);                                                       // Save the current candidate (current rule + performance)
 
     int FindBestLength(bool Initialised, CANDIDATE PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure);
     CANDIDATE ChooseBestCandidate(unsigned int RuleLength, bool Initialised, CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure);
