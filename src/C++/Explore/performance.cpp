@@ -13,6 +13,8 @@ void PERFORMANCE::Print() {
   cout << "ACC:" << (Accuracy.Value*100) << " ";
   cout << "PPV:" << (PPV.Value*100) << " ";
   cout << "NPV:" << (NPV.Value*100) << " ";
+  cout << "B_ACC:" << (BalancedAccuracy.Value*100) << " ";
+  cout << "F1:" << (F1score.Value*100) << " ";
   cout << endl;
 }
 
@@ -27,13 +29,17 @@ string PERFORMANCE::PrintString(bool headers) {
     Result << "ACC:" << (Accuracy.Value*100) << " ";
     Result << "PPV:" << (PPV.Value*100) << " ";
     Result << "NPV:" << (NPV.Value*100) << " ";
+    Result << "B_ACC:" << (BalancedAccuracy.Value*100) << " ";
+    Result << "F1:" << (F1score.Value*100) << " ";
   }
   else {
     Result << (Sensitivity.Value*100) << "\t";
     Result << (Specificity.Value*100) << "\t ";
     Result << (Accuracy.Value*100) << "\t ";
     Result << (PPV.Value*100) << "\t ";
-    Result << (NPV.Value*100);
+    Result << (NPV.Value*100) << "\t ";
+    Result << (BalancedAccuracy.Value*100) << "\t ";
+    Result << (F1score.Value*100);
 
   }
   return Result.str();

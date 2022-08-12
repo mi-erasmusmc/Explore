@@ -1103,6 +1103,8 @@ PERFORMANCE RULE::GetPerformance() {
     Dummy.Accuracy.Value = RuleSet.GetAccuracy();
     Dummy.NPV.Value = RuleSet.GetNPV();
     Dummy.PPV.Value = RuleSet.GetPPV();
+    Dummy.BalancedAccuracy.Value = RuleSet.GetBalancedAccuracy();
+    Dummy.F1score.Value = RuleSet.GetF1score();
 
 #ifdef DEBUG_TIMING
     End = clock();
@@ -1128,6 +1130,8 @@ void RULE::SetMinLength(unsigned int RMinLength) {
 Function: SetMaxLength()
 Category: Modifiers
 Scope: public
+
+
 In: unsigned int, minimum length.
 Out: -
 Description: Assign minimum length of the rule.
@@ -3327,24 +3331,25 @@ bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised
 
         switch (MaximizeMeasure) {
             case SENSITIVITY:
-                // CandidateValue = CurrentCandidate.Performance.Sensitivity.Value;
                 RuleValue = CurrentPerformance.Sensitivity.Value;
                 break;
             case SPECIFICITY:
-                //   CandidateValue = CurrentCandidate.Performance.Specificity.Value;
                 RuleValue = CurrentPerformance.Specificity.Value;
                 break;
             case NPV:
-                //  CandidateValue = CurrentCandidate.Performance.NPV.Value;
                 RuleValue = CurrentPerformance.NPV.Value;
                 break;
             case PPV:
-                // CandidateValue = CurrentCandidate.Performance.PPV.Value;
                 RuleValue = CurrentPerformance.PPV.Value;
                 break;
             case ACCURACY:
-                //  CandidateValue = CurrentCandidate.Performance.Accuracy.Value;
                 RuleValue = CurrentPerformance.Accuracy.Value;
+                break;
+            case BALANCEDACCURACY:
+                RuleValue = CurrentPerformance.BalancedAccuracy.Value;
+                break;
+            case F1SCORE:
+                RuleValue = CurrentPerformance.F1score.Value;
                 break;
         }
 
@@ -3468,6 +3473,18 @@ int RULE::FindBestLength(bool Initialised, CANDIDATE PartitionCandidates, PARTIT
                                 break;
                             case SPECIFICITY:
                                 current = BestCandidate.Performance.Specificity.Value;
+                                break;
+                            case NPV:
+                                current = BestCandidate.Performance.NPV.Value;
+                                break;
+                            case PPV:
+                                current = BestCandidate.Performance.PPV.Value;
+                                break;
+                            case BALANCEDACCURACY:
+                                current = BestCandidate.Performance.BalancedAccuracy.Value;
+                                break;
+                            case F1SCORE:
+                                current = BestCandidate.Performance.F1score.Value;
                                 break;
                         }
                         if (i==1) {

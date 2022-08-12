@@ -115,7 +115,7 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "CutoffMethod", input = CutoffMethod, default_setting = "RVAC")
   settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude, default_setting = "")
   settings <- changeSetting(settings, parameter = "Maximize", input = Maximize, default_setting = "ACCURACY")
-  settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy, default_setting = "")
+  settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy, default_setting = "custom")
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity, default_setting = "")
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings, default_setting = "yes")
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance, default_setting = "yes")

@@ -45,6 +45,8 @@ class SET {
     float GetPPV();
     float GetNPV();
     float GetAccuracy();
+    float GetBalancedAccuracy();
+    float GetF1score();
 
     void SummariseBags();                                                       // Count instances of elements in both bags
 

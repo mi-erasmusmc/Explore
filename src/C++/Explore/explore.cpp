@@ -405,6 +405,12 @@ void Explore::SummarisePerformance() {
           case ACCURACY:
             CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
             break;
+            case BALANCEDACCURACY:
+                CurrentValue = (*CurrentCandidate).Performance.BalancedAccuracy.Value;
+                break;
+            case F1SCORE:
+                CurrentValue = (*CurrentCandidate).Performance.F1score.Value;
+                break;
         }
 		// Calculate minimum performance
         if (CurrentValue<MinimumPerformance) {
@@ -447,6 +453,12 @@ void Explore::SummarisePerformance() {
           case ACCURACY:
             CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
             break;
+            case BALANCEDACCURACY:
+                CurrentValue = (*CurrentCandidate).Performance.BalancedAccuracy.Value;
+                break;
+            case F1SCORE:
+                CurrentValue = (*CurrentCandidate).Performance.F1score.Value;
+                break;
         }
 		// Sum sqr difference with mean
 		MeanDifSum += pow((AveragePerformance-CurrentValue),2);
@@ -825,6 +837,12 @@ void Explore::PrintConstraints() {
     case ACCURACY:
       cout << "Accuracy";
       break;
+      case BALANCEDACCURACY:
+          cout << "Balanced Accuracy";
+          break;
+      case F1SCORE:
+          cout << "F1 score";
+          break;
   }
   cout << endl;
 
@@ -845,6 +863,12 @@ void Explore::PrintConstraints() {
       case ACCURACY:
         cout << "Accuracy >= ";
         break;
+        case BALANCEDACCURACY:
+            cout << "Balanced Accuracy >= ";
+            break;
+        case F1SCORE:
+            cout << "F1 score >= ";
+            break;
     }
     cout << (*CurrentConstraint).Value << endl;
   }
@@ -2876,7 +2900,29 @@ if (!Parallel) {
             // CalculateProgress();
             while (Rule.NextCutoffSetGenerator()) {
 
-                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                switch (MaximizeMeasure) {
+                    case SENSITIVITY:
+                        CandidatePerformance = PartitionCandidates.Performance.Sensitivity.Value;
+                        break;
+                    case SPECIFICITY:
+                        CandidatePerformance = PartitionCandidates.Performance.Specificity.Value;
+                        break;
+                    case NPV:
+                        CandidatePerformance = PartitionCandidates.Performance.NPV.Value;
+                        break;
+                    case PPV:
+                        CandidatePerformance = PartitionCandidates.Performance.PPV.Value;
+                        break;
+                    case ACCURACY:
+                        CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                        break;
+                    case BALANCEDACCURACY:
+                        CandidatePerformance = PartitionCandidates.Performance.BalancedAccuracy.Value;
+                        break;
+                    case F1SCORE:
+                        CandidatePerformance = PartitionCandidates.Performance.F1score.Value;
+                        break;
+                }
 
                 if (Rule.TestRule(Initialised, Constraints,
                                   CandidatePerformance, MaximizeMeasure, RestrictionSet,
@@ -2951,8 +2997,29 @@ if (!Parallel) {
                 Rule_i.CPBest = CPBest_global;
                 Rule_i.CTBest = CTBest_global;
 
-                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-                // TODO: change to alternative measures (ctrl f = in many places, check if some can be removed!)
+                switch (MaximizeMeasure) {
+                    case SENSITIVITY:
+                        CandidatePerformance = PartitionCandidates.Performance.Sensitivity.Value;
+                        break;
+                    case SPECIFICITY:
+                        CandidatePerformance = PartitionCandidates.Performance.Specificity.Value;
+                        break;
+                    case NPV:
+                        CandidatePerformance = PartitionCandidates.Performance.NPV.Value;
+                        break;
+                    case PPV:
+                        CandidatePerformance = PartitionCandidates.Performance.PPV.Value;
+                        break;
+                    case ACCURACY:
+                        CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                        break;
+                    case BALANCEDACCURACY:
+                        CandidatePerformance = PartitionCandidates.Performance.BalancedAccuracy.Value;
+                        break;
+                    case F1SCORE:
+                        CandidatePerformance = PartitionCandidates.Performance.F1score.Value;
+                        break;
+                }
                 m2.unlock();
 
                 if (IsPrintCombinations) Rule_i.PrintCombination();
@@ -2976,8 +3043,33 @@ if (!Parallel) {
                             PotentialCandidate = Rule_i.SaveCandidate(MaximizeMeasure,
                                                                        RestrictionSet);
                             m2.lock();
-// TODO: other performance measures
-                            if (PotentialCandidate.Performance.Accuracy.Value > PartitionCandidates.Performance.Accuracy.Value) {
+
+                            bool change;
+                            switch (MaximizeMeasure) {
+                                case SENSITIVITY:
+                                    change = (PotentialCandidate.Performance.Sensitivity.Value > PartitionCandidates.Performance.Sensitivity.Value);
+                                    break;
+                                case SPECIFICITY:
+                                    change = (PotentialCandidate.Performance.Specificity.Value > PartitionCandidates.Performance.Specificity.Value);
+                                    break;
+                                case NPV:
+                                    change = (PotentialCandidate.Performance.NPV.Value > PartitionCandidates.Performance.NPV.Value);
+                                    break;
+                                case PPV:
+                                    change = (PotentialCandidate.Performance.PPV.Value > PartitionCandidates.Performance.PPV.Value);
+                                    break;
+                                case ACCURACY:
+                                    change = (PotentialCandidate.Performance.Accuracy.Value > PartitionCandidates.Performance.Accuracy.Value);
+                                    break;
+                                case BALANCEDACCURACY:
+                                    change = (PotentialCandidate.Performance.BalancedAccuracy.Value > PartitionCandidates.Performance.BalancedAccuracy.Value);
+                                    break;
+                                case F1SCORE:
+                                    change = (PotentialCandidate.Performance.F1score.Value > PartitionCandidates.Performance.F1score.Value);
+                                    break;
+                            }
+
+                            if (change) {
                                 PartitionCandidates = PotentialCandidate;
 
                                 CPBest_global = Rule_i.CPBest;
@@ -3058,8 +3150,29 @@ if (!Parallel) {
                         Rule_ij.CPBest = CPBest_global;
                         Rule_ij.CTBest = CTBest_global;
 
-                        CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-                        // TODO: change to alternative measures (ctrl f = in many places, check if some can be removed!)
+                        switch (MaximizeMeasure) {
+                            case SENSITIVITY:
+                                CandidatePerformance = PartitionCandidates.Performance.Sensitivity.Value;
+                                break;
+                            case SPECIFICITY:
+                                CandidatePerformance = PartitionCandidates.Performance.Specificity.Value;
+                                break;
+                            case NPV:
+                                CandidatePerformance = PartitionCandidates.Performance.NPV.Value;
+                                break;
+                            case PPV:
+                                CandidatePerformance = PartitionCandidates.Performance.PPV.Value;
+                                break;
+                            case ACCURACY:
+                                CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                                break;
+                            case BALANCEDACCURACY:
+                                CandidatePerformance = PartitionCandidates.Performance.BalancedAccuracy.Value;
+                                break;
+                            case F1SCORE:
+                                CandidatePerformance = PartitionCandidates.Performance.F1score.Value;
+                                break;
+                        }
                         m2.unlock();
 
                         if (IsPrintCombinations) Rule_ij.PrintCombination();
@@ -3086,8 +3199,33 @@ if (!Parallel) {
                                     PotentialCandidate = Rule_ij.SaveCandidate(MaximizeMeasure, RestrictionSet);
 
                                     m2.lock();
-// TODO: other performance measures
-                                    if (PotentialCandidate.Performance.Accuracy.Value > PartitionCandidates.Performance.Accuracy.Value) {
+
+                                    bool change;
+                                    switch (MaximizeMeasure) {
+                                        case SENSITIVITY:
+                                            change = (PotentialCandidate.Performance.Sensitivity.Value > PartitionCandidates.Performance.Sensitivity.Value);
+                                            break;
+                                        case SPECIFICITY:
+                                            change = (PotentialCandidate.Performance.Specificity.Value > PartitionCandidates.Performance.Specificity.Value);
+                                            break;
+                                        case NPV:
+                                            change = (PotentialCandidate.Performance.NPV.Value > PartitionCandidates.Performance.NPV.Value);
+                                            break;
+                                        case PPV:
+                                            change = (PotentialCandidate.Performance.PPV.Value > PartitionCandidates.Performance.PPV.Value);
+                                            break;
+                                        case ACCURACY:
+                                            change = (PotentialCandidate.Performance.Accuracy.Value > PartitionCandidates.Performance.Accuracy.Value);
+                                            break;
+                                        case BALANCEDACCURACY:
+                                            change = (PotentialCandidate.Performance.BalancedAccuracy.Value > PartitionCandidates.Performance.BalancedAccuracy.Value);
+                                            break;
+                                        case F1SCORE:
+                                            change = (PotentialCandidate.Performance.F1score.Value > PartitionCandidates.Performance.F1score.Value);
+                                            break;
+                                    }
+
+                                    if (change) {
                                         PartitionCandidates = PotentialCandidate;
 
                                         CPBest_global = Rule_ij.CPBest;
@@ -3242,9 +3380,29 @@ void Explore::Induce(int nStart, int nEnd) {
 	  while (Rule.NextCutoffSetGenerator()) {
 
           float CandidatePerformance;
-       // if (PartitionCandidates.IsValid()) {
-            CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-        // }
+          switch (MaximizeMeasure) {
+              case SENSITIVITY:
+                  CandidatePerformance = PartitionCandidates.Performance.Sensitivity.Value;
+                  break;
+              case SPECIFICITY:
+                  CandidatePerformance = PartitionCandidates.Performance.Specificity.Value;
+                  break;
+              case NPV:
+                  CandidatePerformance = PartitionCandidates.Performance.NPV.Value;
+                  break;
+              case PPV:
+                  CandidatePerformance = PartitionCandidates.Performance.PPV.Value;
+                  break;
+              case ACCURACY:
+                  CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                  break;
+              case BALANCEDACCURACY:
+                  CandidatePerformance = PartitionCandidates.Performance.BalancedAccuracy.Value;
+                  break;
+              case F1SCORE:
+                  CandidatePerformance = PartitionCandidates.Performance.F1score.Value;
+                  break;
+          }
 
           if (Rule.TestRule(Initialised, Constraints,
                             CandidatePerformance, MaximizeMeasure, RestrictionSet,
@@ -3301,10 +3459,29 @@ bool Explore::ResumeProject() {
        // TestRule();                                                             // Calculate performance of current rule
 
           float CandidatePerformance;
-          // if (PartitionCandidates.IsValid()) {
-              CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-         // }
-
+          switch (MaximizeMeasure) {
+              case SENSITIVITY:
+                  CandidatePerformance = PartitionCandidates.Performance.Sensitivity.Value;
+                  break;
+              case SPECIFICITY:
+                  CandidatePerformance = PartitionCandidates.Performance.Specificity.Value;
+                  break;
+              case NPV:
+                  CandidatePerformance = PartitionCandidates.Performance.NPV.Value;
+                  break;
+              case PPV:
+                  CandidatePerformance = PartitionCandidates.Performance.PPV.Value;
+                  break;
+              case ACCURACY:
+                  CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                  break;
+              case BALANCEDACCURACY:
+                  CandidatePerformance = PartitionCandidates.Performance.BalancedAccuracy.Value;
+                  break;
+              case F1SCORE:
+                  CandidatePerformance = PartitionCandidates.Performance.F1score.Value;
+                  break;
+          }
           Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
           PartitionCandidates = Rule.SaveCandidate(MaximizeMeasure, RestrictionSet);
 
@@ -3339,9 +3516,29 @@ bool Explore::ResumeProject() {
        // TestRule();                                                             // Calculate performance of current rule
 
           float CandidatePerformance;
-         // if (PartitionCandidates.IsValid()) {
-              CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
-          // }
+          switch (MaximizeMeasure) {
+              case SENSITIVITY:
+                  CandidatePerformance = PartitionCandidates.Performance.Sensitivity.Value;
+                  break;
+              case SPECIFICITY:
+                  CandidatePerformance = PartitionCandidates.Performance.Specificity.Value;
+                  break;
+              case NPV:
+                  CandidatePerformance = PartitionCandidates.Performance.NPV.Value;
+                  break;
+              case PPV:
+                  CandidatePerformance = PartitionCandidates.Performance.PPV.Value;
+                  break;
+              case ACCURACY:
+                  CandidatePerformance = PartitionCandidates.Performance.Accuracy.Value;
+                  break;
+              case BALANCEDACCURACY:
+                  CandidatePerformance = PartitionCandidates.Performance.BalancedAccuracy.Value;
+                  break;
+              case F1SCORE:
+                  CandidatePerformance = PartitionCandidates.Performance.F1score.Value;
+                  break;
+          }
 
           Rule.TestRule(Initialised, Constraints, CandidatePerformance, MaximizeMeasure, RestrictionSet, RuleOutputMethod, IsPrintPerformance, IsPrintSets);
           PartitionCandidates = Rule.SaveCandidate(MaximizeMeasure, RestrictionSet);
