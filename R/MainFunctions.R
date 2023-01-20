@@ -145,6 +145,11 @@ settingsExplore <- function(settings,
 #' @examples
 predictExplore <- function(model, test_data) {
   
+  # Return NULL if cannot make predictions
+  if (is.null(model) || model == "") {
+    return(NULL)
+  }
+  
   # Split string 
   all_terms <- stringr::str_split_fixed(model, "OR", n=Inf)
   
