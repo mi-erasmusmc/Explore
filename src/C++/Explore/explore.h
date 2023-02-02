@@ -14,7 +14,7 @@
 //#include "../UIExplore/events.h"
 // !!!
 //#include "../../MPIExplore/Control.h"                                           // Needed for EXPONENTIAL_COMPLEXITY settings
-
+#include <tbb/concurrent_vector.h>
 
 #include "timing.h"
 
@@ -46,7 +46,7 @@ class Explore {
     PERFORMANCE_MEASURE MaximizeMeasure;                                        // Measure which has to be maximized
     vector<CONSTRAINT> Constraints;                                             // Measures to constraint performances
 
-    vector<CANDIDATE> PartitionCandidates;                                      // Best rules with corresponding performances for the current partition
+    CANDIDATE PartitionCandidates;                                      // Best rules with corresponding performances for the current partition
     vector<CANDIDATE> ProjectCandidates;                                        // Best rules with corresponding performances for the complete project
 
     CANDIDATE BestCandidate;                                                    // The best rule and performance
@@ -85,6 +85,7 @@ class Explore {
 
 	bool BranchBound;                                                           // Optimize rule generation process?
 	bool SubSumption;                                                           // Use SubSumption Pruning to remove cutoffs
+    bool Parallel;                                                              // Use parallelization
     bool IsUpdateRealtime;                                                      // Print summary information in real-time
 
 	TIMING RuleLengthTiming;
@@ -114,10 +115,7 @@ class Explore {
     bool IsPrintFeatureOperators;                                               // Should FeatureOperators be printed at the start of rule generation?
 
     // Private modifiers
-    bool CompareBestCandidate();                                                // Compare current performance with best previous performance
-    bool CompareConstraints();                                                  // Compare current performance with constraints
-    void SaveCandidate();                                                       // Save the current candidate (current rule + performance)
-    bool ChooseBestCandidate(unsigned int RuleLength);                          // Select the best candidate, depending on the maximising feature and constraints, of the list of candidates
+    //  bool ChooseBestCandidate(unsigned int RuleLength);
 
     // Output functions
     void PrintSettings();                                                       // Print settings (debug settings)
@@ -136,10 +134,10 @@ class Explore {
 
     void SetRerun();                                                            // Set project for rerun of project or partition
 	bool RunProject();                                                          // Run a new project (start rule-generation)
-	int  Stop();                                                                // Stop criterium for internal testing
-	int  FindBestLength();                                                          // Return the best length on internal testing
+	// int  Stop();                                                                // Stop criterium for internal testing
+	// int  FindBestLength();                                                          // Return the best length on internal testing
 	void Induce(int nStart, int nEnd);											// Induce rule on learn parition form start tot end
-	bool ResumeProject();
+    bool ResumeProject();
 
 	void CalculateProgress();                                                   // Calculates progress of current project
 	void PrintSummary();                                                        // Prints summary information to summaryfunction
@@ -202,6 +200,7 @@ class Explore {
     RULE_OUTPUT_METHOD GetRuleOutputMethod();                                   // Returns the output method of rules for this project
     bool GetBranchBound();                                                      // Returns whether Explore will optimize rules when it has the chance
     bool GetSubSumption();                                                      // Returns whether Explore will use subsumption
+    bool GetParallel();                                                      // Returns whether Explore will use parallelization
 
     bool GetPrintSettings();                                                    // Should settings be printed to output
     bool GetPrintPartitions();                                                  // Should population be printed to output
@@ -224,7 +223,7 @@ class Explore {
 
 
     CANDIDATE GetProjectCandidate(unsigned int COrder);                         // Get a candidate from the project list
-    CANDIDATE GetPartitionCandidate(unsigned int COrder);                       // Get a candidate from the partition list
+    // CANDIDATE GetPartitionCandidate(unsigned int COrder);                       // Get a candidate from the partition list
     unsigned int GetNoProjectCandidates();                                      // Get the number of current best-performing rules of the project list
     unsigned int GetNoPartitionCandidates();                                    // Get the number of current best-performing rules of the partition list
 
@@ -289,8 +288,6 @@ class Explore {
 	bool AddFeature(string FeatureName, unsigned int Nom);                      // Add a feature to the population
 	void AddObservation(list<string> Values, unsigned int Class);               // Add an observation to the population
 
-    bool TestRule();                                                            // Test current rule
-
 	bool SetPartitionMethod(const PARTITION_METHOD PMethod);                    // Partitioning method to be used
     bool SetCutoffMethod(const CUTOFF_METHOD CMethod);                          // Cutoff method to be used
     bool SetOperatorMethod(const OPERATOR_METHOD OMethod);                      // Operator method to be used
@@ -319,6 +316,7 @@ class Explore {
 
 	void SetBranchBound(bool Optimize);                                         // Optimize on accuracy/sensitivity or specificity depending on constraints and maximize measure
 	void SetSubSumption(bool Value);                                            // Prune Cutoffs by SubSumption
+    void SetParallel(bool Value);                                               // Use parallelization
 
     // Interfacing
     void   SetOutput(streambuf *OutputBuffer);                                  // Redirect explore output
@@ -355,13 +353,13 @@ class Explore {
 
 	// Control
 	bool NextCombination();                                                     // Creates the next Combination
-	bool NextFeatureSet();                                                      // Creates the next FeatureSet
+	bool NextFeatureSet(int FOperatorNr_start, unsigned int FOperatorNr_end);                                                      // Creates the next FeatureSet
 
     bool SetRule(CANDIDATE NewRule);
     void SetBranchBoundValues(int CTBest, int CPBest, int FPConstraint);
 	void ResetRule();
 
-    bool ManualRunProject(string StartString, string StopString);               // Run a project from a given start to a given end
+    // bool ManualRunProject(string StartString, string StopString);               // Run a project from a given start to a given end
     bool CheckStopFeature();
     bool CheckStopCombination();
     bool SetStopRule(string NewStopRule);
@@ -374,7 +372,7 @@ class Explore {
 
     // Exchanging information
     vector<CANDIDATE> *GetProjectCandidates();
-    vector<CANDIDATE> *GetPartitionCandidates();
+    CANDIDATE *GetPartitionCandidates();
 
     int *GetCTBest();
     int *GetCPBest();

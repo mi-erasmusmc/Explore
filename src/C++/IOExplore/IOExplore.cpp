@@ -61,6 +61,8 @@ IOExplore::IOExplore() {
   Dummy.push_back("Accuracy");
   Dummy.push_back("PPV");
   Dummy.push_back("NPV");
+    Dummy.push_back("BalancedAccuracy");
+    Dummy.push_back("F1score");
   Sections.push_back(Dummy);
   Dummy.clear();
 
@@ -130,6 +132,8 @@ void IOExplore::ClearSettings() {
   ProjectSettings.NPV                    = 0;
   ProjectSettings.PPV                    = 0;
   ProjectSettings.Accuracy               = 0;
+  ProjectSettings.BalancedAccuracy        = 0;
+  ProjectSettings.F1score               = 0;
   ProjectSettings.OutputMethod           = INCREMENT;
   ProjectSettings.PrintSettings          = false;
   ProjectSettings.PrintPartitions        = false;
@@ -146,6 +150,7 @@ void IOExplore::ClearSettings() {
   ProjectSettings.PrintSets              = false;
   ProjectSettings.BranchBound            = false;
   ProjectSettings.SubSumption            = false;
+  ProjectSettings.Parallel               = false;
 }
 
 /**********************************************************************
@@ -578,6 +583,13 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
       case NPV:
         ProjectSettings.Maximize = NPV;        
         break;
+
+        case BALANCEDACCURACY:
+            ProjectSettings.Maximize = BALANCEDACCURACY;
+            break;
+        case F1SCORE:
+            ProjectSettings.Maximize = F1SCORE;
+            break;
     }
 
     vector<CONSTRAINT> Constraints = Project->GetConstraints();
@@ -610,6 +622,16 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
             ProjectSettings.Accuracy = (*CurrentConstraint).Value;
           }
           break;
+          case BALANCEDACCURACY:
+              if ((*CurrentConstraint).Value != 0){
+                  ProjectSettings.BalancedAccuracy = (*CurrentConstraint).Value;
+              }
+              break;
+          case F1SCORE:
+              if ((*CurrentConstraint).Value != 0){
+                  ProjectSettings.F1score = (*CurrentConstraint).Value;
+              }
+              break;
       }
     }
     ProjectFile.flush();
@@ -692,8 +714,12 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
 	if (Project->GetSubSumption()) {
 	  ProjectSettings.SubSumption = true;
 	}
+    ProjectSettings.Parallel = false;
+    if (Project->GetParallel()) {
+        ProjectSettings.Parallel = true;
+    }
 
-	return SaveSettingsToFile(IOFilename);
+    return SaveSettingsToFile(IOFilename);
 }
 
 bool IOExplore::SaveSettingsToFile(string IOFilename) {
@@ -829,6 +855,12 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
       case NPV:
         ProjectFile << "Maximize=NPV" << endl;
         break;
+        case BALANCEDACCURACY:
+            ProjectFile << "Maximize=BALANCEDACCURACY" << endl;
+            break;
+        case F1SCORE:
+            ProjectFile << "Maximize=F1SCORE" << endl;
+            break;
     }
     if (ProjectSettings.Sensitivity>0) {
       ProjectFile << "Sensitivity=" << ProjectSettings.Sensitivity << endl;
@@ -845,6 +877,12 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
     if (ProjectSettings.Accuracy>0) {
       ProjectFile << "Accuracy=" << ProjectSettings.Accuracy << endl;
     }
+      if (ProjectSettings.BalancedAccuracy>0) {
+          ProjectFile << "BalancedAccuracy=" << ProjectSettings.BalancedAccuracy << endl;
+      }
+      if (ProjectSettings.F1score>0) {
+          ProjectFile << "F1score=" << ProjectSettings.F1score << endl;
+      }
     ProjectFile << "[Output]" << endl;
     switch (ProjectSettings.OutputMethod) {
       case EVERY:
@@ -933,6 +971,11 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
 	} else {
 	  ProjectFile << "SubSumption=no" << endl;
 	}
+      if (ProjectSettings.Parallel) {
+          ProjectFile << "Parallel=yes" << endl;
+      } else {
+          ProjectFile << "Parallel=no" << endl;
+      }
 	ProjectFile.flush();
 	ProjectFile.close();
 	return true;
@@ -1247,6 +1290,10 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
           ProjectSettings.Maximize = PPV;
         } else if (CurrentValue.compare("NPV")==0) {
           ProjectSettings.Maximize = NPV;
+        } else if (CurrentValue.compare("BALANCEDACCURACY")==0) {
+            ProjectSettings.Maximize = BALANCEDACCURACY;
+        } else if (CurrentValue.compare("F1SCORE")==0) {
+            ProjectSettings.Maximize = F1SCORE;
         } else {
           ProjectLoadErrors.push_back("Invalid value for maximize measure.");
           return false;
@@ -1292,6 +1339,23 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
           return false;
         }
       }
+        if (CurrentHeading.compare("BalancedAccuracy")==0) {                                   // Balanced accuracy constraint
+            if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
+                ProjectSettings.BalancedAccuracy = atof(CurrentValue.c_str());
+            } else {
+                ProjectLoadErrors.push_back("Invalid value for constraint NPV.");
+                return false;
+            }
+        }
+
+        if (CurrentHeading.compare("F1score")==0) {                                   // F1 score constraint
+            if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
+                ProjectSettings.F1score = atof(CurrentValue.c_str());
+            } else {
+                ProjectLoadErrors.push_back("Invalid value for constraint NPV.");
+                return false;
+            }
+        }
       // Output Settings
       if (CurrentHeading.compare("OutputMethod")==0) {                          // Output method (ALL, INCREMENTAL or BEST)
         if (CurrentValue.compare("EVERY")==0) {
@@ -1467,6 +1531,16 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
 		  return false;
 		}
 	  }
+        if (CurrentHeading.compare("Parallel")==0) {
+            if (CurrentValue.compare("yes")==0) {
+                ProjectSettings.Parallel = true;
+            } else if (CurrentValue.compare("no")==0) {
+                ProjectSettings.Parallel = false;
+            } else {
+                ProjectLoadErrors.push_back("Invalid value for parallel optimization.");
+                return false;
+            }
+        }
 	  ProjectFile.getline(Buffer,MAX_LINESIZE,ENDL_SEPARATOR);
 	}
     ProjectFile.close();
@@ -1568,6 +1642,12 @@ bool IOExplore::SetupExploreFromStruct() {
   if (ProjectSettings.NPV>0 && ProjectSettings.NPV < 1) {
     Project->SetConstraint(NPV,ProjectSettings.NPV);
   }
+  if (ProjectSettings.BalancedAccuracy>0 && ProjectSettings.BalancedAccuracy < 1) {
+      Project->SetConstraint(BALANCEDACCURACY,ProjectSettings.BalancedAccuracy);
+  }
+  if (ProjectSettings.F1score>0 && ProjectSettings.F1score < 1) {
+      Project->SetConstraint(F1SCORE,ProjectSettings.F1score);
+  }
 
   Project->SetRuleOutputMethod(ProjectSettings.OutputMethod);
 
@@ -1587,6 +1667,7 @@ bool IOExplore::SetupExploreFromStruct() {
   Project->SetSavePartitions(ProjectSettings.SavePartitions);
   Project->SetBranchBound(ProjectSettings.BranchBound);
   Project->SetSubSumption(ProjectSettings.SubSumption);
+  Project->SetParallel(ProjectSettings.Parallel);
 
   return true;
 }

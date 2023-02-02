@@ -51,6 +51,8 @@ struct ExploreSettings {
   double                      NPV;
   double                      PPV;
   double                      Accuracy;
+  double                      BalancedAccuracy;
+  double                      F1score;
   RULE_OUTPUT_METHOD          OutputMethod;                                     // Output
   bool                        PrintSettings;
   bool                        PrintPartitions;
@@ -68,6 +70,7 @@ struct ExploreSettings {
   bool                        SavePartitions;
   bool                        BranchBound;
   bool						  SubSumption;
+  bool                        Parallel;
 };
 
 class IOExplore {

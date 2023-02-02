@@ -61,7 +61,7 @@ void TIMING::AddTime(string Description, clock_t StartTime, clock_t EndTime) {
   Total = 0;
 
   for (unsigned int i=0; CurrentDescription != LastDescription; CurrentDescription++) {
-    if ((*CurrentDescription).compare(Description)==0) {
+    if ((*CurrentDescription).compare(Description)==0) { // compare equal
       TotalTimes[i] += DifferenceTime;
 	  Counters[i]++;
 	  Found = true;
@@ -108,6 +108,22 @@ string TIMING::PrintAll() {
   Result << endl;
   Result << "Total:" << Total /CLOCKS_PER_SEC << " sec." << endl << endl;
   return Result.str();
+}
+
+
+/**********************************************************************
+Function: PrintAll()
+Category: Modifiers
+Scope: public
+In: -
+Out: -
+Description: Returns all timers as a string.
+**********************************************************************/
+string TIMING::PrintTotal() {
+    ostringstream Result;
+    Result << endl;
+    Result << "Total:" << Total /CLOCKS_PER_SEC << " sec." << endl;
+    return Result.str();
 }
 
 

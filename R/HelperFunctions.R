@@ -55,6 +55,8 @@ saveData <- function(output_path, train_data, file_name) {
   farff::writeARFF(train_data, paste0(output_path, file_name, ".arff"))
   
   # Create cutoff file based on column names
+  # TODO: add input to exclude class?
+  # FOR PLP: cutoff <- paste(colnames(train_data)[2:ncol(train_data)], collapse = ",")
   cutoff <- paste(colnames(train_data)[1:(ncol(train_data)-1)], collapse = ",")
   write.table(cutoff, 
               file=paste0(output_path, file_name,".cutoff"), 

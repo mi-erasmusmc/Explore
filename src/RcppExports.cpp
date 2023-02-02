@@ -5,15 +5,19 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // runExplore
-int runExplore(Rcpp::CharacterVector input);
+void runExplore(Rcpp::CharacterVector input);
 RcppExport SEXP _Explore_runExplore(SEXP inputSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type input(inputSEXP);
-    rcpp_result_gen = Rcpp::wrap(runExplore(input));
-    return rcpp_result_gen;
+    runExplore(input);
+    return R_NilValue;
 END_RCPP
 }
 

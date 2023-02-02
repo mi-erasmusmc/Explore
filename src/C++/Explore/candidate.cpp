@@ -7,6 +7,7 @@
 
 #include "candidate.h"
 #include "../common.h"
+#include <tbb/concurrent_vector.h>
 
 /**********************************************************************
 Function: Size()

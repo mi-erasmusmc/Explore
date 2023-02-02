@@ -9,9 +9,9 @@ Description: This package includes the implementation of EXPLORE in C++ and conn
 License: GPL (>= 2)
 Depends:
     R (>= 3.6.1)
-Imports: Rcpp (>= 1.0.5)
+Imports: Rcpp (>= 1.0.5), RcppParallel
 Encoding: UTF-8
-LinkingTo: Rcpp, BH (>= 1.51.0)
+LinkingTo: Rcpp, BH (>= 1.51.0), RcppParallel
 RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0),

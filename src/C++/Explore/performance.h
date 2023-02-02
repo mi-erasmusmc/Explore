@@ -17,7 +17,9 @@ class PERFORMANCE {
     CONSTRAINT Specificity;
     CONSTRAINT NPV;
     CONSTRAINT PPV;
-    CONSTRAINT Accuracy;                                   
+    CONSTRAINT Accuracy;
+    CONSTRAINT BalancedAccuracy;
+    CONSTRAINT F1score;
 
     PERFORMANCE operator/(PERFORMANCE SourcePerformance);
     

@@ -348,6 +348,41 @@ float SET::GetAccuracy() {
 	return -1;
 }
 
+
+/**********************************************************************
+Function: GetBalancedAccuracy()
+Category: Selectors
+Scope: public
+In: -
+Out: -
+Description: Return the balanced accuracy of the cutoff/operator combination.
+**********************************************************************/
+float SET::GetBalancedAccuracy() {
+    return ((float) GetSensitivity() + (float) GetSpecificity()) / 2;
+}
+
+
+/**********************************************************************
+Function: GetF1score()
+Category: Selectors
+Scope: public
+In: -
+Out: -
+Description: Return the F1 score of the cutoff/operator combination.
+**********************************************************************/
+float SET::GetF1score() {
+    if ((2 * (float)CorrectPositive + (float)FalsePositive + (float)FalseNegative) != 0) {
+
+        return (2 * (float)CorrectPositive / (2 * (float)CorrectPositive + (float)FalsePositive + (float)FalseNegative));
+    }
+    else
+        return -1;
+}
+
+
+
+
+
 /**********************************************************************
 Function: PrintPerformance()
 Category: Selectors
