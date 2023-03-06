@@ -191,7 +191,8 @@ predictExplore <- function(model, test_data) {
 #' @export
 #'
 #' @examples
-aucrocExplore <- function(output_path, train_data, settings_path, file_name, ...) {
+aurocEXPLORE <- function(output_path, train_data, settings_path, file_name, ...) {
+  # TODO: check with latest implementation in PLP
   
   # Range of specificities to check
   specificities <- seq(from = 0.01, to = 0.99, by = 0.02)
@@ -213,8 +214,8 @@ aucrocExplore <- function(output_path, train_data, settings_path, file_name, ...
     sensitivities[s] <- as.numeric(sensitivity)
   }
   
-  aucroc <- simple_auc(TPR = rev(sensitivities), FPR = rev(1 - specificities))
-  plot(1-specificities, sensitivities)
+  auroc <- simple_auc(TPR = rev(sensitivities), FPR = rev(1 - specificities))
+  # plot(1-specificities, sensitivities)
   
-  return(aucroc)
+  return(auroc)
 }

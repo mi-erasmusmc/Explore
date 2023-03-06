@@ -21,8 +21,9 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# Documetns
+# Documents and results
 docs/
+output/
 
 # Mac files
 .DS_STORE
@@ -41,7 +42,7 @@ docs/
 *.a
 *.lib
 
-# C++ files
+# Other C++ files
 **/__history/
 
 # EXPLORE result files

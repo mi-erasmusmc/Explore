@@ -15,8 +15,8 @@ NumberofPartitions=1
 OperatorMethod=EXHAUSTIVE
 CutoffMethod=RVAC
 CutoffFile=/Users/aniekmarkus/Documents/Git/Explore/inst/examples/iris.cutoff
-ClassFeature='class'
-PositiveClass="Iris-versicolor"
+ClassFeature=class
+PositiveClass=Iris-versicolor
 [Restrictions]
 Rule=
 FeatureInclude=
