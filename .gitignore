@@ -41,5 +41,8 @@ docs/
 *.a
 *.lib
 
-# EXPLORE fesult files
+# C++ files
+**/__history/
+
+# EXPLORE result files
 *.result

@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<BorlandProject>
-  <Transactions>
-    <Transaction>2009-03-20 12:15:35.578.cpp,C:\Documents and Settings\Rijnbeek\My Documents\RAD Studio\Projects\File1.cpp=C:\Documents and Settings\Rijnbeek\My Documents\My Work\Perforce\Explore\CMExplore\main.cpp</Transaction>
-    <Transaction>2009-03-20 12:16:54.046.h,C:\Documents and Settings\Rijnbeek\My Documents\RAD Studio\Projects\File1.h=C:\Documents and Settings\Rijnbeek\My Documents\My Work\Perforce\Explore\CMExplore\main.h</Transaction>
-    <Transaction>2009-03-20 12:19:39.312.cbproj,C:\Documents and Settings\Rijnbeek\My Documents\RAD Studio\Projects\Project2.cbproj=C:\Documents and Settings\Rijnbeek\My Documents\My Work\Perforce\Explore\CMExplore\CMExplore.cbproj</Transaction>
-  </Transactions>
-</BorlandProject>
