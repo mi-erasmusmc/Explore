@@ -1,6 +1,6 @@
 # TODO: add descriptions for package manual
 
-#' trainExplore
+#' trainExplore This function finds the best decision rule for the given dataset based using EXPLORE. 
 #'
 #' @param output_path 
 #' @param train_data 
@@ -10,6 +10,7 @@
 #'
 #' @return
 #' @export
+#' @import Rcpp RcppParallel
 #'
 #' @examples
 trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, file_name = "train_data", ...) {

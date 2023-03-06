@@ -1071,7 +1071,7 @@ PERFORMANCE RULE::CalculatePerformance() {
     }
 
 // !!!
-//  ROCCurves[CurrentLength-MinLength].AddEntry(RuleSet.GetSpecificity(), RuleSet.GetSensitivity());  // Add entry to ROCCurve
+ // ROCCurves[CurrentLength-MinLength].AddEntry(RuleSet.GetSpecificity(), RuleSet.GetSensitivity());  // Add entry to ROCCurve
 
 #ifdef DEBUG_TIMING
     End = clock();

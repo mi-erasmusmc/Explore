@@ -3,6 +3,7 @@ project(Explore)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -g -O3")
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -stdlib=libc++")
@@ -28,8 +29,8 @@ include_directories(IOExplore)
 include_directories(include /usr/local/include/)
 link_directories(/usr/local/lib)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb -fprofile-instr-generate -fcoverage-mapping")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb --coverage")
-
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb --coverage")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb")
 
 
 # LINUX
