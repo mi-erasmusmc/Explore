@@ -25,12 +25,22 @@ changeSetting <- function(settings, parameter, input, default_setting) {
   }
   
   if (!is.null(input)) { # If input has a value -> update parameter in settings
+    
+    # if (input=="custom") {
+    #   if (parameter=="Accuracy") {input <- custom_Accuracy()}
+    # }
+    
     settings <- sub(current_setting, paste0(parameter, "=", input, ""), settings)
   
   } else if  (grepl(paste0("@",parameter), settings, fixed=TRUE)) { # If value is required in settings, use default value if possible
     # TODO: extend list of patterns that are recognized as required settings
     
     if(!is.na(default_setting)) {
+      
+      # if (default_setting=="custom") {
+      #   if (parameter=="Accuracy") {default_setting <- custom_Accuracy()}
+      # }
+      
       settings <- sub(current_setting, paste0(parameter, "=", default_setting, ""), settings)
     } else{
       warning(paste0('Default setting for ', parameter, ' is NA, but setting is required to replace @', parameter, "."))
