@@ -11,9 +11,6 @@ predictExplore(model, test_data)
 
 \item{test_data}{}
 }
-\value{
-
-}
 \description{
 predictExplore
 }

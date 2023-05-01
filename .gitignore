@@ -47,3 +47,4 @@ output/
 
 # EXPLORE result files
 *.result
+inst/doc

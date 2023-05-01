@@ -13,9 +13,6 @@ saveData(output_path, train_data, file_name)
 
 \item{file_name}{}
 }
-\value{
-
-}
 \description{
 saveData
 }
