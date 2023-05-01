@@ -18,7 +18,7 @@ aurocEXPLORE(output_path, train_data, settings_path, file_name, ...)
 \item{...}{}
 }
 \value{
-
+auroc
 }
 \description{
 aucrocExplore

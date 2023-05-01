@@ -24,7 +24,7 @@ trainExplore(
 \item{...}{}
 }
 \value{
-
+Model
 }
 \description{
 trainExplore This function finds the best decision rule for the given dataset based using EXPLORE.

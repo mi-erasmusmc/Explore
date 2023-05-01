@@ -8,11 +8,10 @@
 #' @param file_name 
 #' @param ... 
 #'
-#' @return
+#' @return Model
 #' @export
-#' @import Rcpp RcppParallel
-#'
-#' @examples
+#' @import Rcpp 
+#' @importFrom RcppParallel RcppParallelLibs
 trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, file_name = "train_data", ...) {
   
   # Create output folder
@@ -74,10 +73,25 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
 #' @param output_path 
 #' @param file_name 
 #' @param train_data 
-#' @param maxRuleLength 
-#' @param mandatoryFeatures 
+#' @param OutputFile 
+#' @param StartRulelength 
+#' @param EndRulelength 
+#' @param OperatorMethod 
+#' @param CutoffMethod 
+#' @param ClassFeature 
+#' @param PositiveClass 
+#' @param FeatureInclude 
+#' @param Maximize 
+#' @param Accuracy 
+#' @param Specificity 
+#' @param PrintSettings 
+#' @param PrintPerformance 
+#' @param Subsumption 
+#' @param BranchBound 
+#' @param Parallel 
 #'
-#' @return
+#' @return Settings path
+#' @export
 settingsExplore <- function(settings,
                             output_path, # C++ cannot handle spaces in file path well, avoid those
                             file_name,
@@ -140,10 +154,8 @@ settingsExplore <- function(settings,
 #' @param model 
 #' @param test_data 
 #'
-#' @return
+#' @importFrom stringr str_split_fixed
 #' @export
-#'
-#' @examples
 predictExplore <- function(model, test_data) {
   
   # Return NULL if cannot make predictions
@@ -187,10 +199,8 @@ predictExplore <- function(model, test_data) {
 #' @param file_name 
 #' @param ... 
 #'
-#' @return
+#' @return auroc
 #' @export
-#'
-#' @examples
 aurocEXPLORE <- function(output_path, train_data, settings_path, file_name, ...) {
   # TODO: check with latest implementation in PLP
   
@@ -201,7 +211,7 @@ aurocEXPLORE <- function(output_path, train_data, settings_path, file_name, ...)
   sensitivities <- rep(NA, length(specificities))
   for (s in 1:length(specificities)) { # s <- 0.1
     
-    model <- Explore::trainExplore(output_path = output_path, train_data = train_data, settings_path = settings_path, Maximize = "SENSITIVITY", Specificity = specificities[s], ...)
+    model <- trainExplore(output_path = output_path, train_data = train_data, settings_path = settings_path, Maximize = "SENSITIVITY", Specificity = specificities[s], ...)
     
     # Extract sensitivity from results file
     results <- paste(readLines(paste0(output_path, "train_data.result")), collapse="\n")
