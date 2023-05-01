@@ -1,7 +1,7 @@
 Package: Explore
 Type: Package
 Title: Exhaustive Procedure for LOgic-Rule Extraction
-Version: 1.0
+Version: 0.1.0
 Date: 2020-12-14
 Author: Aniek F Markus 
 Maintainer: Aniek F Markus <a.markus@erasmusmc.nl>
