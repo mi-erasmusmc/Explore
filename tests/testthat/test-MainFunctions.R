@@ -1,14 +1,17 @@
 # TODO: check differences variable names with / without ''
 
-### Tests for EXPLORE using iris dataset
-root_folder <- system.file(package = "Explore")    
-data_path <- file.path(root_folder, "examples/iris.arff")
-settings_path <- file.path(root_folder, "examples/iris.project")
-output_path <- file.path(root_folder, "examples/output//")
-data <- farff::readARFF(data_path)
-
 test_that("option 1: fully pre-specified settings file works", {
+  
+  ### Tests for EXPLORE using iris dataset
+  root_folder <- system.file(package = "Explore")    
+  data_path <- file.path(root_folder, "examples/iris.arff")
+  settings_path <- file.path(root_folder, "examples/iris.project")
+  output_path <- file.path(root_folder, "examples/output//")
+  data <- farff::readARFF(data_path)
+  
+  # Required dependencies
   withr::local_package("farff")
+  
   model <- Explore::trainExplore(output_path = output_path, 
                                  file_name = "iris", 
                                  settings_path = settings_path)
@@ -23,7 +26,16 @@ test_that("option 1: fully pre-specified settings file works", {
 })
 
 test_that("option 2: pre-specified settings file with input data works", {
+  ### Tests for EXPLORE using iris dataset
+  root_folder <- system.file(package = "Explore")    
+  data_path <- file.path(root_folder, "examples/iris.arff")
+  settings_path <- file.path(root_folder, "examples/iris.project")
+  output_path <- file.path(root_folder, "examples/output//")
+  data <- farff::readARFF(data_path)
+  
+  # Required dependencies
   withr::local_package("farff")
+  
   model <- Explore::trainExplore(output_path = output_path, 
                                  train_data = data, 
                                  settings_path = settings_path, 
@@ -35,7 +47,16 @@ test_that("option 2: pre-specified settings file with input data works", {
 })
 
 test_that("option 3: only input parameters (no settings file) works", {
+  ### Tests for EXPLORE using iris dataset
+  root_folder <- system.file(package = "Explore")    
+  data_path <- file.path(root_folder, "examples/iris.arff")
+  settings_path <- file.path(root_folder, "examples/iris.project")
+  output_path <- file.path(root_folder, "examples/output//")
+  data <- farff::readARFF(data_path)
+  
+  # Required dependencies
   withr::local_package("farff")
+  
   model <- Explore::trainExplore(output_path = output_path, 
                                  file_name = "iris", 
                                  train_data = data, 
@@ -47,7 +68,16 @@ test_that("option 3: only input parameters (no settings file) works", {
 })
 
 test_that("prediction", {
+  ### Tests for EXPLORE using iris dataset
+  root_folder <- system.file(package = "Explore")    
+  data_path <- file.path(root_folder, "examples/iris.arff")
+  settings_path <- file.path(root_folder, "examples/iris.project")
+  output_path <- file.path(root_folder, "examples/output//")
+  data <- farff::readARFF(data_path)
+  
+  # Required dependencies
   withr::local_package("farff")
+  
   model <- Explore::trainExplore(output_path = output_path, 
                                  train_data = data, 
                                  settings_path = settings_path, 
@@ -61,7 +91,16 @@ test_that("prediction", {
 })
 
 test_that("compute AUC", {
+  ### Tests for EXPLORE using iris dataset
+  root_folder <- system.file(package = "Explore")    
+  data_path <- file.path(root_folder, "examples/iris.arff")
+  settings_path <- file.path(root_folder, "examples/iris.project")
+  output_path <- file.path(root_folder, "examples/output//")
+  data <- farff::readARFF(data_path)
+  
+  # Required dependencies
   withr::local_package("farff")
+  
   auroc <- Explore::aurocEXPLORE(output_path = output_path, 
                                  train_data = data, 
                                  settings_path = settings_path, 
