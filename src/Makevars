@@ -5,12 +5,6 @@ SOURCES=$(wildcard C++/*.cpp C++/IOExplore/*.cpp C++/Explore/*.cpp C++/CMExplore
 
 OBJECTS = ExploreInterface.o RcppExports.o $(SOURCES:.cpp=.o)
 
-LDFLAGS = -L/opt/intel/oneapi/tbb/latest/lib
-LD_LIBRARY_PATH = -L/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8 
-PKG_CXXFLAGS= -I. -I/opt/intel/oneapi/tbb/latest/include -O3 -g3 -Wall -c
-# Elimination of PKG_LIBS allows installation in Ubuntu Linux
-# PKG_LIBS = -L/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8  -ltbb -ltbbmalloc -std=c++11
-
 all: $(SHLIB)
 
 clean:  @rm -f $(OBJECTS)
