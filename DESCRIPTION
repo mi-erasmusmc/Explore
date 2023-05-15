@@ -1,7 +1,7 @@
 Package: Explore
 Type: Package
 Title: Exhaustive Procedure for LOgic-Rule Extraction
-Version: 1.0
+Version: 0.2.0
 Date: 2020-12-14
 Author: Aniek F Markus 
 Maintainer: Aniek F Markus <a.markus@erasmusmc.nl>
@@ -9,13 +9,19 @@ Description: This package includes the implementation of EXPLORE in C++ and conn
 License: GPL (>= 2)
 Depends:
     R (>= 3.6.1)
-Imports: Rcpp (>= 1.0.5), RcppParallel
+Imports: 
+    farff,
+    Rcpp (>= 1.0.5),
+    RcppParallel,
+    stringr
 Encoding: UTF-8
 LinkingTo: Rcpp, BH (>= 1.51.0), RcppParallel
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    withr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+URL: https://cbarbozaerasmus.github.io/Explore/

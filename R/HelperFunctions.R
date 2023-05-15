@@ -1,3 +1,11 @@
+#' Get the setting parameter value
+#'
+#' @param settings 
+#' @param parameter 
+#' @param type 
+#'
+#' @return A parameter value, character.
+#' @importFrom stringr str_extract str_replace_all
 #' @export
 getSetting <- function(settings, parameter, type = "value") {
   extraction <- stringr::str_extract(settings, paste0(parameter , "=.*?\u000A"))[[1]] 
@@ -15,6 +23,17 @@ getSetting <- function(settings, parameter, type = "value") {
   }
 }
 
+
+#' Change setting parameter value
+#'
+#' @param settings 
+#' @param parameter 
+#' @param input 
+#' @param default_setting 
+#'
+#' @return A setting parameter value
+#' @importFrom utils write.table
+#' 
 #' @export
 changeSetting <- function(settings, parameter, input, default_setting) {
   
@@ -55,8 +74,10 @@ changeSetting <- function(settings, parameter, input, default_setting) {
 #' @param output_path 
 #' @param train_data 
 #' @param file_name 
+#' 
+#' @importFrom farff writeARFF
+#' @importFrom utils write.table
 #'
-#' @return
 #' @export
 saveData <- function(output_path, train_data, file_name) {
   

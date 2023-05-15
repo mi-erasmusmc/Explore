@@ -34,13 +34,17 @@ library(farff)
 
 Load data:
 ```{r, eval=FALSE}
-data <- farff::readARFF("inst/examples/iris.arff")
-output_path <- file.path(getwd(), "output/")
+data <- farff::readARFF(system.file("examples/iris.arff", package = "Explore"))
+output_path <- file.path(getwd(), "output//")
 ```
 
 Fit model with defaults and/or input parameters:
 ```{r, eval=FALSE}
-model <- Explore::trainExplore(output_path = output_path, file_name = "iris", train_data = data, ClassFeature = "'class'", PositiveClass = '"Iris-versicolor"')
+model <- Explore::trainExplore(output_path = output_path, 
+                               file_name = "iris", 
+                               train_data = data, 
+                               ClassFeature = "'class'", 
+                               PositiveClass = '"Iris-versicolor"')
 ```
   
 Predict:

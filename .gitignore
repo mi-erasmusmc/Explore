@@ -47,3 +47,9 @@ output/
 
 # EXPLORE result files
 *.result
+inst/doc
+docs
+
+# PaRe Report
+Report.html
+Report_files/

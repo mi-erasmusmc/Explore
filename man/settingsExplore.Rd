@@ -36,12 +36,40 @@ settingsExplore(
 
 \item{train_data}{}
 
-\item{maxRuleLength}{}
+\item{OutputFile}{}
 
-\item{mandatoryFeatures}{}
+\item{StartRulelength}{}
+
+\item{EndRulelength}{}
+
+\item{OperatorMethod}{}
+
+\item{CutoffMethod}{}
+
+\item{ClassFeature}{}
+
+\item{PositiveClass}{}
+
+\item{FeatureInclude}{}
+
+\item{Maximize}{}
+
+\item{Accuracy}{}
+
+\item{Specificity}{}
+
+\item{PrintSettings}{}
+
+\item{PrintPerformance}{}
+
+\item{Subsumption}{}
+
+\item{BranchBound}{}
+
+\item{Parallel}{}
 }
 \value{
-
+Settings path
 }
 \description{
 settingsExplore
