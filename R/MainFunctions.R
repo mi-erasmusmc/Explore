@@ -1,6 +1,6 @@
-# TODO: add descriptions for package manual
-
-#' trainExplore This function finds the best decision rule for the given dataset based using EXPLORE. 
+#' Finds decision rule using Explore
+#' 
+#' `trainExplore()` finds the best decision rule for the given data set based using EXPLORE. 
 #'
 #' @param output_path 
 #' @param train_data 
@@ -67,7 +67,9 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
 }
 
 
-#' settingsExplore
+#' Writes settings in a table for Explore
+#' 
+#' `settingsExplore()` defines the parameters used by Explore
 #'
 #' @param settings 
 #' @param output_path 
@@ -149,7 +151,9 @@ settingsExplore <- function(settings,
   return(settings_path)
 }
 
-#' predictExplore
+#' Prediction with Explore
+#' 
+#' `predictExplore()` executes a prediction using Explore 
 #'
 #' @param model 
 #' @param test_data 
@@ -193,10 +197,10 @@ predictExplore <- function(model, test_data) {
 
 #' aucrocExplore
 #'
-#' @param output_path 
-#' @param train_data 
-#' @param settings_path 
-#' @param file_name 
+#' @param output_path A string declaring the path to the settings
+#' @param train_data Train data
+#' @param settings_path A string declaring the path to the settings
+#' @param file_name A string declaring the name of the file
 #' @param ... 
 #'
 #' @return auroc

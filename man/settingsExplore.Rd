@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{settingsExplore}
 \alias{settingsExplore}
-\title{settingsExplore}
+\title{Writes settings in a table for Explore}
 \usage{
 settingsExplore(
   settings,
@@ -72,5 +72,5 @@ settingsExplore(
 Settings path
 }
 \description{
-settingsExplore
+`settingsExplore()` defines the parameters used by Explore
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{trainExplore}
 \alias{trainExplore}
-\title{trainExplore This function finds the best decision rule for the given dataset based using EXPLORE.}
+\title{Finds decision rule using Explore}
 \usage{
 trainExplore(
   output_path,
@@ -27,5 +27,5 @@ trainExplore(
 Model
 }
 \description{
-trainExplore This function finds the best decision rule for the given dataset based using EXPLORE.
+`trainExplore()` finds the best decision rule for the given data set based using EXPLORE.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{predictExplore}
 \alias{predictExplore}
-\title{predictExplore}
+\title{Prediction with Explore}
 \usage{
 predictExplore(model, test_data)
 }
@@ -12,5 +12,5 @@ predictExplore(model, test_data)
 \item{test_data}{}
 }
 \description{
-predictExplore
+`predictExplore()` executes a prediction using Explore
 }
