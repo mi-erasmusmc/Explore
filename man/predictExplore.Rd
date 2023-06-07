@@ -7,9 +7,9 @@
 predictExplore(model, test_data)
 }
 \arguments{
-\item{model}{}
+\item{model}{Model to run predictions}
 
-\item{test_data}{}
+\item{test_data}{Test data}
 }
 \description{
 `predictExplore()` executes a prediction using Explore

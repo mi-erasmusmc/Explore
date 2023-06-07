@@ -7,13 +7,13 @@
 changeSetting(settings, parameter, input, default_setting)
 }
 \arguments{
-\item{settings}{}
+\item{settings}{Settings parameter, string}
 
-\item{parameter}{}
+\item{parameter}{Parameter value, string}
 
-\item{input}{}
+\item{input}{Input value}
 
-\item{default_setting}{}
+\item{default_setting}{Default setting}
 }
 \value{
 A setting parameter value

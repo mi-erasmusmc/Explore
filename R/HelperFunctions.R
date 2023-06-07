@@ -1,8 +1,8 @@
 #' Get the setting parameter value
 #'
-#' @param settings 
-#' @param parameter 
-#' @param type 
+#' @param settings Settings parameter, string
+#' @param parameter Parameter value, string
+#' @param type Type value, string
 #'
 #' @return A parameter value, character.
 #' @importFrom stringr str_extract str_replace_all
@@ -26,10 +26,10 @@ getSetting <- function(settings, parameter, type = "value") {
 
 #' Change setting parameter value
 #'
-#' @param settings 
-#' @param parameter 
-#' @param input 
-#' @param default_setting 
+#' @param settings Settings parameter, string
+#' @param parameter Parameter value, string
+#' @param input Input value
+#' @param default_setting Default setting
 #'
 #' @return A setting parameter value
 #' @importFrom utils write.table
@@ -71,9 +71,9 @@ changeSetting <- function(settings, parameter, input, default_setting) {
 
 #' saveData
 #'
-#' @param output_path 
-#' @param train_data 
-#' @param file_name 
+#' @param output_path A string declaring the path to the settings
+#' @param train_data Train data
+#' @param file_name A string declaring the the path to the file name
 #' 
 #' @importFrom farff writeARFF
 #' @importFrom utils write.table

@@ -13,9 +13,9 @@ aurocEXPLORE(output_path, train_data, settings_path, file_name, ...)
 
 \item{settings_path}{A string declaring the path to the settings}
 
-\item{file_name}{A string declaring the name of the file}
+\item{file_name}{A string declaring the the path to the file name}
 
-\item{...}{}
+\item{...}{List of arguments}
 }
 \value{
 auroc

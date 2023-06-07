@@ -28,45 +28,45 @@ settingsExplore(
 )
 }
 \arguments{
-\item{settings}{}
+\item{settings}{Settings parameter}
 
-\item{output_path}{}
+\item{output_path}{A string declaring the path to the settings}
 
-\item{file_name}{}
+\item{file_name}{A string declaring the the path to the file name}
 
-\item{train_data}{}
+\item{train_data}{Train data}
 
-\item{OutputFile}{}
+\item{OutputFile}{A string declaring the path to the output file}
 
-\item{StartRulelength}{}
+\item{StartRulelength}{Integer value}
 
-\item{EndRulelength}{}
+\item{EndRulelength}{Integer value}
 
-\item{OperatorMethod}{}
+\item{OperatorMethod}{ROCREA}
 
-\item{CutoffMethod}{}
+\item{CutoffMethod}{RVAC}
 
-\item{ClassFeature}{}
+\item{ClassFeature}{class}
 
-\item{PositiveClass}{}
+\item{PositiveClass}{Such as Iris-versicolor}
 
-\item{FeatureInclude}{}
+\item{FeatureInclude}{Feature restriction}
 
-\item{Maximize}{}
+\item{Maximize}{Specificity}
 
-\item{Accuracy}{}
+\item{Accuracy}{Numeric, > 0 & < 1}
 
-\item{Specificity}{}
+\item{Specificity}{Numeric, > 0 & < 1}
 
-\item{PrintSettings}{}
+\item{PrintSettings}{True or False}
 
-\item{PrintPerformance}{}
+\item{PrintPerformance}{True or False}
 
-\item{Subsumption}{}
+\item{Subsumption}{True or False}
 
-\item{BranchBound}{}
+\item{BranchBound}{True or False}
 
-\item{Parallel}{}
+\item{Parallel}{True or False}
 }
 \value{
 Settings path

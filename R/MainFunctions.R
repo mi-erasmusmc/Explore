@@ -2,11 +2,11 @@
 #' 
 #' `trainExplore()` finds the best decision rule for the given data set based using EXPLORE. 
 #'
-#' @param output_path 
-#' @param train_data 
-#' @param settings_path 
-#' @param file_name 
-#' @param ... 
+#' @param output_path A string declaring the path to the settings
+#' @param train_data Train data
+#' @param settings_path A string declaring the path to the settings
+#' @param file_name A string declaring the the path to the file name
+#' @param ... A list of arguments
 #'
 #' @return Model
 #' @export
@@ -71,26 +71,26 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
 #' 
 #' `settingsExplore()` defines the parameters used by Explore
 #'
-#' @param settings 
-#' @param output_path 
-#' @param file_name 
-#' @param train_data 
-#' @param OutputFile 
-#' @param StartRulelength 
-#' @param EndRulelength 
-#' @param OperatorMethod 
-#' @param CutoffMethod 
-#' @param ClassFeature 
-#' @param PositiveClass 
-#' @param FeatureInclude 
-#' @param Maximize 
-#' @param Accuracy 
-#' @param Specificity 
-#' @param PrintSettings 
-#' @param PrintPerformance 
-#' @param Subsumption 
-#' @param BranchBound 
-#' @param Parallel 
+#' @param settings Settings parameter
+#' @param output_path A string declaring the path to the settings 
+#' @param file_name A string declaring the the path to the file name
+#' @param train_data Train data
+#' @param OutputFile A string declaring the path to the output file
+#' @param StartRulelength Integer value
+#' @param EndRulelength Integer value
+#' @param OperatorMethod ROCREA
+#' @param CutoffMethod RVAC
+#' @param ClassFeature class
+#' @param PositiveClass Such as Iris-versicolor
+#' @param FeatureInclude Feature restriction
+#' @param Maximize Specificity
+#' @param Accuracy Numeric, > 0 & < 1
+#' @param Specificity Numeric, > 0 & < 1
+#' @param PrintSettings True or False
+#' @param PrintPerformance True or False
+#' @param Subsumption True or False
+#' @param BranchBound True or False
+#' @param Parallel True or False
 #'
 #' @return Settings path
 #' @export
@@ -155,8 +155,8 @@ settingsExplore <- function(settings,
 #' 
 #' `predictExplore()` executes a prediction using Explore 
 #'
-#' @param model 
-#' @param test_data 
+#' @param model Model to run predictions
+#' @param test_data Test data
 #'
 #' @importFrom stringr str_split_fixed
 #' @export
@@ -200,8 +200,8 @@ predictExplore <- function(model, test_data) {
 #' @param output_path A string declaring the path to the settings
 #' @param train_data Train data
 #' @param settings_path A string declaring the path to the settings
-#' @param file_name A string declaring the name of the file
-#' @param ... 
+#' @param file_name A string declaring the the path to the file name
+#' @param ... List of arguments
 #'
 #' @return auroc
 #' @export
