@@ -3,6 +3,7 @@
 ^vignettes$
 ^output$
 ^docs$
+^doc$
 ^Meta$
 ^README\.Rmd$
 ^LICENSE\.md$
@@ -11,3 +12,16 @@
 ^pkgdown$
 ^Report\.html$
 ^Report_files$
+^.*\.o$
+^\.o$
+^\.obj$
+^\.DS_STORE$
+^\.idea/$
+^\.so$
+^\.dylib$
+^\.dll$
+^\.a$
+^\.lib$
+^history$
+^Report\.html$
+^Report_files/$
