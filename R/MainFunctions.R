@@ -17,7 +17,7 @@ trainExplore <- function(train_data = NULL,
                          settings_path = NULL,
                          output_path, 
                          file_name = "train_data",
-                         OutputFile, 
+                         OutputFile = NULL, 
                          StartRulelength = 1,
                          EndRulelength = 3,
                          OperatorMethod = "EXHAUSTIVE",
@@ -34,8 +34,7 @@ trainExplore <- function(train_data = NULL,
                          BranchBound = TRUE,
                          Parallel = FALSE) {
   
-  OutputFile <- paste0(output_path, file_name, ".result")
-  
+
   # Create output folder
   if(!endsWith(output_path, "/")) {
     warning("Output path should end with /, add this")
@@ -45,38 +44,52 @@ trainExplore <- function(train_data = NULL,
   if (!file.exists(output_path)) {dir.create(output_path, recursive = TRUE)}
   
   # Variable checks
-  collection <- makeAssertCollection()
-  assert(checkClass(train_data, "data.frame"),
-         checkFileExists(settings_path),
-         checkPathForOutput(output_path),
-         checkDouble(StartRulelength),
-         checkDouble(EndRulelength),
-         checkString(CutoffMethod),
-         checkString(OperatorMethod),
-         # checkString(ClassFeature),
-         # checkString(PositiveClass),
-         checkString(FeatureInclude),
-         checkString(Maximize),
-         # checkDouble(Accuracy),
-         # checkDouble(Specificity),
-         checkLogical(PrintSettings),
-         checkLogical(PrintPerformance),
-         checkLogical(Subsumption),
-         checkLogical(BranchBound),
-         checkLogical(Parallel),
-         add = collection,
-         combine = "and"
-  )
-  collection$getMessages()
+  errorMessage <- makeAssertCollection()
   
+  # check output file
+  if(is.null(OutputFile)) {
+    OutputFile <- paste0(output_path, file_name, ".result")
+  } else {
+    checkmate::checkFileExists(OutputFile,
+                    add = errorMessage)
+  }
+  
+  # check settings_path
+  if (!is.null(settings_path)) {
+    checkmate::assertFileExists(
+      settings_path,
+      add = errorMessage
+    )
+  }
+  
+  # check vars
+  checkmate::assert(checkClass(train_data, "data.frame"),
+                    checkPathForOutput(output_path, overwrite = TRUE),
+                    checkDouble(StartRulelength),
+                    checkDouble(EndRulelength),
+                    checkString(CutoffMethod),
+                    checkString(OperatorMethod),
+                    # checkString(ClassFeature),
+                    # checkString(PositiveClass),
+                    checkString(FeatureInclude),
+                    checkString(Maximize),
+                    # checkDouble(Accuracy),
+                    # checkDouble(Specificity),
+                    checkLogical(PrintSettings),
+                    checkLogical(PrintPerformance),
+                    checkLogical(Subsumption),
+                    checkLogical(BranchBound),
+                    checkLogical(Parallel),
+                    add = errorMessage,
+                    combine = "and"
+  )
+  checkmate::reportAssertions(collection = errorMessage)
 
   PrintSettings <- ifelse(PrintSettings == TRUE, "yes", "no")
   PrintPerformance <- ifelse(PrintPerformance == TRUE, "yes", "no")
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
-
-
   
   # Create project setting
   if (is.null(settings_path)) {
