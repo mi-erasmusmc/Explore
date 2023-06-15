@@ -18,8 +18,8 @@ settingsExplore(
   PositiveClass,
   FeatureInclude = NULL,
   Maximize = NULL,
-  Accuracy = NULL,
-  Specificity = NULL,
+  Accuracy = 0,
+  Specificity = 0,
   PrintSettings = NULL,
   PrintPerformance = NULL,
   Subsumption = NULL,
@@ -38,25 +38,25 @@ settingsExplore(
 
 \item{OutputFile}{A string declaring the path to the output file}
 
-\item{StartRulelength}{Integer value}
+\item{StartRulelength}{Positive integer}
 
-\item{EndRulelength}{Integer value}
+\item{EndRulelength}{Positive integer}
 
-\item{OperatorMethod}{ROCREA}
+\item{OperatorMethod}{One of list with strings, e.g. list = "EXHAUSTIVE", ...}
 
-\item{CutoffMethod}{RVAC}
+\item{CutoffMethod}{One of list with strings, list = "RVAC", ...}
 
-\item{ClassFeature}{class}
+\item{ClassFeature}{String, should be name of one of columns in data train.}
 
-\item{PositiveClass}{Such as Iris-versicolor}
+\item{PositiveClass}{1 or string (?) (should be one of elements of column 'ClassFeature' in data train)}
 
-\item{FeatureInclude}{Feature restriction}
+\item{FeatureInclude}{Empty or string (should be name of one of columns in data train)}
 
-\item{Maximize}{Specificity}
+\item{Maximize}{One of list with strings, list = "ACCURACY", ...}
 
-\item{Accuracy}{Numeric, > 0 & < 1}
+\item{Accuracy}{Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)}
 
-\item{Specificity}{Numeric, > 0 & < 1}
+\item{Specificity}{float 0-1, default = 0}
 
 \item{PrintSettings}{True or False}
 
