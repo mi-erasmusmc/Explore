@@ -65,8 +65,8 @@
 <span>  <span class="va">PositiveClass</span>,</span>
 <span>  FeatureInclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  Maximize <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  Accuracy <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  Specificity <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  Accuracy <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  Specificity <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  PrintSettings <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  PrintPerformance <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  Subsumption <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -98,43 +98,43 @@
 
 
 <dt>StartRulelength</dt>
-<dd><p>Integer value</p></dd>
+<dd><p>Positive integer</p></dd>
 
 
 <dt>EndRulelength</dt>
-<dd><p>Integer value</p></dd>
+<dd><p>Positive integer</p></dd>
 
 
 <dt>OperatorMethod</dt>
-<dd><p>ROCREA</p></dd>
+<dd><p>One of list with strings, e.g. list = "EXHAUSTIVE", ...</p></dd>
 
 
 <dt>CutoffMethod</dt>
-<dd><p>RVAC</p></dd>
+<dd><p>One of list with strings, list = "RVAC", ...</p></dd>
 
 
 <dt>ClassFeature</dt>
-<dd><p>class</p></dd>
+<dd><p>String, should be name of one of columns in data train.</p></dd>
 
 
 <dt>PositiveClass</dt>
-<dd><p>Such as Iris-versicolor</p></dd>
+<dd><p>1 or string (?) (should be one of elements of column 'ClassFeature' in data train)</p></dd>
 
 
 <dt>FeatureInclude</dt>
-<dd><p>Feature restriction</p></dd>
+<dd><p>Empty or string (should be name of one of columns in data train)</p></dd>
 
 
 <dt>Maximize</dt>
-<dd><p>Specificity</p></dd>
+<dd><p>One of list with strings, list = "ACCURACY", ...</p></dd>
 
 
 <dt>Accuracy</dt>
-<dd><p>Numeric, &gt; 0 &amp; &lt; 1</p></dd>
+<dd><p>Float 0-1 -&gt; default = 0 (if 0, make empty = computationally more beneficial)</p></dd>
 
 
 <dt>Specificity</dt>
-<dd><p>Numeric, &gt; 0 &amp; &lt; 1</p></dd>
+<dd><p>float 0-1, default = 0</p></dd>
 
 
 <dt>PrintSettings</dt>
