@@ -4,10 +4,27 @@
 #'
 #' @param train_data Train data
 #' @param output_path A string declaring the path to the settings
-
 #' @param settings_path A string declaring the path to the settings
+#' @param settings Settings parameter
+#' @param output_path A string declaring the path to the settings 
 #' @param file_name A string declaring the the path to the file name
-#' @param ... A list of arguments
+#' @param train_data Train data
+#' @param OutputFile A string declaring the path to the output file
+#' @param StartRulelength Positive integer
+#' @param EndRulelength Positive integer
+#' @param OperatorMethod One of list with strings, e.g. list = "EXHAUSTIVE", ...
+#' @param CutoffMethod One of list with strings, list = "RVAC", ...
+#' @param ClassFeature  String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
+#' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
+#' @param FeatureInclude Empty or string (should be name of one of columns in data train)
+#' @param Maximize One of list with strings, list = "ACCURACY", ...
+#' @param Accuracy Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param Specificity  float 0-1, default = 0
+#' @param PrintSettings True or False
+#' @param PrintPerformance True or False
+#' @param Subsumption True or False
+#' @param BranchBound True or False
+#' @param Parallel True or False
 #'
 #' @return Model
 #' @export
@@ -26,8 +43,8 @@ trainExplore <- function(train_data = NULL,
                          PositiveClass = "'Iris-versicolor'",
                          FeatureInclude = "",
                          Maximize = "ACCURACY",
-                         Accuracy = NULL,
-                         Specificity = NULL,
+                         Accuracy = 0,
+                         Specificity = 0,
                          PrintSettings = TRUE,
                          PrintPerformance = TRUE,
                          Subsumption = TRUE,
@@ -69,12 +86,12 @@ trainExplore <- function(train_data = NULL,
                     checkDouble(EndRulelength),
                     checkString(CutoffMethod),
                     checkString(OperatorMethod),
-                    # checkString(ClassFeature),
-                    # checkString(PositiveClass),
+                    checkString(ClassFeature),
+                    checkString(PositiveClass),
                     checkString(FeatureInclude),
                     checkString(Maximize),
-                    # checkDouble(Accuracy),
-                    # checkDouble(Specificity),
+                    checkDouble(Accuracy),
+                    checkDouble(Specificity),
                     checkLogical(PrintSettings),
                     checkLogical(PrintPerformance),
                     checkLogical(Subsumption),
