@@ -10,21 +10,21 @@ settingsExplore(
   file_name,
   train_data = NULL,
   OutputFile = NULL,
-  StartRulelength = NULL,
-  EndRulelength = NULL,
-  OperatorMethod = NULL,
+  StartRulelength = 1,
+  EndRulelength = 3,
+  OperatorMethod = "EXHAUSTIVE",
   CutoffMethod = NULL,
   ClassFeature,
   PositiveClass,
-  FeatureInclude = NULL,
-  Maximize = NULL,
+  FeatureInclude = "",
+  Maximize = "ACCURACY",
   Accuracy = 0,
   Specificity = 0,
-  PrintSettings = NULL,
-  PrintPerformance = NULL,
-  Subsumption = NULL,
-  BranchBound = NULL,
-  Parallel = NULL
+  PrintSettings = "yes",
+  PrintPerformance = "yes",
+  Subsumption = "yes",
+  BranchBound = "yes",
+  Parallel = "no"
 )
 }
 \arguments{
