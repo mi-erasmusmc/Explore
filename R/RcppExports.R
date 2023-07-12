@@ -3,9 +3,6 @@
 
 #' @useDynLib Explore
 #' @import Rcpp
-NULL
-
-#' @export
 runExplore <- function(input) {
     invisible(.Call('_Explore_runExplore', PACKAGE = 'Explore', input))
 }

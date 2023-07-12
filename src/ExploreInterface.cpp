@@ -11,8 +11,6 @@ using namespace Rcpp;
 
 //' @useDynLib Explore
 //' @import Rcpp
-
-//' @export
 // [[Rcpp::export]]
 void runExplore(Rcpp::CharacterVector input) {
   // Transfer data from CharacterVector to std::string
