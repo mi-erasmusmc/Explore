@@ -52,21 +52,32 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trainExplore</span><span class="op">(</span></span>
-<span>  <span class="va">output_path</span>,</span>
 <span>  train_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  settings_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">output_path</span>,</span>
 <span>  file_name <span class="op">=</span> <span class="st">"train_data"</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  OutputFile <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  StartRulelength <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  EndRulelength <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  OperatorMethod <span class="op">=</span> <span class="st">"EXHAUSTIVE"</span>,</span>
+<span>  CutoffMethod <span class="op">=</span> <span class="st">"RVAC"</span>,</span>
+<span>  ClassFeature <span class="op">=</span> <span class="st">"'class'"</span>,</span>
+<span>  PositiveClass <span class="op">=</span> <span class="st">"'Iris-versicolor'"</span>,</span>
+<span>  FeatureInclude <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  Maximize <span class="op">=</span> <span class="st">"ACCURACY"</span>,</span>
+<span>  Accuracy <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  Specificity <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  PrintSettings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  PrintPerformance <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  Subsumption <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  BranchBound <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  Parallel <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>output_path</dt>
-<dd><p>A string declaring the path to the settings</p></dd>
-
-
-<dt>train_data</dt>
+    <dl><dt>train_data</dt>
 <dd><p>Train data</p></dd>
 
 
@@ -74,12 +85,80 @@
 <dd><p>A string declaring the path to the settings</p></dd>
 
 
+<dt>output_path</dt>
+<dd><p>A string declaring the path to the settings</p></dd>
+
+
 <dt>file_name</dt>
 <dd><p>A string declaring the the path to the file name</p></dd>
 
 
-<dt>...</dt>
-<dd><p>A list of arguments</p></dd>
+<dt>OutputFile</dt>
+<dd><p>A string declaring the path to the output file</p></dd>
+
+
+<dt>StartRulelength</dt>
+<dd><p>Positive integer</p></dd>
+
+
+<dt>EndRulelength</dt>
+<dd><p>Positive integer</p></dd>
+
+
+<dt>OperatorMethod</dt>
+<dd><p>One of list with strings, e.g. list = "EXHAUSTIVE", ...</p></dd>
+
+
+<dt>CutoffMethod</dt>
+<dd><p>One of list with strings, list = "RVAC", ...</p></dd>
+
+
+<dt>ClassFeature</dt>
+<dd><p>String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'</p></dd>
+
+
+<dt>PositiveClass</dt>
+<dd><p>1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'</p></dd>
+
+
+<dt>FeatureInclude</dt>
+<dd><p>Empty or string (should be name of one of columns in data train)</p></dd>
+
+
+<dt>Maximize</dt>
+<dd><p>One of list with strings, list = "ACCURACY", ...</p></dd>
+
+
+<dt>Accuracy</dt>
+<dd><p>Float 0-1 -&gt; default = 0 (if 0, make empty = computationally more beneficial)</p></dd>
+
+
+<dt>Specificity</dt>
+<dd><p>float 0-1, default = 0</p></dd>
+
+
+<dt>PrintSettings</dt>
+<dd><p>True or False</p></dd>
+
+
+<dt>PrintPerformance</dt>
+<dd><p>True or False</p></dd>
+
+
+<dt>Subsumption</dt>
+<dd><p>True or False</p></dd>
+
+
+<dt>BranchBound</dt>
+<dd><p>True or False</p></dd>
+
+
+<dt>Parallel</dt>
+<dd><p>True or False</p></dd>
+
+
+<dt>settings</dt>
+<dd><p>Settings parameter</p></dd>
 
 </dl></div>
     <div class="section level2">
