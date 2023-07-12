@@ -3269,9 +3269,9 @@ if (!Parallel) {
 //                        Rule_ij.PrintCombination();
 //                        cout << TermTupleTiming.PrintTotal();
 //                        cout << "Candidates: " << Rule_ij.GetCountCandidates() << endl << endl;
-//                        m3.lock();
-//                        CountCandidatesPartition += Rule_ij.GetCountCandidates();
-//                        m3.unlock();
+                          m3.lock();
+                          CountCandidatesPartition += Rule_ij.GetCountCandidates();
+                          m3.unlock();
                     }
                 });
             }
