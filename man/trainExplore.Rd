@@ -67,8 +67,6 @@ trainExplore(
 \item{BranchBound}{True or False}
 
 \item{Parallel}{True or False}
-
-\item{settings}{Settings parameter}
 }
 \value{
 Model

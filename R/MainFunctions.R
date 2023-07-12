@@ -5,7 +5,6 @@
 #' @param train_data Train data
 #' @param output_path A string declaring the path to the settings
 #' @param settings_path A string declaring the path to the settings
-#' @param settings Settings parameter
 #' @param output_path A string declaring the path to the settings 
 #' @param file_name A string declaring the the path to the file name
 #' @param train_data Train data
