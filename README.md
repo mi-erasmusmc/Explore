@@ -17,7 +17,7 @@ remotes::install_github("mi-erasmusmc/EXPLORE")
 
 Additional instructions: to be added.
 
-## Example usage using iris dataset
+## Example usage using standalone dataset
 
 ``` r
 library(Explore)
@@ -47,9 +47,10 @@ Predict:
 prediction <- Explore::predictExplore(model, test_data = data)
 ```
 
-## Example usage using PLP package
+## Example usage using OMOP CDM / PLP package
 
 ``` r
+# remotes::install_github("OHDSI/PatientLevelPrediction@explore")
 library(PatientLevelPrediction)
 library(Eunomia)
 #> Loading required package: DatabaseConnector
@@ -106,7 +107,6 @@ Fit model with defaults and/or input parameters:
 
 ``` r
 modelSettings <- PatientLevelPrediction::setExplore(aucCurve = FALSE, sort_by = "random")
-
 
 plpResults <- PatientLevelPrediction::runPlp( 
   plpData = plpData, 
