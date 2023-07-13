@@ -43,13 +43,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb")
 set(SOURCE_FILES
         Clion/main.cpp
         src/C++/CMExplore/cmdline.h
-        src/C++/CMExplore/CMExplore.cbproj
-        src/C++/CMExplore/CMExplore.cbproj.local
         src/C++/CMExplore/initialise.h
         src/C++/CMExplore/main.h
         src/C++/CMExplore/Makefile
-        src/C++/CMExplore/ProjectGroup1.groupproj
-        src/C++/CMExplore/ProjectGroup1.groupproj.local
         src/C++/Explore/bin.cpp
         src/C++/Explore/bin.h
         src/C++/Explore/candidate.cpp
