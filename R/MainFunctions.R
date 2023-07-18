@@ -299,7 +299,7 @@ predictExplore <- function(model, test_data) {
 }
 
 
-#' aucrocExplore
+#' modelsCurveExplore # TODO: update documentation?
 #'
 #' @param output_path A string declaring the path to the settings
 #' @param train_data Train data
@@ -308,33 +308,91 @@ predictExplore <- function(model, test_data) {
 #' @param ... List of arguments
 #'
 #' @import checkmate
-#' @return auroc
+#' @return models for different sensitivities/specificities
 #' @export
-aurocEXPLORE <- function(output_path, train_data, settings_path, file_name, ...) {
-  # TODO: check with latest implementation in PLP
+modelsCurveExplore <- function(train_data = NULL,
+                               settings_path = NULL,
+                               output_path, 
+                               file_name = "train_data",
+                               OutputFile = NULL, 
+                               StartRulelength = 1,
+                               EndRulelength = 3,
+                               OperatorMethod = "EXHAUSTIVE",
+                               CutoffMethod = "RVAC",
+                               ClassFeature = "'class'",
+                               PositiveClass = "'Iris-versicolor'",
+                               FeatureInclude = "",
+                               Maximize = "ACCURACY",
+                               Accuracy = 0,
+                               Specificity = 0,
+                               PrintSettings = TRUE,
+                               PrintPerformance = TRUE,
+                               Subsumption = TRUE,
+                               BranchBound = TRUE,
+                               Parallel = FALSE) {
+  # TODO: only input required variables?
   
   # Range of specificities to check
-  specificities <- seq(from = 0.01, to = 0.99, by = 0.02)
+  constraints <- c(seq(0.05,0.65,0.1), seq(0.75,0.97,0.02))
   
-  # Set specificity constraint and maximize sensitivity
-  sensitivities <- rep(NA, length(specificities))
-  for (s in 1:length(specificities)) { # s <- 0.1
+  modelsCurve <- tryCatch({
+    models <- sapply(constraints, function(constraint) {
+      print(paste0("Model for specificity: ", as.character(constraint)))
+      
+      # Fit EXPLORE
+      model <- Explore::trainExplore(output_path = file.path(output_path, "modelsCurve"), train_data = train_data,
+                                     settings_path = settings_path, 
+                                     file_name = paste0("explore_specificity", as.character(constraint)),
+                                     OutputFile = OutputFile,
+                                     StartRulelength = StartRulelength, EndRulelength = EndRulelength,
+                                     OperatorMethod = OperatorMethod, CutoffMethod = CutoffMethod,
+                                     ClassFeature = ClassFeature, PositiveClass = PositiveClass,
+                                     FeatureInclude = FeatureInclude, Maximize = "SENSITIVITY",
+                                     Accuracy = Accuracy, Specificity = constraint,
+                                     PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
+                                     Subsumption = Subsumption, BranchBound = BranchBound,
+                                     Parallel = Parallel)
+      return(model)
+    })
+  },
+  finally = ParallelLogger::logInfo('No model for specificity.')
+  )
+  
+  return(modelsCurve)
+}
+
+
+#' rocCurveExplore
+#'
+#' @return auc value for EXPLORE
+#' @export
+rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outcomeCount
+  
+  # TODO: input checks?
+  
+  # Combine all these results
+  curve_TPR <- c(1,0)
+  curve_FPR <- c(1,0)
+
+  for (c in length(modelsCurve):1) {
+    model <- modelsCurve[c]
     
-    model <- trainExplore(output_path = output_path, train_data = train_data, settings_path = settings_path, Maximize = "SENSITIVITY", Specificity = specificities[s], ...)
+    # Predict using train and test
+    predict <- tryCatch(as.numeric(Explore::predictExplore(model = model, test_data = data)))
     
-    # Extract sensitivity from results file
-    results <- paste(readLines(paste0(output_path, "train_data.result")), collapse="\n")
-    
-    sensitivity <- stringr::str_extract_all(results, "Train-set: .*?\u000A")[[1]]
-    sensitivity <- stringr::str_extract(results, "SE:.*? ")[[1]]
-    sensitivity <- stringr::str_remove_all(sensitivity, "SE:")
-    sensitivity <- stringr::str_replace_all(sensitivity, " ", "")
-    
-    sensitivities[s] <- as.numeric(sensitivity)
+    conf_matrix <- table(factor(predict, levels = c(0,1)), factor(labels, levels = c(0,1))) # binary prediction
+    performance <- caret::confusionMatrix(conf_matrix, positive = '1')
+
+    curve_TPR[c+2] <- performance$byClass['Sensitivity']
+    curve_FPR[c+2] <- 1 - performance$byClass['Specificity']
   }
   
-  auroc <- simple_auc(TPR = rev(sensitivities), FPR = rev(1 - specificities))
-  # plot(1-specificities, sensitivities)
+  roc <- pracma::trapz(curve_FPR[length(curve_FPR):1],curve_TPR[length(curve_TPR):1])
+  # TODO: check if I can use (already used) package/function?
+  # roc <- simple_auc(curve_FPR[length(curve_FPR):1],curve_TPR[length(curve_TPR):1])
   
-  return(auroc)
+  # TODO: return all spec/sens or models?
+  # TODO: output value AND plot
+  
+  return (roc)
 }
