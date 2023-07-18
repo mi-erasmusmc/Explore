@@ -6,7 +6,6 @@
 #'
 #' @return A parameter value, character.
 #' @importFrom stringr str_extract str_replace_all
-#' @export
 getSetting <- function(settings, parameter, type = "value") {
   extraction <- stringr::str_extract(settings, paste0(parameter , "=.*?\u000A"))[[1]] 
   extraction <- stringr::str_replace_all(extraction, "\\n", "")
@@ -33,8 +32,6 @@ getSetting <- function(settings, parameter, type = "value") {
 #'
 #' @return A setting parameter value
 #' @importFrom utils write.table
-#' 
-#' @export
 changeSetting <- function(settings, parameter, input, default_setting) {
   
   current_setting <- getSetting(settings, parameter, type = "complete")
@@ -77,8 +74,6 @@ changeSetting <- function(settings, parameter, input, default_setting) {
 #' 
 #' @importFrom farff writeARFF
 #' @importFrom utils write.table
-#'
-#' @export
 saveData <- function(output_path, train_data, file_name) {
   
   # Save data as arff file

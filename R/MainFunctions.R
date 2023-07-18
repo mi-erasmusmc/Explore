@@ -50,7 +50,7 @@ trainExplore <- function(train_data = NULL,
                          BranchBound = TRUE,
                          Parallel = FALSE) {
   
-
+  
   # Create output folder
   if(!endsWith(output_path, "/")) {
     warning("Output path should end with /, add this")
@@ -67,7 +67,7 @@ trainExplore <- function(train_data = NULL,
     OutputFile <- paste0(output_path, file_name, ".result")
   } else {
     checkmate::checkFileExists(OutputFile,
-                    add = errorMessage)
+                               add = errorMessage)
   }
   
   # check settings_path
@@ -100,7 +100,7 @@ trainExplore <- function(train_data = NULL,
                     combine = "and"
   )
   checkmate::reportAssertions(collection = errorMessage)
-
+  
   PrintSettings <- ifelse(PrintSettings == TRUE, "yes", "no")
   PrintPerformance <- ifelse(PrintPerformance == TRUE, "yes", "no")
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
@@ -160,7 +160,7 @@ trainExplore <- function(train_data = NULL,
   
   # Load model
   rule_string <- stringr::str_extract(results, "Best candidate \\(overall\\):.*?\u000A")
- 
+  
   # Clean string
   rule_string <- stringr::str_replace(rule_string, "Best candidate \\(overall\\):", "")
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
@@ -197,7 +197,6 @@ trainExplore <- function(train_data = NULL,
 #'
 #' @return Settings path
 #' @import checkmate
-#' @export
 settingsExplore <- function(settings,
                             output_path, # C++ cannot handle spaces in file path well, avoid those
                             file_name,
@@ -219,7 +218,7 @@ settingsExplore <- function(settings,
                             BranchBound = "yes",
                             Parallel = "no") {
   
-
+  
   # Insert location training data and cutoff file if train_data is entered
   if (!is.null(train_data)) {
     settings <- changeSetting(settings, parameter = "DataFile", input = paste0(output_path, file_name, ".arff"))
