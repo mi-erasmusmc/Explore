@@ -5,6 +5,7 @@ test_that("option 1: fully pre-specified settings file works", {
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
   output_path <- system.file("examples", "output", package = "Explore")
+  output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
   withr::local_package("farff")
@@ -24,6 +25,7 @@ test_that("option 2: pre-specified settings file with input data works", {
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
   output_path <- system.file("examples", "output", package = "Explore")
+  output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
   withr::local_package("farff")
@@ -42,6 +44,7 @@ test_that("option 3: only input parameters (no settings file) works", {
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
   output_path <- system.file("examples", "output", package = "Explore")
+  output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
   withr::local_package("farff")
@@ -60,6 +63,7 @@ test_that("prediction", {
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
   output_path <- system.file("examples", "output", package = "Explore")
+  output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
   withr::local_package("farff")
@@ -80,7 +84,7 @@ test_that("compute AUC", {
   settings_path <- system.file("examples", "iris.project", package = "Explore")
   output_path <- system.file("examples", "output", package = "Explore")
   # output_path <- system.file("examples", "output//", package = "Explore")
-  output_path <- paste0(output_path, "//")
+  output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
 
   # Required dependencies
