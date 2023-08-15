@@ -7,7 +7,7 @@
 trainExplore(
   train_data = NULL,
   settings_path = NULL,
-  output_path,
+  output_path = tempdir(),
   file_name = "train_data",
   OutputFile = NULL,
   StartRulelength = 1,
