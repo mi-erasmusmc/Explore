@@ -9,7 +9,7 @@ test_that("option 1: fully pre-specified settings file works", {
   output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
-  withr::local_package("farff")
+  # withr::local_package("farff")
   model <- Explore::trainExplore(output_path = output_path,
                                  file_name = "iris",
                                  train_data = data,
@@ -29,7 +29,7 @@ test_that("option 2: pre-specified settings file with input data works", {
   output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
-  withr::local_package("farff")
+  # withr::local_package("farff")
   model <- Explore::trainExplore(output_path = output_path,
                                  train_data = data,
                                  settings_path = settings_path,
@@ -48,7 +48,7 @@ test_that("option 3: only input parameters (no settings file) works", {
   output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
-  withr::local_package("farff")
+  # withr::local_package("farff")
   model <- Explore::trainExplore(output_path = output_path,
                                  file_name = "iris",
                                  train_data = data,
@@ -67,7 +67,7 @@ test_that("prediction", {
   output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
   # Required dependencies
-  withr::local_package("farff")
+  # withr::local_package("farff")
   model <- Explore::trainExplore(output_path = output_path,
                                  train_data = data,
                                  settings_path = settings_path,
@@ -89,7 +89,7 @@ test_that("compute AUC", {
   data <- farff::readARFF(data_path)
 
   # Required dependencies
-  withr::local_package("farff")
+  # withr::local_package("farff")
   auroc <- Explore::aurocEXPLORE(output_path = output_path,
                                  train_data = data,
                                  settings_path = settings_path,
