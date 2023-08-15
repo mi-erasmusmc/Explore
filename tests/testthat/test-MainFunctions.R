@@ -80,7 +80,7 @@ test_that("compute AUC", {
   settings_path <- system.file("examples", "iris.project", package = "Explore")
   output_path <- system.file("examples", "output", package = "Explore")
   # output_path <- system.file("examples", "output//", package = "Explore")
-  # output_path <- paste0(output_path, "//")
+  output_path <- paste0(output_path, "//")
   data <- farff::readARFF(data_path)
 
   # Required dependencies
