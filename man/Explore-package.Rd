@@ -8,4 +8,12 @@
 \description{
 This package includes the implementation of EXPLORE in C++ and connects it to R.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://cbarbozaerasmus.github.io/Explore/}
+  \item \url{https://mi-erasmusmc.github.io/Explore/}
+}
+
+}
 \keyword{internal}
