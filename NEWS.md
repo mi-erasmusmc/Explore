@@ -1,3 +1,7 @@
+# Explore 0.3.0
+
+* Package tested on Windows, MacOs and Linux. 
+
 # Explore 0.2.0
 
 * Added a `NEWS.md` file to track changes to the package.

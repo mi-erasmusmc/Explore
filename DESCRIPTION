@@ -1,7 +1,7 @@
 Package: Explore
 Type: Package
 Title: Exhaustive Procedure for LOgic-Rule Extraction
-Version: 0.2.0
+Version: 0.3.0
 Date: 2020-12-14
 Authors@R: c(
     person("Aniek", "Markus", , "a.markus@erasmusmc.nl", role = c("cre", aut")),
