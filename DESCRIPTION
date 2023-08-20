@@ -4,8 +4,8 @@ Title: Exhaustive Procedure for LOgic-Rule Extraction
 Version: 0.2.0
 Date: 2020-12-14
 Authors@R: c(
-    person("Aniek", "Markus", , "a.markus@erasmusmc.nl", role = c("aut"))
-    person("Cesar", "Barboza", , "c.barbozagutierrez@erasmusmc.nl", role = "aut"),
+    person("Aniek", "Markus", , "a.markus@erasmusmc.nl", role = c("cre", aut")),
+    person("Cesar", "Barboza", , "c.barbozagutierrez@erasmusmc.nl", role = c("aut")
   )
 Description: This package includes the implementation of EXPLORE in C++ and connects it to R. 
 License: GPL (>= 2)
