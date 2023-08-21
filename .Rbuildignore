@@ -26,3 +26,4 @@
 ^history$
 ^Report\.html$
 ^Report_files/$
+^cran-comments\.md$
