@@ -49,35 +49,7 @@ trainExplore <- function(train_data = NULL,
                          Subsumption = TRUE,
                          BranchBound = TRUE,
                          Parallel = FALSE) {
-  
-  ### Tests for EXPLORE using iris dataset
-                            
-  # data_path <- system.file("examples", "iris.arff", package = "Explore")
-  # data <- farff::readARFF(data_path)
-  # withr::local_package("farff")
-  # train_data <- data
-  # settings_path <- system.file("examples", "iris.project", package = "Explore")
-  # output_path <- system.file("examples", "output", package = "Explore")
-  # output_path <- paste0(output_path, "/")
-  # file_name = "iris"
-  # OutputFile <- NULL
-  # StartRulelength <- 1
-  # EndRulelength <- 3
-  # OperatorMethod <- "EXHAUSTIVE"
-  # CutoffMethod <- "RVAC"
-  # ClassFeature <- "'class'"
-  # PositiveClass <- '"Iris-versicolor"'
-  # FeatureInclude <- ""
-  # Maximize <- "ACCURACY"
-  # Accuracy <- 0
-  # Specificity <- 0
-  # PrintSettings <- TRUE
-  # PrintPerformance <- TRUE
-  # Subsumption <- TRUE
-  # BranchBound <- TRUE
-  # Parallel <- FALSE
-  
-  
+
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
     }
