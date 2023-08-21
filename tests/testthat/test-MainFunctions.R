@@ -1,20 +1,16 @@
 # TODO: check differences variable names with / without ''
 
-# vars config
-data_path <- system.file("examples", "iris.arff", package = "Explore")
-settings_path <- system.file("examples", "iris.project", package = "Explore")
-output_path <- tempdir()
-if (.Platform$OS.type == "windows") {
-  output_path <- gsub("\\\\", "/", output_path)
-}
-output_path <- paste0(output_path, "/")
-data <- farff::readARFF(data_path)
-
 test_that("option 1: fully pre-specified settings file works", {
   ### Tests for EXPLORE using iris dataset
-  # data_path <- system.file("examples", "iris.arff", package = "Explore")
-  # settings_path <- system.file("examples", "iris.project", package = "Explore")
-  # data <- farff::readARFF(data_path)
+  data_path <- system.file("examples", "iris.arff", package = "Explore")
+  settings_path <- system.file("examples", "iris.project", package = "Explore")
+  output_path <- paste0(tempdir(), "/", "Test1")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  output_path <- paste0(output_path, "/")
+  data <- farff::readARFF(data_path)
   model <- Explore::trainExplore(output_path = output_path,
                                  file_name = "iris",
                                  train_data = data,
@@ -29,12 +25,13 @@ test_that("option 2: pre-specified settings file with input data works", {
   ### Tests for EXPLORE using iris dataset
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
-  # output_path <- tempdir()
-  # if (.Platform$OS.type == "windows") {
-  #   output_path <- gsub("\\\\", "/", output_path)
-  # }
-  # output_path <- paste0(output_path, "/")
-  # data <- farff::readARFF(data_path)
+  output_path <- paste0(tempdir(), "/", "Test2")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  output_path <- paste0(output_path, "/")
+  data <- farff::readARFF(data_path)
   model <- Explore::trainExplore(output_path = output_path,
                                  train_data = data,
                                  settings_path = settings_path,
@@ -49,12 +46,13 @@ test_that("option 3: only input parameters (no settings file) works", {
   ### Tests for EXPLORE using iris dataset
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
-  # output_path <- tempdir()
-  # if (.Platform$OS.type == "windows") {
-  #   output_path <- gsub("\\\\", "/", output_path)
-  # }
-  # output_path <- paste0(output_path, "/")
-  # data <- farff::readARFF(data_path)
+  output_path <- paste0(tempdir(), "/", "Test3")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  output_path <- paste0(output_path, "/")
+  data <- farff::readARFF(data_path)
   model <- Explore::trainExplore(output_path = output_path,
                                  file_name = "iris",
                                  train_data = data,
@@ -69,12 +67,13 @@ test_that("prediction", {
   ### Tests for EXPLORE using iris dataset
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
-  # output_path <- tempdir()
-  # if (.Platform$OS.type == "windows") {
-  #   output_path <- gsub("\\\\", "/", output_path)
-  # }
-  # output_path <- paste0(output_path, "/")
-  # data <- farff::readARFF(data_path)
+  output_path <- paste0(tempdir(), "/", "Test4")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  output_path <- paste0(output_path, "/")
+  data <- farff::readARFF(data_path)
   model <- Explore::trainExplore(output_path = output_path,
                                  train_data = data,
                                  settings_path = settings_path,
@@ -89,12 +88,13 @@ test_that("prediction", {
 test_that("compute AUC", {
   data_path <- system.file("examples", "iris.arff", package = "Explore")
   settings_path <- system.file("examples", "iris.project", package = "Explore")
-  # output_path <- tempdir()
-  # if (.Platform$OS.type == "windows") {
-  #   output_path <- gsub("\\\\", "/", output_path)
-  # }
-  # output_path <- paste0(output_path, "/")
-  # data <- farff::readARFF(data_path)
+  output_path <- paste0(tempdir(), "/", "Test5")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  output_path <- paste0(output_path, "/")
+  data <- farff::readARFF(data_path)
   auroc <- Explore::aurocEXPLORE(output_path = output_path,
                                  train_data = data,
                                  settings_path = settings_path,
