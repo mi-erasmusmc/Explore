@@ -4,14 +4,14 @@
 \name{Explore-package}
 \alias{Explore}
 \alias{Explore-package}
-\title{Explore: Exhaustive Procedure for LOgic-Rule Extraction}
+\title{Explore: Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE)}
 \description{
-This package includes the implementation of EXPLORE in C++ and connects it to R.
+This package is the R Implementation of the Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE) in C++.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://cbarbozaerasmus.github.io/Explore/}
+  \item \url{https://github.com/mi-erasmusmc/Explore}
 }
 
 }

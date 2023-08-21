@@ -1,13 +1,13 @@
 Package: Explore
 Type: Package
-Title: Exhaustive Procedure for LOgic-Rule Extraction
+Title: Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE)
 Version: 0.3.0
 Date: 2020-12-14
 Authors@R: c(
     person("Aniek", "Markus", , "a.markus@erasmusmc.nl", role = c("cre", "aut"), comment = c(ORCID = "0000-0001-5779-4794")),
     person("Cesar", "Barboza", , "c.barbozagutierrez@erasmusmc.nl", role = c("aut"), comment = c(ORCID = "0009-0002-4453-3071"))
   )
-Description: This package includes the implementation of EXPLORE in C++ and connects it to R. 
+Description: This package is the R Implementation of the Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE) in C++. 
 License: GPL (>= 2)
 Depends:
     R (>= 3.6.1)
@@ -27,5 +27,5 @@ Suggests:
     withr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://cbarbozaerasmus.github.io/Explore/
-SystemRequirements: GNU make
+URL: https://github.com/mi-erasmusmc/Explore
+
