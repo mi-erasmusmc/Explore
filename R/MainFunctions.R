@@ -17,8 +17,8 @@
 #' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
 #' @param FeatureInclude Empty or string (should be name of one of columns in data train)
 #' @param Maximize One of list with strings, list = "ACCURACY", ...
-#' @param Accuracy Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)
-#' @param Specificity  float 0-1, default = 0
+#' @param Accuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param Specificity float 0-0.999, default = 0
 #' @param PrintSettings True or False
 #' @param PrintPerformance True or False
 #' @param Subsumption True or False
