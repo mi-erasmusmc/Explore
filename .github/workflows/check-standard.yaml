@@ -38,6 +38,19 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          
+      - name: Install system dependencies
+          if: runner.os == 'Linux'
+          run: |
+            while read -r cmd
+            do
+            eval sudo $cmd
+            done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+      
+      - name: Install libssh
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install libssh-dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
