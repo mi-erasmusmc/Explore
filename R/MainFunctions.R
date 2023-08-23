@@ -380,6 +380,7 @@ rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outc
     # Predict using train and test
     predict <- tryCatch(as.numeric(Explore::predictExplore(model = model, test_data = data)))
     
+    # Compute metrics
     conf_matrix <- table(factor(predict, levels = c(0,1)), factor(labels, levels = c(0,1))) # binary prediction
     performance <- caret::confusionMatrix(conf_matrix, positive = '1')
 
@@ -388,11 +389,6 @@ rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outc
   }
   
   roc <- pracma::trapz(curve_FPR[length(curve_FPR):1],curve_TPR[length(curve_TPR):1])
-  # TODO: check if I can use (already used) package/function?
-  # roc <- simple_auc(curve_FPR[length(curve_FPR):1],curve_TPR[length(curve_TPR):1])
-  
-  # TODO: return all spec/sens or models?
-  # TODO: output value AND plot
   
   return (roc)
 }

@@ -92,11 +92,3 @@ saveData <- function(output_path, train_data, file_name) {
   
   # TODO: Support other file formats?
 }
-
-simple_auc <- function(TPR, FPR){
-  # inputs already sorted, best scores first 
-  # TODO: different computation? is it same as standard packages (how LASSO computed)?
-  dFPR <- c(diff(FPR), 0)
-  dTPR <- c(diff(TPR), 0)
-  sum(TPR * dFPR) + sum(dTPR * dFPR)/2
-}
