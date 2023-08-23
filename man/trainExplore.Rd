@@ -54,9 +54,9 @@ trainExplore(
 
 \item{Maximize}{One of list with strings, list = "ACCURACY", ...}
 
-\item{Accuracy}{Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)}
+\item{Accuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
 
-\item{Specificity}{float 0-1, default = 0}
+\item{Specificity}{float 0-0.999, default = 0}
 
 \item{PrintSettings}{True or False}
 
