@@ -1,5 +1,7 @@
 # TODO: check differences variable names with / without ''
 
+Rcpp::compileAttributes()
+
 test_that("option 1: fully pre-specified settings file works", {
   ### Tests for EXPLORE using iris dataset
   data_path <- system.file("examples", "iris.arff", package = "Explore")
