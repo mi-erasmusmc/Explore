@@ -43,6 +43,7 @@ jobs:
         run: |
           install.packages('remotes')
           install.packages('knitr')
+          install.packages('testthat')
         shell: Rscript {0}
           
       - name: Install system dependencies
