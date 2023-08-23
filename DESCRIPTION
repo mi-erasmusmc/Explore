@@ -10,7 +10,7 @@ Authors@R: c(
 Description: This package is the R Implementation of the Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE) in C++. 
 License: GPL (>= 2)
 Depends:
-    R (>= 3.6.1)
+    R (>= 3.6.0)
 Imports: 
     checkmate,
     farff,
