@@ -39,9 +39,15 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
           
+     - name: Query dependencies
+        run: |
+          install.packages('remotes')
+        shell: Rscript {0}
+          
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
+          install.packages("remotes")
           while read -r cmd
           do
            eval sudo $cmd
