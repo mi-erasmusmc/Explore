@@ -16,11 +16,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Aniek Markus \email{a.markus@erasmusmc.nl} (\href{https://orcid.org/0000-0001-5779-4794}{ORCID})
+\strong{Maintainer}: Cesar Barboza \email{c.barbozagutierrez@erasmusmc.nl} (\href{https://orcid.org/0009-0002-4453-3071}{ORCID})
 
 Authors:
 \itemize{
-  \item Cesar Barboza \email{c.barbozagutierrez@erasmusmc.nl} (\href{https://orcid.org/0009-0002-4453-3071}{ORCID})
+  \item Aniek Markus \email{a.markus@erasmusmc.nl} (\href{https://orcid.org/0000-0001-5779-4794}{ORCID})
 }
 
 }
