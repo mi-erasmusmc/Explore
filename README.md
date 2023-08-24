@@ -1,8 +1,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/mi-erasmusmc/Explore/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/mi-erasmusmc/Explore/actions/workflows/check-standard.yaml)
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 ## Package overview
