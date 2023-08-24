@@ -5,8 +5,6 @@ SOURCES= C++/common.cpp C++/IOExplore/IOExplore.cpp C++/Explore/bin.cpp C++/Expl
 
 OBJECTS = ExploreInterface.o RcppExports.o $(SOURCES:.cpp=.o)
 
-PKG_CPPFLAGS = -pedantic
-
 all: $(SHLIB)
 
 clean:  @rm -f $(OBJECTS)
