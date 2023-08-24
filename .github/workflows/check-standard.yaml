@@ -38,6 +38,13 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
           
+      - name: R dependencies
+        run: |
+          install.packages('remotes')
+          install.packages('knitr')
+          install.packages('testthat')
+        shell: Rscript {0}
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
