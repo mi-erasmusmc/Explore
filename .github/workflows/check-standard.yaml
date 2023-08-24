@@ -38,26 +38,6 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
           
-      # - name: Query dependencies
-      #   run: |
-      #     install.packages('remotes')
-      #     install.packages('knitr')
-      #     install.packages('testthat')
-      #   shell: Rscript {0}
-          
-      # - name: Install system dependencies
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     while read -r cmd
-      #     do
-      #      eval sudo $cmd
-      #     done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
-
-      # - name: Install Linux libs
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     sudo apt-get install libfontconfig1-dev libssh-dev libxml2-dev libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libpng-dev libjpeg-dev
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
