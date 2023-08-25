@@ -7,11 +7,11 @@
 saveData(output_path, train_data, file_name)
 }
 \arguments{
-\item{output_path}{}
+\item{output_path}{A string declaring the path to the settings}
 
-\item{train_data}{}
+\item{train_data}{Train data}
 
-\item{file_name}{}
+\item{file_name}{A string declaring the the path to the file name}
 }
 \description{
 saveData

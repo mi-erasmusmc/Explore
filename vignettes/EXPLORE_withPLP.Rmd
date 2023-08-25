@@ -1,10 +1,6 @@
 ---
 title: "Code examples how to use EXPLORE with PLP package"
 output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{HowToUseEXPLORE}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}

@@ -3,6 +3,7 @@
 ^vignettes$
 ^output$
 ^docs$
+^doc$
 ^Meta$
 ^README\.Rmd$
 ^LICENSE\.md$
@@ -10,4 +11,19 @@
 ^_pkgdown\.yml$
 ^pkgdown$
 ^Report\.html$
+^EXPLORE_withPLP\.Rmd$
 ^Report_files$
+^.*\.o$
+^\.o$
+^\.obj$
+^\.DS_STORE$
+^\.idea/$
+^\.so$
+^\.dylib$
+^\.dll$
+^\.a$
+^\.lib$
+^history$
+^Report\.html$
+^Report_files/$
+^cran-comments\.md$

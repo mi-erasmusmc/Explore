@@ -1,26 +1,114 @@
-# TODO: add descriptions for package manual
-
-#' trainExplore This function finds the best decision rule for the given dataset based using EXPLORE. 
+#' Finds decision rule using Explore
+#' 
+#' `trainExplore()` finds the best decision rule for the given data set based using EXPLORE. 
 #'
-#' @param output_path 
-#' @param train_data 
-#' @param settings_path 
-#' @param file_name 
-#' @param ... 
+#' @param train_data Train data
+#' @param output_path A string declaring the path to the settings
+#' @param settings_path A string declaring the path to the settings
+#' @param output_path A string declaring the path to the settings 
+#' @param file_name A string declaring the the path to the file name
+#' @param train_data Train data
+#' @param OutputFile A string declaring the path to the output file
+#' @param StartRulelength Positive integer
+#' @param EndRulelength Positive integer
+#' @param OperatorMethod One of list with strings, e.g. list = "EXHAUSTIVE", ...
+#' @param CutoffMethod One of list with strings, list = "RVAC", ...
+#' @param ClassFeature  String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
+#' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
+#' @param FeatureInclude Empty or string (should be name of one of columns in data train)
+#' @param Maximize One of list with strings, list = "ACCURACY", ...
+#' @param Accuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param Specificity float 0-0.999, default = 0
+#' @param PrintSettings True or False
+#' @param PrintPerformance True or False
+#' @param Subsumption True or False
+#' @param BranchBound True or False
+#' @param Parallel True or False
 #'
 #' @return Model
 #' @export
-#' @import Rcpp 
+#' @import Rcpp checkmate
 #' @importFrom RcppParallel RcppParallelLibs
-trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, file_name = "train_data", ...) {
-  
+trainExplore <- function(train_data = NULL,
+                         settings_path = NULL,
+                         output_path = tempdir(), 
+                         file_name = "train_data",
+                         OutputFile = NULL, 
+                         StartRulelength = 1,
+                         EndRulelength = 3,
+                         OperatorMethod = "EXHAUSTIVE",
+                         CutoffMethod = "RVAC",
+                         ClassFeature = "'class'",
+                         PositiveClass = "'Iris-versicolor'",
+                         FeatureInclude = "",
+                         Maximize = "ACCURACY",
+                         Accuracy = 0,
+                         Specificity = 0,
+                         PrintSettings = TRUE,
+                         PrintPerformance = TRUE,
+                         Subsumption = TRUE,
+                         BranchBound = TRUE,
+                         Parallel = FALSE) {
+
+  if (!dir.exists(output_path)) {
+    dir.create(output_path, recursive = TRUE)
+    }
+
   # Create output folder
   if(!endsWith(output_path, "/")) {
     warning("Output path should end with /, add this")
     output_path <- paste0(output_path, "/")
   }
   
-  if (!file.exists(output_path)) {dir.create(output_path, recursive = TRUE)}
+  # Variable checks
+  errorMessage <- makeAssertCollection()
+  
+  # check output file
+  if(is.null(OutputFile)) {
+    OutputFile <- paste0(output_path, file_name, ".result")
+  } else {
+    checkmate::checkFileExists(OutputFile,
+                    add = errorMessage)
+  }
+  
+  # check settings_path
+  if (!is.null(settings_path)) {
+    checkmate::assertFileExists(
+      settings_path,
+      add = errorMessage
+    )
+  }
+  
+  # check vars
+  checkmate::assert(checkClass(train_data, "data.frame"),
+                    checkPathForOutput(output_path, overwrite = TRUE),
+                    checkDouble(StartRulelength),
+                    checkDouble(EndRulelength),
+                    checkString(CutoffMethod),
+                    checkString(OperatorMethod),
+                    checkString(ClassFeature),
+                    checkString(PositiveClass),
+                    checkString(FeatureInclude),
+                    checkString(Maximize),
+                    checkDouble(Accuracy),
+                    checkDouble(Specificity),
+                    checkLogical(PrintSettings),
+                    checkLogical(PrintPerformance),
+                    checkLogical(Subsumption),
+                    checkLogical(BranchBound),
+                    checkLogical(Parallel),
+                    add = errorMessage,
+                    combine = "and"
+  )
+  checkmate::reportAssertions(collection = errorMessage)
+
+  PrintSettings <- ifelse(PrintSettings == TRUE, "yes", "no")
+  PrintPerformance <- ifelse(PrintPerformance == TRUE, "yes", "no")
+  Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
+  BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
+  Parallel <- ifelse(Parallel == TRUE, "yes", "no")
+  Accuracy <- ifelse(Accuracy == 0, "", Specificity)
+  Specificity <- ifelse(Specificity == 0, "", Specificity)
   
   # Create project setting
   if (is.null(settings_path)) {
@@ -30,8 +118,7 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
       # Load template
       settings <- paste0(paste(readLines(paste0(system.file(package="Explore"),"/settings/template.project")), collapse="\n"),"\n")
     }
-  }
-  else {
+  } else {
     # Load settings
     settings <- paste0(paste(readLines(settings_path), collapse="\n"),"\n")
   }
@@ -45,7 +132,26 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
   }
   
   # Create selected settings 
-  settings_path <- settingsExplore(settings, output_path, file_name, train_data, ...)
+  settings_path <- settingsExplore(settings, 
+                                   output_path = output_path, # C++ cannot handle spaces in file path well, avoid those
+                                   file_name = file_name,
+                                   train_data = train_data,
+                                   OutputFile = OutputFile, 
+                                   StartRulelength = StartRulelength,
+                                   EndRulelength = EndRulelength,
+                                   OperatorMethod = OperatorMethod,
+                                   CutoffMethod = CutoffMethod,
+                                   ClassFeature = ClassFeature,
+                                   PositiveClass = PositiveClass,
+                                   FeatureInclude = FeatureInclude,
+                                   Maximize = Maximize,
+                                   Accuracy = Accuracy,
+                                   Specificity = Specificity,
+                                   PrintSettings = PrintSettings,
+                                   PrintPerformance = PrintPerformance,
+                                   Subsumption = Subsumption,
+                                   BranchBound = BranchBound,
+                                   Parallel = Parallel)
   
   # Train EXPLORE model
   # TODO: allow to enter settings file instead of path?
@@ -67,76 +173,79 @@ trainExplore <- function(output_path, train_data = NULL, settings_path = NULL, f
 }
 
 
-#' settingsExplore
+#' Writes settings in a table for Explore
+#' 
+#' `settingsExplore()` defines the parameters used by Explore
 #'
-#' @param settings 
-#' @param output_path 
-#' @param file_name 
-#' @param train_data 
-#' @param OutputFile 
-#' @param StartRulelength 
-#' @param EndRulelength 
-#' @param OperatorMethod 
-#' @param CutoffMethod 
-#' @param ClassFeature 
-#' @param PositiveClass 
-#' @param FeatureInclude 
-#' @param Maximize 
-#' @param Accuracy 
-#' @param Specificity 
-#' @param PrintSettings 
-#' @param PrintPerformance 
-#' @param Subsumption 
-#' @param BranchBound 
-#' @param Parallel 
+#' @param settings Settings parameter
+#' @param output_path A string declaring the path to the settings 
+#' @param file_name A string declaring the the path to the file name
+#' @param train_data Train data
+#' @param OutputFile A string declaring the path to the output file
+#' @param StartRulelength Positive integer
+#' @param EndRulelength Positive integer
+#' @param OperatorMethod One of list with strings, e.g. list = "EXHAUSTIVE", ...
+#' @param CutoffMethod One of list with strings, list = "RVAC", ...
+#' @param ClassFeature  String, should be name of one of columns in data train.
+#' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train)
+#' @param FeatureInclude Empty or string (should be name of one of columns in data train)
+#' @param Maximize One of list with strings, list = "ACCURACY", ...
+#' @param Accuracy Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param Specificity  float 0-1, default = 0
+#' @param PrintSettings True or False
+#' @param PrintPerformance True or False
+#' @param Subsumption True or False
+#' @param BranchBound True or False
+#' @param Parallel True or False
 #'
 #' @return Settings path
+#' @import checkmate
 #' @export
 settingsExplore <- function(settings,
                             output_path, # C++ cannot handle spaces in file path well, avoid those
                             file_name,
                             train_data = NULL,
                             OutputFile = NULL, 
-                            StartRulelength = NULL,
-                            EndRulelength = NULL,
-                            OperatorMethod = NULL,
+                            StartRulelength = 1,
+                            EndRulelength = 3,
+                            OperatorMethod = "EXHAUSTIVE",
                             CutoffMethod = NULL,
                             ClassFeature,
                             PositiveClass,
-                            FeatureInclude = NULL,
-                            Maximize = NULL,
-                            Accuracy = NULL,
-                            Specificity = NULL,
-                            PrintSettings = NULL,
-                            PrintPerformance = NULL,
-                            Subsumption = NULL,
-                            BranchBound = NULL,
-                            Parallel = NULL) {
+                            FeatureInclude = "",
+                            Maximize = "ACCURACY",
+                            Accuracy = 0,
+                            Specificity = 0,
+                            PrintSettings = "yes",
+                            PrintPerformance = "yes",
+                            Subsumption = "yes",
+                            BranchBound = "yes",
+                            Parallel = "no") {
   
+
   # Insert location training data and cutoff file if train_data is entered
   if (!is.null(train_data)) {
-    settings <- changeSetting(settings, parameter = "DataFile", input = paste0(output_path, file_name, ".arff"), default_setting = NA)
-    settings <- changeSetting(settings, parameter = "CutoffFile", input = paste0(output_path, file_name, ".cutoff"), default_setting = NA)
-    
+    settings <- changeSetting(settings, parameter = "DataFile", input = paste0(output_path, file_name, ".arff"))
+    settings <- changeSetting(settings, parameter = "CutoffFile", input = paste0(output_path, file_name, ".cutoff"))
     settings <- changeSetting(settings, parameter = "ClassFeature", input = ClassFeature, default_setting = NA)
     settings <- changeSetting(settings, parameter = "PositiveClass", input = PositiveClass, default_setting = NA)
   }
   
   # Insert other settings if given and default if @ in template
-  settings <- changeSetting(settings, parameter = "OutputFile", input = OutputFile, default_setting = paste0(output_path, file_name, ".result"))
-  settings <- changeSetting(settings, parameter = "StartRulelength", input = StartRulelength, default_setting = 1)
-  settings <- changeSetting(settings, parameter = "EndRulelength", input = EndRulelength, default_setting = 3)
-  settings <- changeSetting(settings, parameter = "OperatorMethod", input = OperatorMethod, default_setting = "EXHAUSTIVE")
-  settings <- changeSetting(settings, parameter = "CutoffMethod", input = CutoffMethod, default_setting = "RVAC")
-  settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude, default_setting = "")
-  settings <- changeSetting(settings, parameter = "Maximize", input = Maximize, default_setting = "ACCURACY")
-  settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy, default_setting = "custom")
-  settings <- changeSetting(settings, parameter = "Specificity", input = Specificity, default_setting = "")
-  settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings, default_setting = "yes")
-  settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance, default_setting = "yes")
-  settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption, default_setting = "yes")
-  settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound, default_setting = "yes")
-  settings <- changeSetting(settings, parameter = "Parallel", input = Parallel, default_setting = "no")
+  settings <- changeSetting(settings, parameter = "OutputFile", input = OutputFile)
+  settings <- changeSetting(settings, parameter = "StartRulelength", input = StartRulelength)
+  settings <- changeSetting(settings, parameter = "EndRulelength", input = EndRulelength)
+  settings <- changeSetting(settings, parameter = "OperatorMethod", input = OperatorMethod)
+  settings <- changeSetting(settings, parameter = "CutoffMethod", input = CutoffMethod)
+  settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude)
+  settings <- changeSetting(settings, parameter = "Maximize", input = Maximize)
+  settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy)
+  settings <- changeSetting(settings, parameter = "Specificity", input = Specificity)
+  settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings)
+  settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance)
+  settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption)
+  settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound)
+  settings <- changeSetting(settings, parameter = "Parallel", input = Parallel)
   
   # Save settings file
   settings_path <- paste0(output_path, file_name,".project")
@@ -149,11 +258,14 @@ settingsExplore <- function(settings,
   return(settings_path)
 }
 
-#' predictExplore
+#' Prediction with Explore
+#' 
+#' `predictExplore()` executes a prediction using Explore 
 #'
-#' @param model 
-#' @param test_data 
-#'
+#' @param model Model to run predictions
+#' @param test_data Test data
+#' 
+#' @import checkmate
 #' @importFrom stringr str_split_fixed
 #' @export
 predictExplore <- function(model, test_data) {
@@ -193,12 +305,13 @@ predictExplore <- function(model, test_data) {
 
 #' aucrocExplore
 #'
-#' @param output_path 
-#' @param train_data 
-#' @param settings_path 
-#' @param file_name 
-#' @param ... 
+#' @param output_path A string declaring the path to the settings
+#' @param train_data Train data
+#' @param settings_path A string declaring the path to the settings
+#' @param file_name A string declaring the the path to the file name
+#' @param ... List of arguments
 #'
+#' @import checkmate
 #' @return auroc
 #' @export
 aurocEXPLORE <- function(output_path, train_data, settings_path, file_name, ...) {

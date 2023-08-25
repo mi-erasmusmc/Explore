@@ -7,11 +7,11 @@
 getSetting(settings, parameter, type = "value")
 }
 \arguments{
-\item{settings}{}
+\item{settings}{Settings parameter, string}
 
-\item{parameter}{}
+\item{parameter}{Parameter value, string}
 
-\item{type}{}
+\item{type}{Type value, string}
 }
 \value{
 A parameter value, character.

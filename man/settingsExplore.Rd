@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{settingsExplore}
 \alias{settingsExplore}
-\title{settingsExplore}
+\title{Writes settings in a table for Explore}
 \usage{
 settingsExplore(
   settings,
@@ -10,67 +10,67 @@ settingsExplore(
   file_name,
   train_data = NULL,
   OutputFile = NULL,
-  StartRulelength = NULL,
-  EndRulelength = NULL,
-  OperatorMethod = NULL,
+  StartRulelength = 1,
+  EndRulelength = 3,
+  OperatorMethod = "EXHAUSTIVE",
   CutoffMethod = NULL,
   ClassFeature,
   PositiveClass,
-  FeatureInclude = NULL,
-  Maximize = NULL,
-  Accuracy = NULL,
-  Specificity = NULL,
-  PrintSettings = NULL,
-  PrintPerformance = NULL,
-  Subsumption = NULL,
-  BranchBound = NULL,
-  Parallel = NULL
+  FeatureInclude = "",
+  Maximize = "ACCURACY",
+  Accuracy = 0,
+  Specificity = 0,
+  PrintSettings = "yes",
+  PrintPerformance = "yes",
+  Subsumption = "yes",
+  BranchBound = "yes",
+  Parallel = "no"
 )
 }
 \arguments{
-\item{settings}{}
+\item{settings}{Settings parameter}
 
-\item{output_path}{}
+\item{output_path}{A string declaring the path to the settings}
 
-\item{file_name}{}
+\item{file_name}{A string declaring the the path to the file name}
 
-\item{train_data}{}
+\item{train_data}{Train data}
 
-\item{OutputFile}{}
+\item{OutputFile}{A string declaring the path to the output file}
 
-\item{StartRulelength}{}
+\item{StartRulelength}{Positive integer}
 
-\item{EndRulelength}{}
+\item{EndRulelength}{Positive integer}
 
-\item{OperatorMethod}{}
+\item{OperatorMethod}{One of list with strings, e.g. list = "EXHAUSTIVE", ...}
 
-\item{CutoffMethod}{}
+\item{CutoffMethod}{One of list with strings, list = "RVAC", ...}
 
-\item{ClassFeature}{}
+\item{ClassFeature}{String, should be name of one of columns in data train.}
 
-\item{PositiveClass}{}
+\item{PositiveClass}{1 or string (?) (should be one of elements of column 'ClassFeature' in data train)}
 
-\item{FeatureInclude}{}
+\item{FeatureInclude}{Empty or string (should be name of one of columns in data train)}
 
-\item{Maximize}{}
+\item{Maximize}{One of list with strings, list = "ACCURACY", ...}
 
-\item{Accuracy}{}
+\item{Accuracy}{Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)}
 
-\item{Specificity}{}
+\item{Specificity}{float 0-1, default = 0}
 
-\item{PrintSettings}{}
+\item{PrintSettings}{True or False}
 
-\item{PrintPerformance}{}
+\item{PrintPerformance}{True or False}
 
-\item{Subsumption}{}
+\item{Subsumption}{True or False}
 
-\item{BranchBound}{}
+\item{BranchBound}{True or False}
 
-\item{Parallel}{}
+\item{Parallel}{True or False}
 }
 \value{
 Settings path
 }
 \description{
-settingsExplore
+`settingsExplore()` defines the parameters used by Explore
 }
