@@ -1,7 +1,7 @@
 
 // [[Rcpp::depends(BH)]]
 #include <Rcpp.h>
-#include "C++/CMExplore/main.h"
+#include "C++/CMExplore/mainforR.h"
 #include "C++/CMExplore/initialise.h"
 #include "../src/C++/Explore/explore.h"
 
@@ -23,7 +23,7 @@ void runExplore(Rcpp::CharacterVector input) {
   int argc = (int)cstrings.size()+1;
   char** argv = cstrings.data();
   
-  int res = main(argc, argv);
+  int res = mainforR(argc, argv);
 }
 
 /*** R
@@ -36,7 +36,7 @@ void runExplore(Rcpp::CharacterVector input) {
 # runExplore(input)
 */
 
-int main(int argc, char* argv[])
+int mainforR(int argc, char* argv[])
 {
   ExploreSettings ProjectSettings;
   

@@ -7,7 +7,7 @@
 trainExplore(
   train_data = NULL,
   settings_path = NULL,
-  output_path,
+  output_path = tempdir(),
   file_name = "train_data",
   OutputFile = NULL,
   StartRulelength = 1,
@@ -52,11 +52,11 @@ trainExplore(
 
 \item{FeatureInclude}{Empty or string (should be name of one of columns in data train)}
 
-\item{Maximize}{One of list with strings, list = "ACCURACY", ...}
+\item{Maximize}{One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...}
 
-\item{Accuracy}{Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)}
+\item{Accuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
 
-\item{Specificity}{float 0-1, default = 0}
+\item{Specificity}{float 0-0.999, default = 0}
 
 \item{PrintSettings}{True or False}
 

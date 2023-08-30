@@ -11,6 +11,12 @@ out.width = "100%"
 )
 ```
 
+  <!-- badges: start -->
+  [![R-CMD-check](https://github.com/mi-erasmusmc/Explore/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/mi-erasmusmc/Explore/actions/workflows/check-standard.yaml)
+  [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+  [![Codecov test coverage](https://codecov.io/github/mi-erasmusmc/Explore/branch/develop/graph/badge.svg)](https://app.codecov.io/github/mi-erasmusmc/Explore?branch=develop)
+  <!-- badges: end -->
+
 ## Package overview
 Functions to find a short and accurate decision rule in disjunctive normal form using the Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE) algorithm. The application performs and exhaustive search on all Boolean Normal Form decision rules.
 

@@ -1,7 +1,7 @@
 # Makevars
 CXX_STD = CXX11 -mmacosx-version-min=10.15
 
-SOURCES=$(wildcard C++/*.cpp C++/IOExplore/*.cpp C++/Explore/*.cpp C++/CMExplore/*.cpp)
+SOURCES= C++/common.cpp C++/IOExplore/IOExplore.cpp C++/Explore/bin.cpp C++/Explore/candidate.cpp C++/Explore/classdef.cpp C++/Explore/condition.cpp C++/Explore/conjunction.cpp C++/Explore/constraint.cpp C++/Explore/cutoff.cpp C++/Explore/explore.cpp C++/Explore/feature.cpp C++/Explore/mandatory.cpp C++/Explore/observation.cpp C++/Explore/partition.cpp C++/Explore/performance.cpp C++/Explore/population.cpp C++/Explore/roc.cpp C++/Explore/rocpair.cpp C++/Explore/rule.cpp C++/Explore/set.cpp C++/Explore/timing.cpp
 
 OBJECTS = ExploreInterface.o RcppExports.o $(SOURCES:.cpp=.o)
 
