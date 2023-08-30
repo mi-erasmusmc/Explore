@@ -4,14 +4,31 @@
 \name{Explore-package}
 \alias{Explore}
 \alias{Explore-package}
-\title{Explore: Exhaustive Procedure for LOgic-Rule Extraction}
+\title{Explore: Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE)}
 \description{
-This package includes the implementation of EXPLORE in C++ and connects it to R.
+This package is the R Implementation of the Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE) in C++.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mi-erasmusmc/Explore}
+}
+
+}
+\author{
+\strong{Maintainer}: Cesar Barboza \email{c.barbozagutierrez@erasmusmc.nl} (\href{https://orcid.org/0009-0002-4453-3071}{ORCID})
+
+Authors:
+\itemize{
+  \item Aniek Markus \email{a.markus@erasmusmc.nl} (\href{https://orcid.org/0000-0001-5779-4794}{ORCID})
+}
+
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://cbarbozaerasmus.github.io/Explore/}
+  \item \url{https://mi-erasmusmc.github.io/Explore/}
 }
 
 }

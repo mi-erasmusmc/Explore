@@ -14,7 +14,7 @@
 IOExplore      *MyIOExplore;                                              		// Input object
 Explore        *MyExplore;                                                 		// Explore core object
 
-int main(int argc, char* argv[]);
+// int main(int argc, char* argv[]);
 
 int mainforR(int argc, char* argv[]);
 

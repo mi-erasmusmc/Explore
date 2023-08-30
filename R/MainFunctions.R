@@ -5,7 +5,6 @@
 #' @param train_data Train data
 #' @param output_path A string declaring the path to the settings
 #' @param settings_path A string declaring the path to the settings
-#' @param settings Settings parameter
 #' @param output_path A string declaring the path to the settings 
 #' @param file_name A string declaring the the path to the file name
 #' @param train_data Train data
@@ -18,8 +17,8 @@
 #' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
 #' @param FeatureInclude Empty or string (should be name of one of columns in data train)
 #' @param Maximize One of list with strings, list = "ACCURACY", ...
-#' @param Accuracy Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)
-#' @param Specificity  float 0-1, default = 0
+#' @param Accuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param Specificity float 0-0.999, default = 0
 #' @param PrintSettings True or False
 #' @param PrintPerformance True or False
 #' @param Subsumption True or False
@@ -32,7 +31,7 @@
 #' @importFrom RcppParallel RcppParallelLibs
 trainExplore <- function(train_data = NULL,
                          settings_path = NULL,
-                         output_path, 
+                         output_path = tempdir(), 
                          file_name = "train_data",
                          OutputFile = NULL, 
                          StartRulelength = 1,
@@ -50,15 +49,16 @@ trainExplore <- function(train_data = NULL,
                          Subsumption = TRUE,
                          BranchBound = TRUE,
                          Parallel = FALSE) {
-  
+
+  if (!dir.exists(output_path)) {
+    dir.create(output_path, recursive = TRUE)
+    }
 
   # Create output folder
   if(!endsWith(output_path, "/")) {
     warning("Output path should end with /, add this")
     output_path <- paste0(output_path, "/")
   }
-  
-  if (!file.exists(output_path)) {dir.create(output_path, recursive = TRUE)}
   
   # Variable checks
   errorMessage <- makeAssertCollection()
@@ -107,6 +107,8 @@ trainExplore <- function(train_data = NULL,
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
+  Accuracy <- ifelse(Accuracy == 0, "", Specificity)
+  Specificity <- ifelse(Specificity == 0, "", Specificity)
   
   # Create project setting
   if (is.null(settings_path)) {

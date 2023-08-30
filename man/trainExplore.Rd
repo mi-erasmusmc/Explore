@@ -5,23 +5,68 @@
 \title{Finds decision rule using Explore}
 \usage{
 trainExplore(
-  output_path,
   train_data = NULL,
   settings_path = NULL,
+  output_path = tempdir(),
   file_name = "train_data",
-  ...
+  OutputFile = NULL,
+  StartRulelength = 1,
+  EndRulelength = 3,
+  OperatorMethod = "EXHAUSTIVE",
+  CutoffMethod = "RVAC",
+  ClassFeature = "'class'",
+  PositiveClass = "'Iris-versicolor'",
+  FeatureInclude = "",
+  Maximize = "ACCURACY",
+  Accuracy = 0,
+  Specificity = 0,
+  PrintSettings = TRUE,
+  PrintPerformance = TRUE,
+  Subsumption = TRUE,
+  BranchBound = TRUE,
+  Parallel = FALSE
 )
 }
 \arguments{
-\item{output_path}{A string declaring the path to the settings}
-
 \item{train_data}{Train data}
 
 \item{settings_path}{A string declaring the path to the settings}
 
+\item{output_path}{A string declaring the path to the settings}
+
 \item{file_name}{A string declaring the the path to the file name}
 
-\item{...}{A list of arguments}
+\item{OutputFile}{A string declaring the path to the output file}
+
+\item{StartRulelength}{Positive integer}
+
+\item{EndRulelength}{Positive integer}
+
+\item{OperatorMethod}{One of list with strings, e.g. list = "EXHAUSTIVE", ...}
+
+\item{CutoffMethod}{One of list with strings, list = "RVAC", ...}
+
+\item{ClassFeature}{String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'}
+
+\item{PositiveClass}{1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'}
+
+\item{FeatureInclude}{Empty or string (should be name of one of columns in data train)}
+
+\item{Maximize}{One of list with strings, list = "ACCURACY", ...}
+
+\item{Accuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
+
+\item{Specificity}{float 0-0.999, default = 0}
+
+\item{PrintSettings}{True or False}
+
+\item{PrintPerformance}{True or False}
+
+\item{Subsumption}{True or False}
+
+\item{BranchBound}{True or False}
+
+\item{Parallel}{True or False}
 }
 \value{
 Model
