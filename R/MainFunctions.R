@@ -18,6 +18,7 @@
 #' @param FeatureInclude Empty or string (should be name of one of columns in data train)
 #' @param Maximize One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...
 #' @param Accuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param BalancedAccuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
 #' @param Specificity float 0-0.999, default = 0
 #' @param PrintSettings True or False
 #' @param PrintPerformance True or False
@@ -43,6 +44,7 @@ trainExplore <- function(train_data = NULL,
                          FeatureInclude = "",
                          Maximize = "ACCURACY",
                          Accuracy = 0,
+                         BalancedAccuracy = 0,
                          Specificity = 0,
                          PrintSettings = TRUE,
                          PrintPerformance = TRUE,
@@ -91,6 +93,7 @@ trainExplore <- function(train_data = NULL,
                     checkString(FeatureInclude),
                     checkString(Maximize),
                     checkDouble(Accuracy),
+                    checkDouble(BalancedAccuracy),
                     checkDouble(Specificity),
                     checkLogical(PrintSettings),
                     checkLogical(PrintPerformance),
@@ -107,7 +110,8 @@ trainExplore <- function(train_data = NULL,
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
-  Accuracy <- ifelse(Accuracy == 0, "", Specificity)
+  Accuracy <- ifelse(Accuracy == 0, "", Accuracy)
+  BalancedAccuracy <- ifelse(BalancedAccuracy == 0, "", BalancedAccuracy)
   Specificity <- ifelse(Specificity == 0, "", Specificity)
   
   # Create project setting
@@ -146,6 +150,7 @@ trainExplore <- function(train_data = NULL,
                                    FeatureInclude = FeatureInclude,
                                    Maximize = Maximize,
                                    Accuracy = Accuracy,
+                                   BalancedAccuracy = BalancedAccuracy,
                                    Specificity = Specificity,
                                    PrintSettings = PrintSettings,
                                    PrintPerformance = PrintPerformance,
@@ -214,6 +219,7 @@ settingsExplore <- function(settings,
                             FeatureInclude = "",
                             Maximize = "ACCURACY",
                             Accuracy = 0,
+                            BalancedAccuracy = 0,
                             Specificity = 0,
                             PrintSettings = "yes",
                             PrintPerformance = "yes",
@@ -239,6 +245,7 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude)
   settings <- changeSetting(settings, parameter = "Maximize", input = Maximize)
   settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy)
+  settings <- changeSetting(settings, parameter = "BalancedAccuracy", input = BalancedAccuracy)
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity)
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings)
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance)
@@ -327,6 +334,7 @@ modelsCurveExplore <- function(train_data = NULL,
                                FeatureInclude = "",
                                Maximize = "ACCURACY",
                                Accuracy = 0,
+                               BalancedAccuracy = 0,
                                Specificity = 0,
                                PrintSettings = TRUE,
                                PrintPerformance = TRUE,
@@ -351,7 +359,7 @@ modelsCurveExplore <- function(train_data = NULL,
                                      OperatorMethod = OperatorMethod, CutoffMethod = CutoffMethod,
                                      ClassFeature = ClassFeature, PositiveClass = PositiveClass,
                                      FeatureInclude = FeatureInclude, Maximize = "SENSITIVITY",
-                                     Accuracy = Accuracy, Specificity = constraint,
+                                     Accuracy = Accuracy, BalancedAccuracy = BalancedAccuracy, Specificity = constraint,
                                      PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
                                      Subsumption = Subsumption, BranchBound = BranchBound,
                                      Parallel = Parallel)
