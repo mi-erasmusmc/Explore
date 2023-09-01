@@ -95,11 +95,17 @@ test_that("compute AUC", {
   }
   output_path <- paste0(output_path, "/")
   data <- farff::readARFF(data_path)
-  auroc <- Explore::aurocEXPLORE(output_path = output_path,
-                                 train_data = data,
-                                 settings_path = settings_path,
-                                 ClassFeature = "'class'",
-                                 PositiveClass = '"Iris-versicolor"')
+  
+  modelsCurve <- Explore::modelsCurveExplore(output_path = output_path,
+                                             train_data = data,
+                                             settings_path = settings_path,
+                                             ClassFeature = "'class'",
+                                             PositiveClass = '"Iris-versicolor"')
+  
+  auroc <- Explore::rocCurveExplore(modelsCurve = modelsCurve,
+                                    data = data,
+                                    labels = ifelse(data["class"] == "Iris-versicolor", 1, 0))
+  
   expect_equal(class(auroc), "numeric")
   expect_true(auroc < 100)
   expect_true(auroc > 0)
