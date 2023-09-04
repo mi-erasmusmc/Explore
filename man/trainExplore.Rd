@@ -19,6 +19,7 @@ trainExplore(
   FeatureInclude = "",
   Maximize = "ACCURACY",
   Accuracy = 0,
+  BalancedAccuracy = 0,
   Specificity = 0,
   PrintSettings = TRUE,
   PrintPerformance = TRUE,
@@ -55,6 +56,8 @@ trainExplore(
 \item{Maximize}{One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...}
 
 \item{Accuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
+
+\item{BalancedAccuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
 
 \item{Specificity}{float 0-0.999, default = 0}
 

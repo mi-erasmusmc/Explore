@@ -19,6 +19,7 @@ modelsCurveExplore(
   FeatureInclude = "",
   Maximize = "ACCURACY",
   Accuracy = 0,
+  BalancedAccuracy = 0,
   Specificity = 0,
   PrintSettings = TRUE,
   PrintPerformance = TRUE,

@@ -24,6 +24,7 @@ FeatureRule=
 [Constraints]
 Maximize=ACCURACY
 Accuracy=
+BalancedAccuracy=
 Specificity=
 [Output]
 OutputMethod=BEST

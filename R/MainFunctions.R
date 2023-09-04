@@ -51,11 +51,11 @@ trainExplore <- function(train_data = NULL,
                          Subsumption = TRUE,
                          BranchBound = TRUE,
                          Parallel = FALSE) {
-
+  
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
-    }
-
+  }
+  
   # Create output folder
   if(!endsWith(output_path, "/")) {
     warning("Output path should end with /, add this")
@@ -363,10 +363,11 @@ modelsCurveExplore <- function(train_data = NULL,
                                      PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
                                      Subsumption = Subsumption, BranchBound = BranchBound,
                                      Parallel = Parallel)
+      
       return(model)
     })
   },
-  finally = ParallelLogger::logInfo('No model for specificity.')
+  finally = warning("No model for specificity.")
   )
   
   return(modelsCurve)
@@ -377,6 +378,7 @@ modelsCurveExplore <- function(train_data = NULL,
 #'
 #' @return auc value for EXPLORE
 #' @export
+#' @importFrom caret confusionMatrix
 rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outcomeCount
   
   # TODO: input checks?
@@ -384,7 +386,7 @@ rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outc
   # Combine all these results
   curve_TPR <- c(1,0)
   curve_FPR <- c(1,0)
-
+  
   for (c in length(modelsCurve):1) {
     model <- modelsCurve[c]
     
@@ -394,7 +396,7 @@ rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outc
     # Compute metrics
     conf_matrix <- table(factor(predict, levels = c(0,1)), factor(labels, levels = c(0,1))) # binary prediction
     performance <- caret::confusionMatrix(conf_matrix, positive = '1')
-
+    
     curve_TPR[c+2] <- performance$byClass['Sensitivity']
     curve_FPR[c+2] <- 1 - performance$byClass['Specificity']
   }

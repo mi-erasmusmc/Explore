@@ -19,6 +19,7 @@ settingsExplore(
   FeatureInclude = "",
   Maximize = "ACCURACY",
   Accuracy = 0,
+  BalancedAccuracy = 0,
   Specificity = 0,
   PrintSettings = "yes",
   PrintPerformance = "yes",
