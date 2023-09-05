@@ -379,6 +379,7 @@ modelsCurveExplore <- function(train_data = NULL,
 #' @return auc value for EXPLORE
 #' @export
 #' @importFrom caret confusionMatrix
+#' @importFrom pracma trapz
 rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outcomeCount
   
   # TODO: input checks?

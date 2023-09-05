@@ -17,7 +17,8 @@ Imports:
     Rcpp (>= 1.0.5),
     RcppParallel,
     stringr,
-    caret
+    caret,
+    pracma
 Encoding: UTF-8
 LinkingTo: Rcpp, BH (>= 1.51.0), RcppParallel
 RoxygenNote: 7.2.3
