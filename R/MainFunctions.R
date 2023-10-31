@@ -16,8 +16,9 @@
 #' @param ClassFeature  String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
 #' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
 #' @param FeatureInclude Empty or string (should be name of one of columns in data train)
-#' @param Maximize One of list with strings, list = "ACCURACY", ...
+#' @param Maximize One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...
 #' @param Accuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param BalancedAccuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
 #' @param Specificity float 0-0.999, default = 0
 #' @param PrintSettings True or False
 #' @param PrintPerformance True or False
@@ -43,17 +44,18 @@ trainExplore <- function(train_data = NULL,
                          FeatureInclude = "",
                          Maximize = "ACCURACY",
                          Accuracy = 0,
+                         BalancedAccuracy = 0,
                          Specificity = 0,
                          PrintSettings = TRUE,
                          PrintPerformance = TRUE,
                          Subsumption = TRUE,
                          BranchBound = TRUE,
                          Parallel = FALSE) {
-
+  
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
-    }
-
+  }
+  
   # Create output folder
   if(!endsWith(output_path, "/")) {
     warning("Output path should end with /, add this")
@@ -68,7 +70,7 @@ trainExplore <- function(train_data = NULL,
     OutputFile <- paste0(output_path, file_name, ".result")
   } else {
     checkmate::checkFileExists(OutputFile,
-                    add = errorMessage)
+                               add = errorMessage)
   }
   
   # check settings_path
@@ -91,6 +93,7 @@ trainExplore <- function(train_data = NULL,
                     checkString(FeatureInclude),
                     checkString(Maximize),
                     checkDouble(Accuracy),
+                    checkDouble(BalancedAccuracy),
                     checkDouble(Specificity),
                     checkLogical(PrintSettings),
                     checkLogical(PrintPerformance),
@@ -101,13 +104,14 @@ trainExplore <- function(train_data = NULL,
                     combine = "and"
   )
   checkmate::reportAssertions(collection = errorMessage)
-
+  
   PrintSettings <- ifelse(PrintSettings == TRUE, "yes", "no")
   PrintPerformance <- ifelse(PrintPerformance == TRUE, "yes", "no")
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
-  Accuracy <- ifelse(Accuracy == 0, "", Specificity)
+  Accuracy <- ifelse(Accuracy == 0, "", Accuracy)
+  BalancedAccuracy <- ifelse(BalancedAccuracy == 0, "", BalancedAccuracy)
   Specificity <- ifelse(Specificity == 0, "", Specificity)
   
   # Create project setting
@@ -146,6 +150,7 @@ trainExplore <- function(train_data = NULL,
                                    FeatureInclude = FeatureInclude,
                                    Maximize = Maximize,
                                    Accuracy = Accuracy,
+                                   BalancedAccuracy = BalancedAccuracy,
                                    Specificity = Specificity,
                                    PrintSettings = PrintSettings,
                                    PrintPerformance = PrintPerformance,
@@ -163,7 +168,7 @@ trainExplore <- function(train_data = NULL,
   
   # Load model
   rule_string <- stringr::str_extract(results, "Best candidate \\(overall\\):.*?\u000A")
- 
+  
   # Clean string
   rule_string <- stringr::str_replace(rule_string, "Best candidate \\(overall\\):", "")
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
@@ -200,7 +205,6 @@ trainExplore <- function(train_data = NULL,
 #'
 #' @return Settings path
 #' @import checkmate
-#' @export
 settingsExplore <- function(settings,
                             output_path, # C++ cannot handle spaces in file path well, avoid those
                             file_name,
@@ -215,6 +219,7 @@ settingsExplore <- function(settings,
                             FeatureInclude = "",
                             Maximize = "ACCURACY",
                             Accuracy = 0,
+                            BalancedAccuracy = 0,
                             Specificity = 0,
                             PrintSettings = "yes",
                             PrintPerformance = "yes",
@@ -222,7 +227,7 @@ settingsExplore <- function(settings,
                             BranchBound = "yes",
                             Parallel = "no") {
   
-
+  
   # Insert location training data and cutoff file if train_data is entered
   if (!is.null(train_data)) {
     settings <- changeSetting(settings, parameter = "DataFile", input = paste0(output_path, file_name, ".arff"))
@@ -240,6 +245,7 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "FeatureInclude", input = FeatureInclude)
   settings <- changeSetting(settings, parameter = "Maximize", input = Maximize)
   settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy)
+  settings <- changeSetting(settings, parameter = "BalancedAccuracy", input = BalancedAccuracy)
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity)
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings)
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance)
@@ -303,7 +309,7 @@ predictExplore <- function(model, test_data) {
 }
 
 
-#' aucrocExplore
+#' modelsCurveExplore # TODO: update documentation?
 #'
 #' @param output_path A string declaring the path to the settings
 #' @param train_data Train data
@@ -312,33 +318,91 @@ predictExplore <- function(model, test_data) {
 #' @param ... List of arguments
 #'
 #' @import checkmate
-#' @return auroc
+#' @return models for different sensitivities/specificities
 #' @export
-aurocEXPLORE <- function(output_path, train_data, settings_path, file_name, ...) {
-  # TODO: check with latest implementation in PLP
+modelsCurveExplore <- function(train_data = NULL,
+                               settings_path = NULL,
+                               output_path, 
+                               file_name = "train_data",
+                               OutputFile = NULL, 
+                               StartRulelength = 1,
+                               EndRulelength = 3,
+                               OperatorMethod = "EXHAUSTIVE",
+                               CutoffMethod = "RVAC",
+                               ClassFeature = "'class'",
+                               PositiveClass = "'Iris-versicolor'",
+                               FeatureInclude = "",
+                               Maximize = "ACCURACY",
+                               Accuracy = 0,
+                               BalancedAccuracy = 0,
+                               Specificity = 0,
+                               PrintSettings = TRUE,
+                               PrintPerformance = TRUE,
+                               Subsumption = TRUE,
+                               BranchBound = TRUE,
+                               Parallel = FALSE) {
+  # TODO: only input required variables?
   
   # Range of specificities to check
-  specificities <- seq(from = 0.01, to = 0.99, by = 0.02)
+  constraints <- c(seq(0.05,0.65,0.1), seq(0.75,0.97,0.02))
   
-  # Set specificity constraint and maximize sensitivity
-  sensitivities <- rep(NA, length(specificities))
-  for (s in 1:length(specificities)) { # s <- 0.1
+  modelsCurve <- tryCatch({
+    models <- sapply(constraints, function(constraint) {
+      print(paste0("Model for specificity: ", as.character(constraint)))
+      
+      # Fit EXPLORE
+      model <- Explore::trainExplore(output_path = file.path(output_path, "modelsCurve"), train_data = train_data,
+                                     settings_path = settings_path, 
+                                     file_name = paste0("explore_specificity", as.character(constraint)),
+                                     OutputFile = OutputFile,
+                                     StartRulelength = StartRulelength, EndRulelength = EndRulelength,
+                                     OperatorMethod = OperatorMethod, CutoffMethod = CutoffMethod,
+                                     ClassFeature = ClassFeature, PositiveClass = PositiveClass,
+                                     FeatureInclude = FeatureInclude, Maximize = "SENSITIVITY",
+                                     Accuracy = Accuracy, BalancedAccuracy = BalancedAccuracy, Specificity = constraint,
+                                     PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
+                                     Subsumption = Subsumption, BranchBound = BranchBound,
+                                     Parallel = Parallel)
+      
+      return(model)
+    })
+  },
+  finally = warning("No model for specificity.")
+  )
+  
+  return(modelsCurve)
+}
+
+
+#' rocCurveExplore
+#'
+#' @return auc value for EXPLORE
+#' @export
+#' @importFrom caret confusionMatrix
+#' @importFrom pracma trapz
+rocCurveExplore <- function(modelsCurve, data, labels) { # labels <- cohort$outcomeCount
+  
+  # TODO: input checks?
+  
+  # Combine all these results
+  curve_TPR <- c(1,0)
+  curve_FPR <- c(1,0)
+  
+  for (c in length(modelsCurve):1) {
+    model <- modelsCurve[c]
     
-    model <- trainExplore(output_path = output_path, train_data = train_data, settings_path = settings_path, Maximize = "SENSITIVITY", Specificity = specificities[s], ...)
+    # Predict using train and test
+    predict <- tryCatch(as.numeric(Explore::predictExplore(model = model, test_data = data)))
     
-    # Extract sensitivity from results file
-    results <- paste(readLines(paste0(output_path, "train_data.result")), collapse="\n")
+    # Compute metrics
+    conf_matrix <- table(factor(predict, levels = c(0,1)), factor(labels, levels = c(0,1))) # binary prediction
+    performance <- caret::confusionMatrix(conf_matrix, positive = '1')
     
-    sensitivity <- stringr::str_extract_all(results, "Train-set: .*?\u000A")[[1]]
-    sensitivity <- stringr::str_extract(results, "SE:.*? ")[[1]]
-    sensitivity <- stringr::str_remove_all(sensitivity, "SE:")
-    sensitivity <- stringr::str_replace_all(sensitivity, " ", "")
-    
-    sensitivities[s] <- as.numeric(sensitivity)
+    curve_TPR[c+2] <- performance$byClass['Sensitivity']
+    curve_FPR[c+2] <- 1 - performance$byClass['Specificity']
   }
   
-  auroc <- simple_auc(TPR = rev(sensitivities), FPR = rev(1 - specificities))
-  # plot(1-specificities, sensitivities)
+  roc <- pracma::trapz(curve_FPR[length(curve_FPR):1],curve_TPR[length(curve_TPR):1])
   
-  return(auroc)
+  return (roc)
 }
