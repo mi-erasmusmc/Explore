@@ -24,12 +24,4 @@ Authors:
 }
 
 }
-\seealso{
-Useful links:
-\itemize{
-  \item \url{https://cbarbozaerasmus.github.io/Explore/}
-  \item \url{https://mi-erasmusmc.github.io/Explore/}
-}
-
-}
 \keyword{internal}
