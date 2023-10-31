@@ -22,9 +22,6 @@
     <loc>https://mi-erasmusmc.github.io/Explore/reference/Explore-package.html</loc>
   </url>
   <url>
-    <loc>https://mi-erasmusmc.github.io/Explore/reference/aurocEXPLORE.html</loc>
-  </url>
-  <url>
     <loc>https://mi-erasmusmc.github.io/Explore/reference/changeSetting.html</loc>
   </url>
   <url>
@@ -34,7 +31,13 @@
     <loc>https://mi-erasmusmc.github.io/Explore/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://mi-erasmusmc.github.io/Explore/reference/modelsCurveExplore.html</loc>
+  </url>
+  <url>
     <loc>https://mi-erasmusmc.github.io/Explore/reference/predictExplore.html</loc>
+  </url>
+  <url>
+    <loc>https://mi-erasmusmc.github.io/Explore/reference/rocCurveExplore.html</loc>
   </url>
   <url>
     <loc>https://mi-erasmusmc.github.io/Explore/reference/saveData.html</loc>
