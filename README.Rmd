@@ -59,11 +59,6 @@ prediction <- Explore::predictExplore(model, test_data = data)
 ```  
 
 
-Additional documentation includes:
-- Vignette code examples in combination with PLP: [to be added](~/Documents/Git/Explore/vignettes/EXPLORE_withPLP.Rmd) 
-- Package manual: [to be added](~/Documents/Git/Explore/vignettes/Explore_1.0.pdf) 
-
-
 ## Development status
 EXPLORE is under active development.
 
