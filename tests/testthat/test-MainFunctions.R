@@ -2,8 +2,8 @@
 
 test_that("option 1: fully pre-specified settings file works", {
   ### Tests for EXPLORE using iris dataset
-  data_path <- system.file("examples", "iris.arff", package = "Explore")
-  settings_path <- system.file("examples", "iris.project", package = "Explore")
+  data_path <- system.file("examples", "tests", "iris.arff", package = "Explore")
+  settings_path <- system.file("examples", "tests", "iris.project", package = "Explore")
   output_path <- paste0(tempdir(), "/", "Test1")
   dir.create(output_path)
   if (.Platform$OS.type == "windows") {
@@ -23,8 +23,8 @@ test_that("option 1: fully pre-specified settings file works", {
 
 test_that("option 2: pre-specified settings file with input data works", {
   ### Tests for EXPLORE using iris dataset
-  data_path <- system.file("examples", "iris.arff", package = "Explore")
-  settings_path <- system.file("examples", "iris.project", package = "Explore")
+  data_path <- system.file("examples", "tests", "iris.arff", package = "Explore")
+  settings_path <- system.file("examples", "tests", "iris.project", package = "Explore")
   output_path <- paste0(tempdir(), "/", "Test2")
   dir.create(output_path)
   if (.Platform$OS.type == "windows") {
@@ -44,8 +44,8 @@ test_that("option 2: pre-specified settings file with input data works", {
 
 test_that("option 3: only input parameters (no settings file) works", {
   ### Tests for EXPLORE using iris dataset
-  data_path <- system.file("examples", "iris.arff", package = "Explore")
-  settings_path <- system.file("examples", "iris.project", package = "Explore")
+  data_path <- system.file("examples", "tests", "iris.arff", package = "Explore")
+  settings_path <- system.file("examples", "tests", "iris.project", package = "Explore")
   output_path <- paste0(tempdir(), "/", "Test3")
   dir.create(output_path)
   if (.Platform$OS.type == "windows") {
@@ -65,8 +65,8 @@ test_that("option 3: only input parameters (no settings file) works", {
 
 test_that("prediction", {
   ### Tests for EXPLORE using iris dataset
-  data_path <- system.file("examples", "iris.arff", package = "Explore")
-  settings_path <- system.file("examples", "iris.project", package = "Explore")
+  data_path <- system.file("examples", "tests", "iris.arff", package = "Explore")
+  settings_path <- system.file("examples", "tests", "iris.project", package = "Explore")
   output_path <- paste0(tempdir(), "/", "Test4")
   dir.create(output_path)
   if (.Platform$OS.type == "windows") {
@@ -86,8 +86,8 @@ test_that("prediction", {
 })
 
 test_that("compute AUC", {
-  data_path <- system.file("examples", "iris.arff", package = "Explore")
-  settings_path <- system.file("examples", "iris.project", package = "Explore")
+  data_path <- system.file("examples","tests", "iris.arff", package = "Explore")
+  settings_path <- system.file("examples", "tests", "iris.project", package = "Explore")
   output_path <- paste0(tempdir(), "/", "Test5")
   dir.create(output_path)
   if (.Platform$OS.type == "windows") {
