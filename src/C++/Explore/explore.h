@@ -86,6 +86,7 @@ class Explore {
 	bool BranchBound;                                                           // Optimize rule generation process?
 	bool SubSumption;                                                           // Use SubSumption Pruning to remove cutoffs
     bool Parallel;                                                              // Use parallelization
+    PARALLEL_METHOD ParallelMethod;                                             // Method of parallelization
     bool IsUpdateRealtime;                                                      // Print summary information in real-time
 
 	TIMING RuleLengthTiming;
@@ -201,6 +202,7 @@ class Explore {
     bool GetBranchBound();                                                      // Returns whether Explore will optimize rules when it has the chance
     bool GetSubSumption();                                                      // Returns whether Explore will use subsumption
     bool GetParallel();                                                      // Returns whether Explore will use parallelization
+    PARALLEL_METHOD GetParallelMethod();                                     // Returns method of parallelization
 
     bool GetPrintSettings();                                                    // Should settings be printed to output
     bool GetPrintPartitions();                                                  // Should population be printed to output
@@ -317,6 +319,7 @@ class Explore {
 	void SetBranchBound(bool Optimize);                                         // Optimize on accuracy/sensitivity or specificity depending on constraints and maximize measure
 	void SetSubSumption(bool Value);                                            // Prune Cutoffs by SubSumption
     void SetParallel(bool Value);                                               // Use parallelization
+    void SetParallelMethod(PARALLEL_METHOD Value);                              // Set method for parallelization
 
     // Interfacing
     void   SetOutput(streambuf *OutputBuffer);                                  // Redirect explore output

@@ -53,6 +53,9 @@ enum RULE_OUTPUT_METHOD { EVERY, INCREMENT, BEST };
 // Performance variable that has to be maximised
 enum PERFORMANCE_MEASURE { SENSITIVITY, SPECIFICITY, PPV, NPV, ACCURACY, BALANCEDACCURACY, F1SCORE};
 
+// Which loops to parallelize
+enum PARALLEL_METHOD {ONE, TWO};
+
 // Cutoff-ranges
 struct Range {
   float Min;

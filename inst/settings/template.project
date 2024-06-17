@@ -43,7 +43,7 @@ PrintPerformance=yes
 PrintSets=no
 SavePartitions=no
 [Run]
-OptimizeRules=yes
 Subsumption=yes
 BranchBound=yes
 Parallel=no
+ParallelMethod=ONE

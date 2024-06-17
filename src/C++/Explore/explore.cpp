@@ -83,7 +83,6 @@ Explore::Explore() {
     IsPrintOperatorValues       = false;
     IsPrintCutoffValues         = false;
     IsPrintFeatureOperators     = false;
-
 }
 
 /**********************************************************************
@@ -2210,6 +2209,18 @@ bool Explore::GetParallel() {
 }
 
 /**********************************************************************
+Function: GetParallelMethod()
+Category: Selectors
+Scope: public
+In: -
+Out: bool, rules will be optimized or not when possible
+Description: Returns whether explore will use parallelization
+**********************************************************************/
+PARALLEL_METHOD Explore::GetParallelMethod() {
+    return ParallelMethod;
+}
+
+/**********************************************************************
 Function: AddFeature()
 Category: Modifiers
 Scope: public
@@ -2306,6 +2317,18 @@ Description: Determines whether Explore will use parallelization
 **********************************************************************/
 void Explore::SetParallel(bool Value) {
     Parallel = Value;
+}
+
+/**********************************************************************
+Function: SetParallelMethod()
+Category: Modifiers
+Scope: public
+In: PARALLEL_METHOD
+Out: -
+Description: Determines which method Explore will use in case of parallelization
+**********************************************************************/
+void Explore::SetParallelMethod(PARALLEL_METHOD Value) {
+    ParallelMethod = Value;
 }
 
 /**********************************************************************
@@ -2972,9 +2995,7 @@ if (!Parallel) {
 
 } else {
 
-    string ParallelMethod = "Global double parallel";
-
-    if (ParallelMethod == "Global single parallel") {
+    if (ParallelMethod == ONE) {
 
         vector<RULE> all_rules;
         while(Rule.NextCombinationGenerator()) {
@@ -3119,7 +3140,7 @@ if (!Parallel) {
             }
             // }
         });
-    } else if (ParallelMethod == "Global double parallel") {
+    } else if (ParallelMethod == TWO) {
 
         vector<RULE> all_rules;
         while(Rule.NextCombinationGenerator()) {
@@ -3185,9 +3206,9 @@ if (!Parallel) {
 
                             if (IsPrintFeatureSets) Rule_ij.PrintFeatureSet_Thread();
 
-//                            m0.lock();
-//                            CountFeatureOperatorPairs++;
-//                            m0.unlock();
+                            m0.lock();
+                            CountFeatureOperatorPairs++;
+                            m0.unlock();
                             // CalculateProgress();
 
                             while (Rule_ij.NextCutoffSetGenerator()) {
@@ -3239,9 +3260,9 @@ if (!Parallel) {
                                     cout << "Candidate model: ";
                                     Rule_ij.PrintCutoffSet();
                                 }
-//                                m1.lock();
-//                                CountCutoffSets++;
-//                                m1.unlock();
+                                m1.lock();
+                                CountCutoffSets++;
+                                m1.unlock();
                                 // if (IsUpdateRealtime) CalculateProgress();
 
 #ifndef COMMANDVERSION
@@ -3332,9 +3353,10 @@ if (!Parallel) {
 
                         ProjectCandidates.push_back(BestCandidate);
 
-                        cout << "Total Count Candidates:" << CountCandidatesPartition << endl;
+                        cout << "Total Count Combinations:" << Rule.GetCombinationsGenerated() << endl;
                         cout << "Total Count Feature Operator Pairs:" << CountFeatureOperatorPairs << endl;
-                        cout << "Total Count Cutoff Sets:" << CountCutoffSets << endl;
+                        cout << "Total Count Cutoff Sets:" << CountCutoffSets << endl; // = CountCandidatesPartition
+                        // cout << "Total Count Candidates:" << CountCandidatesPartition << endl;
 
                     }
                // }
