@@ -989,7 +989,7 @@ FEATURE::RVACutoff() {                                                     // Re
 
     // Compare each Bin sequentially
     if (Continuous) {
-        while (NextBin != LastBin) {
+        while (NextBin != LastBin || LastBin == 1) {
             CurrentNegCount = Bins[CurrentBin].GetNegativeCount();
             CurrentPosCount = Bins[CurrentBin].GetPositiveCount();
 
@@ -1007,6 +1007,9 @@ FEATURE::RVACutoff() {                                                     // Re
                 Cutoffs.push_back(CUTOFF(dum));
             }
 
+            if (LastBin==1) {
+                break;
+            }
             CurrentBin++;
             NextBin++;
         }
