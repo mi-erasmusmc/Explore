@@ -1968,7 +1968,7 @@ bool RULE::NextCutoffSet() {
                     if (CurrentCondition->NextSame) {
                         MaxCutoff--;
                     }
-                    if (CurrentFeatureOperator->IsSolo && CurrentFeatureOperator->NonSoloIncluded && CurrentConjunction->Size>1) {
+                    if (CurrentFeatureOperator->IsSolo && CurrentFeatureOperator->NonSoloIncluded && CurrentConjunction->Size>1 && !(CurrentFeatureOperator->Operator == LESS)) {
                         MaxCutoff--;
                     }
                     if (CurrentCondition->CutoffNumber+1 < MaxCutoff) {
