@@ -1694,7 +1694,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                     (*Condition) = FeatureOperators[FOperatorNr];                         // Set condition to current FeatureOperator
                     Incremented = true;
                     //check total number of solo occurencee of nominal FOPs until incremented position
-                    if (Conjunctions[ConjunctionNr].Size==1){
+                    if (Conjunctions[ConjunctionNr].Size==1 && FeatureOperators[FOperatorNr].Operator == EQUAL){
                         NumRepeats = 0;
                         for (i=0; i<=ConjunctionNr;i++){
                             if (Conjunctions[i].Conditions[0].FeatureOperator ==
