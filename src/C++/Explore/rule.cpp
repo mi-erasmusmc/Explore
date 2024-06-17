@@ -1924,6 +1924,7 @@ bool RULE::NextCutoffSet() {
     unsigned int MaxCutoff;
     bool Incremented = false;
     bool AtFirst = false;
+    bool ResetFirst = false;
 
     CONJUNCTION* CurrentConjunction;
     CONJUNCTION* PreviousConjunction;
@@ -2067,17 +2068,22 @@ bool RULE::NextCutoffSet() {
                             CurrentCondition->CutoffNumber = CurrentConjunction->Conditions[ConditionNr-1].CutoffNumber+1;
                         } else {
                             CurrentCondition->CutoffNumber = 0;                                 // Not the same feature
-                            //PR but if the previous FOP is the same nominal FOP increase the condition
-                            //!! PreviousCondition is here the condition of the previuous solo conjunction
-//                            if ((ConjunctionNr > 0) &&  (CurrentCondition->Operator==EQUAL) && CurrentConjunction->Size==1){
-//                                if  ((&Conjunctions[ConjunctionNr-1])->Size==1) {
-//                                    if  (PreviousCondition->FeatureNumber == CurrentCondition->FeatureNumber){
-//                                        CurrentCondition->CutoffNumber = PreviousCondition->CutoffNumber;
-//                                    }
-//                                }
-//                            }
-                            if (!(CurrentCondition->Operator==GREATER) && FeatureOperators[CurrentCondition->FeatureOperator].IsSolo && !(CurrentConjunction->Size==1)) {
-                                // CurrentCondition -> CutoffNumber = 1;
+
+                            // If the previous FOP is the same nominal FOP, increase the condition
+                            if ((ConjunctionNr > 0) &&  (CurrentCondition->Operator==EQUAL) && CurrentConjunction->Size==1){
+                                if  ((&Conjunctions[ConjunctionNr-1])->Size==1) {
+                                    if  (PreviousCondition->FeatureNumber == CurrentCondition->FeatureNumber){
+                                        if (PreviousCondition->CutoffNumber + 1 < MaxCutoff) {
+                                            CurrentCondition->CutoffNumber = PreviousCondition->CutoffNumber + 1;
+                                        } // else {
+                                        // CutoffSetGenerated = false; // TODO: check this!!
+                                        // }
+                                    }
+                                }
+                            }
+
+                            // Reset to next cutoff
+                            if (!(CurrentCondition->Operator==GREATER) && CurrentFeatureOperator->IsSolo && CurrentConjunction->Size>1) {
                                 CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureOperator)+1;
                             }
                         }
@@ -2178,14 +2184,18 @@ bool RULE::NextCutoffSet() {
                                 CutoffSetGenerated = false;
                                 return false;
                             }
-                        } else {
-                            CurrentCondition->CutoffNumber = 0;
-                            //but if the previous FOP is the samen nominal FOP increase the condition
-                            //!! PreviousCondition is here the condition of the previuous solo conjunction
-                            if ((ConjunctionNr > 0) &&  (CurrentCondition->Operator==EQUAL)){
-                                if  ((&Conjunctions[ConjunctionNr-1])->Size==1) {
-                                    if  (PreviousCondition->FeatureNumber == CurrentCondition->FeatureNumber){
-                                        CurrentCondition->CutoffNumber = PreviousCondition->CutoffNumber;
+                        }
+
+                        // Compare FeatureNumbers between conjunctions
+                        // If the previous FOP is the same nominal FOP, increase the condition
+                        if ((ConjunctionNr > 0) &&  (CurrentCondition->Operator==EQUAL)){
+                            if  ((&Conjunctions[ConjunctionNr-1])->Size==1) {
+                                if  (PreviousCondition->FeatureNumber == CurrentCondition->FeatureNumber){
+                                    if (PreviousCondition->CutoffNumber + 1 < CurrentCondition->Cutoffs.size()) {
+                                        CurrentCondition->CutoffNumber = PreviousCondition->CutoffNumber + 1;
+                                        // PreviousCondition->CutoffNumber =  CurrentCondition->CutoffNumber + 1; // TODO: what if multiple? -> increase previous?
+                                    } else {
+                                        CutoffSetGenerated = false; // TODO: check this!!
                                     }
                                 }
                             }
