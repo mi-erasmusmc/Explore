@@ -76,6 +76,10 @@ changeSetting <- function(settings, parameter, input, default_setting) {
 #' @importFrom utils write.table
 saveData <- function(output_path, train_data, file_name) {
   
+  # Fix col type for binary data
+  binary_cols <- sapply(1:ncol(train_data), function(c) all(train_data[[c]] %in% 0:1))
+  train_data[binary_cols] <- lapply(colnames(train_data[binary_cols]), function(c) factor(train_data[[c]], labels=c(0,1)))
+
   # Save data as arff file
   if (file.exists(paste0(output_path, file_name, ".arff"))) {file.remove(paste0(output_path, file_name, ".arff"))}
   farff::writeARFF(train_data, paste0(output_path, file_name, ".arff"))
@@ -91,4 +95,11 @@ saveData <- function(output_path, train_data, file_name) {
               row.names = FALSE)
   
   # TODO: Support other file formats?
+}
+
+# Correlation metric for binary data.
+jaccard <- function(a, b) {
+  intersection = length(intersect(a, b))
+  union = length(a) + length(b) - intersection
+  return (intersection/union)
 }

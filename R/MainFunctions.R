@@ -15,7 +15,7 @@
 #' @param CutoffMethod One of list with strings, list = "RVAC", ...
 #' @param ClassFeature  String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
 #' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
-#' @param FeatureInclude Empty or string (should be name of one of columns in data train)
+#' @param FeatureInclude Empty or string (should be name of one or more columns in data train separated by ;)
 #' @param Maximize One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...
 #' @param Accuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
 #' @param BalancedAccuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
@@ -24,6 +24,7 @@
 #' @param PrintPerformance True or False
 #' @param Subsumption True or False
 #' @param BranchBound True or False
+#' @param Sorted One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered
 #' @param Parallel True or False
 #'
 #' @return Model
@@ -50,6 +51,7 @@ trainExplore <- function(train_data = NULL,
                          PrintPerformance = TRUE,
                          Subsumption = TRUE,
                          BranchBound = TRUE,
+                         Sorted = "none",
                          Parallel = FALSE) {
   
   if (!dir.exists(output_path)) {
@@ -99,6 +101,7 @@ trainExplore <- function(train_data = NULL,
                     checkLogical(PrintPerformance),
                     checkLogical(Subsumption),
                     checkLogical(BranchBound),
+                    checkString(Sorted),
                     checkLogical(Parallel),
                     add = errorMessage,
                     combine = "and"
@@ -132,6 +135,29 @@ trainExplore <- function(train_data = NULL,
   
   # Save train_data if entered
   if (!is.null(train_data)) {
+    
+    # Sort features in data if needed
+    if (Sorted != "none") {
+ 
+      # TODO: test these options
+      ClassFeature_ <- stringr::str_remove_all(ClassFeature, "'")
+      PositiveClass_ <- stringr::str_remove_all(PositiveClass, '"')
+      if (Sorted == "pearson" || Sorted == "spearman" || Sorted == "kendall") {
+        cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) cor(col, train_data[ClassFeature_]==PositiveClass_, method=Sorted))
+      } else if (Sorted == "jaccard") {
+        cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) jaccard(col, train_data[ClassFeature_]==PositiveClass_))
+      }
+      # else if (Sorted == "LASSO") { 
+      #   model_lasso <- glmnet::cv.glmnet(x=data.matrix(train_data[, -which(names(train_data) == ClassFeature_)]), y = train_data[ClassFeature_]==PositiveClass_, alpha = 1, lambda = 10^seq(3, -2, by = -.1), maxit=10000000, standardize = TRUE, nfolds = 5, family = "binomial")
+      #   coef <- as.matrix(coef(model_lasso, s = "lambda.min")) # get importance
+      #   coef <- rownames(coef)[order(-abs(coef))] # order from high to low
+      #   coef <- coef[-which(coef == "(Intercept)")] # remove intercept
+      # }
+        
+      coef <- names(cor)[order(-abs(cor))] 
+      train_data <- train_data[,c(coef,ClassFeature_)] # sort data features by LASSO importance
+    }
+    
     saveData(output_path, train_data, file_name)
   }
   
