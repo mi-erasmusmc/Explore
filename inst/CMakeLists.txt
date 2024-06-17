@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.17)
 project(Explore)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -g -O3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -90,9 +91,6 @@ set(SOURCE_FILES
         ../src/C++/IOExplore/initialise.h
         ../src/C++/IOExplore/IOExplore.cpp
         ../src/C++/IOExplore/IOExplore.h
-        ../src/C++/Test/iris.arff
-        ../src/C++/Test/iris.cutoff
-        ../src/C++/Test/test.project
         ../src/C++/common.cpp
         ../src/C++/common.h
         ../src/C++/stl.h
