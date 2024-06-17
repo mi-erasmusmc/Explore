@@ -152,6 +152,7 @@ void IOExplore::ClearSettings() {
   ProjectSettings.BranchBound            = false;
   ProjectSettings.SubSumption            = false;
   ProjectSettings.Parallel               = false;
+  ProjectSettings.ParallelMethod         = ONE;
 }
 
 /**********************************************************************
@@ -719,6 +720,14 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
     if (Project->GetParallel()) {
         ProjectSettings.Parallel = true;
     }
+    switch(Project->GetParallelMethod()) {
+        case ONE:
+            ProjectSettings.ParallelMethod = ONE;
+        break;
+        case TWO:
+            ProjectSettings.ParallelMethod = TWO;
+        break;
+    }
 
     return SaveSettingsToFile(IOFilename);
 }
@@ -976,6 +985,14 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
           ProjectFile << "Parallel=yes" << endl;
       } else {
           ProjectFile << "Parallel=no" << endl;
+      }
+      switch (ProjectSettings.ParallelMethod) {
+          case ONE:
+              ProjectFile << "ParallelMethod=ONE" << endl;
+              break;
+          case TWO:
+              ProjectFile << "ParallelMethod=TWO" << endl;
+              break;
       }
 	ProjectFile.flush();
 	ProjectFile.close();
@@ -1542,6 +1559,16 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
                 return false;
             }
         }
+        if (CurrentHeading.compare("ParallelMethod")==0) {                              // Parallel method
+            if (CurrentValue.compare("ONE")==0) {
+                ProjectSettings.ParallelMethod = ONE;
+            } else if (CurrentValue.compare("TWO")==0) {
+                ProjectSettings.ParallelMethod = TWO;
+            } else {
+                ProjectLoadErrors.push_back("Invalid value for parallel method.");
+                return false;
+            }
+        }
 	  ProjectFile.getline(Buffer,MAX_LINESIZE,ENDL_SEPARATOR);
 	}
     ProjectFile.close();
@@ -1678,6 +1705,7 @@ bool IOExplore::SetupExploreFromStruct() {
   Project->SetBranchBound(ProjectSettings.BranchBound);
   Project->SetSubSumption(ProjectSettings.SubSumption);
   Project->SetParallel(ProjectSettings.Parallel);
+  Project->SetParallelMethod(ProjectSettings.ParallelMethod);
 
   return true;
 }

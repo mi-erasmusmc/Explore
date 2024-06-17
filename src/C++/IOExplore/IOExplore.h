@@ -71,6 +71,7 @@ struct ExploreSettings {
   bool                        BranchBound;
   bool						  SubSumption;
   bool                        Parallel;
+  PARALLEL_METHOD             ParallelMethod;
 };
 
 class IOExplore {
