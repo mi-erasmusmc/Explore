@@ -8,6 +8,7 @@
 #include "IOExplore.h"
 #include "../common.h"
 //#include <string.h>
+#include <boost/algorithm/string.hpp>
 
 #define COMMANDVERSION
 
@@ -1621,8 +1622,17 @@ bool IOExplore::SetupExploreFromStruct() {
     }
   }
 
-    if (Project->GetFeatureNumber(ProjectSettings.FeatureInclude)>-1){
-        Project->SetMandatoryFeature(Project->GetFeatureNumber(ProjectSettings.FeatureInclude), true);
+    // Split list of features
+    std::vector<std::string> AllFeaturesToInclude;
+    boost::split(AllFeaturesToInclude, ProjectSettings.FeatureInclude, boost::is_any_of(";"));
+
+    vector<std::string>::iterator CurrentFeature(AllFeaturesToInclude.begin());
+    vector<std::string>::iterator LastFeature(AllFeaturesToInclude.end());
+
+    for (; CurrentFeature != LastFeature; CurrentFeature++) {
+        if (Project->GetFeatureNumber((*CurrentFeature))>-1){
+            Project->SetMandatoryFeature(Project->GetFeatureNumber((*CurrentFeature)), true);
+        }
     }
 
 
