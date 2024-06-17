@@ -1,9 +1,9 @@
 [General]
 Name=test
 Remarks=test
-DataFile=/Users/aniekmarkus/Documents/Git/Explore/inst/examples/iris.arff
+DataFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/src/C++/Test/iris.arff
 Output=File
-OutputFile=@OutputFile
+OutputFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/src/C++/Test/iris.result
 IncrementalOutputFile=false
 [Setup]
 PartitionMethod=RESUBSTITUTION
@@ -11,10 +11,10 @@ Randomize=no
 StartRulelength=1
 EndRulelength=3
 LearnRatio=0.8
-NumberofPartitions=1
+NumberofPartitions=3
 OperatorMethod=EXHAUSTIVE
 CutoffMethod=RVAC
-CutoffFile=/Users/aniekmarkus/Documents/Git/Explore/inst/examples/iris.cutoff
+CutoffFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/src/C++/Test/iris.cutoff
 ClassFeature=class
 PositiveClass=Iris-versicolor
 [Restrictions]
@@ -22,10 +22,11 @@ Rule=
 FeatureInclude=
 FeatureRule=
 [Constraints]
-Maximize=ACCURACY
+Maximize=BALANCEDACCURACY
 Accuracy=
-BalancedAccuracy=
 Specificity=
+BalancedAccuracy=
+F1score=
 [Output]
 OutputMethod=BEST
 PrintSettings=yes
@@ -43,7 +44,6 @@ PrintPerformance=yes
 PrintSets=no
 SavePartitions=no
 [Run]
-OptimizeRules=yes
 Subsumption=yes
 BranchBound=yes
 Parallel=no

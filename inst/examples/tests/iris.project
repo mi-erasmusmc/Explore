@@ -1,9 +1,9 @@
 [General]
 Name=test
 Remarks=test
-DataFile=/Users/aniekmarkus/Documents/Medical Informatics Erasmus MC/Health Data Science - PhD Aniek Markus/Projects/Project II - EXPLORE/Results/9 juni 2022/timings_2022-06-08/explore/iris_train_1_1.arff
+DataFile=/Users/aniekmarkus/Documents/Git/Explore/inst/examples/tests/iris.arff
 Output=File
-OutputFile=/Users/aniekmarkus/Documents/Git/Explore/src/C++/Test/iris_train_1_1.result
+OutputFile=@OutputFile
 IncrementalOutputFile=false
 [Setup]
 PartitionMethod=RESUBSTITUTION
@@ -14,19 +14,18 @@ LearnRatio=0.8
 NumberofPartitions=1
 OperatorMethod=EXHAUSTIVE
 CutoffMethod=RVAC
-CutoffFile=/Users/aniekmarkus/Documents/Medical Informatics Erasmus MC/Health Data Science - PhD Aniek Markus/Projects/Project II - EXPLORE/Results/9 juni 2022/timings_2022-06-08/iris_train_1_1.cutoff
-ClassFeature='class'
-PositiveClass=1
+CutoffFile=/Users/aniekmarkus/Documents/Git/Explore/inst/examples/tests/iris.cutoff
+ClassFeature=class
+PositiveClass=Iris-versicolor
 [Restrictions]
 Rule=
 FeatureInclude=
 FeatureRule=
 [Constraints]
-Maximize=BALANCEDACCURACY
-Accuracy=0.624857142857143
-Specificity=0.8
-BalancedAccuracy=0.6
-F1score=0.7
+Maximize=ACCURACY
+Accuracy=
+BalancedAccuracy=
+Specificity=
 [Output]
 OutputMethod=BEST
 PrintSettings=yes
@@ -47,4 +46,4 @@ SavePartitions=no
 OptimizeRules=yes
 Subsumption=yes
 BranchBound=yes
-Parallel=yes
+Parallel=no
