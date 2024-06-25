@@ -148,6 +148,7 @@ unsigned int NoFeatureOperators{};                                            //
     vector<string> GetCutoffs();                                                 // Get a list of cutoffs
 
     unsigned int GetMinCutoff(unsigned int FOperator);
+    bool CutoffsAtMax(int ConjunctionNr, int ConditionNr);
     unsigned int GetMaxCutoff(unsigned int FOperator);
 
     unsigned int GetCombinationsGenerated();                                    // Get the number of combinations generated

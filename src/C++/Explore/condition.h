@@ -46,6 +46,7 @@ class CONDITION {
     // Condition
     bool PreviousSame;                                                          // Feature is equal to previous feature within conjunction (left one)
     bool NextSame;                                                              // Feature is equal to next feature (right one)
+    bool StopNext;                                                              // Stop when next cutoff increase
 
     //--------------------------------------------------------------------------
 
