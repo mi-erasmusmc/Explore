@@ -1468,6 +1468,11 @@ void RULE::CreateFeatureOperators() {
                 FeatureOperators.push_back(LessCondition);
                 FOperator++;
             } else {
+                if ((*Features)[i].GetOperator()==EQUAL) {
+                    CONDITION EqualCondition(i, (*Features)[i].GetName(), (*Features)[i].GetCutoffs(), EQUAL, FOperator);
+                    EqualCondition.NoOperators=1;
+                    FeatureOperators.push_back(EqualCondition);
+                }
                 if ((*Features)[i].GetOperator()==GREATER) {
                     CONDITION GreaterCondition(i, (*Features)[i].GetName(), (*Features)[i].GetCutoffs(), GREATER, FOperator);
                     GreaterCondition.NoOperators=1;
@@ -1477,11 +1482,6 @@ void RULE::CreateFeatureOperators() {
                     CONDITION LessCondition(i, (*Features)[i].GetName(), (*Features)[i].GetCutoffs(), LESS, FOperator);
                     LessCondition.NoOperators=1;
                     FeatureOperators.push_back(LessCondition);
-                }
-                if ((*Features)[i].GetOperator()==EQUAL) {
-                    CONDITION EqualCondition(i, (*Features)[i].GetName(), (*Features)[i].GetCutoffs(), EQUAL, FOperator);
-                    EqualCondition.NoOperators=1;
-                    FeatureOperators.push_back(EqualCondition);
                 }
 
                 FOperator++;
@@ -2043,23 +2043,7 @@ bool RULE::NextCutoffSet() {
                 MaxCutoff = CurrentCondition->Cutoffs.size();
 
                 if (CurrentConjunction->Size==1 && Conjunctions.size()>1) {                         // More than one conjunction and current conjunction size = 1
-                    if (CurrentCondition->Operator==LESS) {
-                        MaxCutoff = GetMinCutoff(CurrentCondition->FeatureOperator);
-                        if (CurrentCondition->CutoffNumber+1 < MaxCutoff) {
-                            CurrentCondition->CutoffNumber++;
-                            Incremented = true;
-                        } else {
-                            ConditionNr--;
-                        }
-                    } else if (CurrentCondition-> Operator==GREATER){
-                        MaxCutoff = GetMaxCutoff(CurrentCondition->FeatureOperator);
-                        if (CurrentCondition->CutoffNumber+1 > MaxCutoff && CurrentCondition->CutoffNumber+1<CurrentCondition->Cutoffs.size()) {
-                            CurrentCondition->CutoffNumber++;
-                            Incremented = true;
-                        } else {
-                            ConditionNr--;
-                        }
-                    } else if (CurrentCondition-> Operator==EQUAL){
+                    if (CurrentCondition-> Operator==EQUAL){
                         if (CurrentCondition->CutoffNumber+1 < MaxCutoff) {
                             CurrentCondition->CutoffNumber++;
                             Incremented = true;
@@ -2128,6 +2112,22 @@ bool RULE::NextCutoffSet() {
                         } else {
                             ConditionNr--;
                         }
+                    } else if (CurrentCondition->Operator==LESS) {
+                        MaxCutoff = GetMinCutoff(CurrentCondition->FeatureOperator);
+                        if (CurrentCondition->CutoffNumber+1 < MaxCutoff) {
+                            CurrentCondition->CutoffNumber++;
+                            Incremented = true;
+                        } else {
+                            ConditionNr--;
+                        }
+                    } else if (CurrentCondition-> Operator==GREATER){
+                        MaxCutoff = GetMaxCutoff(CurrentCondition->FeatureOperator);
+                        if (CurrentCondition->CutoffNumber+1 > MaxCutoff && CurrentCondition->CutoffNumber+1<CurrentCondition->Cutoffs.size()) {
+                            CurrentCondition->CutoffNumber++;
+                            Incremented = true;
+                        } else {
+                            ConditionNr--;
+                        }
                     }
                 } else {
                     if (CurrentFeatureOperator->IsSolo && CurrentFeatureOperator->NonSoloIncluded && CurrentConjunction->Size>1) { // && !(CurrentFeatureOperator->Operator == LESS)
@@ -2169,17 +2169,7 @@ bool RULE::NextCutoffSet() {
                     CurrentFeatureOperator = &FeatureOperators[CurrentCondition->FeatureOperator];
 
                     if (CurrentConjunction->Size==1 && Conjunctions.size()>1) {             // More than one conjunction and current conjunction size = 1
-                        if (CurrentCondition->Operator==LESS) {
-                            CurrentCondition->CutoffNumber = 0;
-                        } else if (CurrentCondition->Operator==GREATER) {
-                            // Reset to next cutoff
-                            CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureOperator)+1;
-
-                            // Or first if maximum reached
-                            if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
-                                CurrentCondition->CutoffNumber = 0;
-                            }
-                        } else if (CurrentCondition->Operator==EQUAL) {
+                        if (CurrentCondition->Operator==EQUAL) {
                             // If the previous FOP is the same nominal FOP, increase the condition
                             if ((ConjunctionNr > 0) && ((&Conjunctions[ConjunctionNr-1])->Size==1)
                             && (PreviousCondition->FeatureNumber == CurrentCondition->FeatureNumber)
@@ -2209,6 +2199,16 @@ bool RULE::NextCutoffSet() {
                                         }
                                     }
                                 }
+                            }
+                        } else if (CurrentCondition->Operator==LESS) {
+                            CurrentCondition->CutoffNumber = 0;
+                        } else if (CurrentCondition->Operator==GREATER) {
+                            // Reset to next cutoff
+                            CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureOperator)+1;
+
+                            // Or first if maximum reached
+                            if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
+                                CurrentCondition->CutoffNumber = 0;
                             }
                         }
                     } else {
