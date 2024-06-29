@@ -2065,20 +2065,19 @@ bool RULE::NextCutoffSet() {
                             Incremented = true;
 
                             // Activate stop for term tuples like 1 1 1
+                            // Current conjunction = size 1, so all higher conjunctions also size 1
                             if (ConjunctionNr<Conjunctions.size()-1) {
                                 PreviousConjunction = &Conjunctions[ConjunctionNr+1]; // Next conjunction but using existing object
 
-                                if (CurrentConjunction->Size == 1) { // All higher conjunctions are then also size 1
-                                    // TODO: check how many repeats? is this important?
-                                    PreviousCondition = &PreviousConjunction->Conditions[0]; // Next condition but using existing object
+                                // TODO: check how many repeats? is this important?
+                                PreviousCondition = &PreviousConjunction->Conditions[0]; // Next condition but using existing object
 
-                                    if (PreviousCondition->FeatureOperator == CurrentCondition->FeatureOperator &&
-                                        CurrentCondition->CutoffNumber == CurrentCondition->Cutoffs.size() - 1) {
-                                        // TODO: 1 difference is specific for this case (for skipping last threshold)
-                                        Incremented = false;
-                                        ConditionNr--;
-                                        CurrentCondition->StopNext = true;
-                                    }
+                                if (PreviousCondition->FeatureOperator == CurrentCondition->FeatureOperator &&
+                                    CurrentCondition->CutoffNumber == CurrentCondition->Cutoffs.size() - 1) {
+                                    // TODO: 1 difference is specific for this case (for skipping last threshold)
+                                    Incremented = false;
+                                    ConditionNr--;
+                                    CurrentCondition->StopNext = true;
                                 }
                             }
 
@@ -2173,7 +2172,13 @@ bool RULE::NextCutoffSet() {
                         if (CurrentCondition->Operator==LESS) {
                             CurrentCondition->CutoffNumber = 0;
                         } else if (CurrentCondition->Operator==GREATER) {
+                            // Reset to next cutoff
                             CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureOperator)+1;
+
+                            // Or first if maximum reached
+                            if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
+                                CurrentCondition->CutoffNumber = 0;
+                            }
                         } else if (CurrentCondition->Operator==EQUAL) {
                             // If the previous FOP is the same nominal FOP, increase the condition
                             if ((ConjunctionNr > 0) && ((&Conjunctions[ConjunctionNr-1])->Size==1)

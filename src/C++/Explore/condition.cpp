@@ -25,6 +25,7 @@ CONDITION::CONDITION() {
 
   NextSame = false;
   PreviousSame = false;
+  StopNext = false;
 }
 
 /**********************************************************************
@@ -45,6 +46,14 @@ CONDITION::CONDITION(unsigned int CNumber, string CName, vector<CUTOFF> CCutoffs
   Operator = COperator;
   FeatureOperator = FOperator;
   CutoffNumber = NULL;
+
+    // Needed for cutoffsets
+    IsSolo = false;
+    NonSoloIncluded = false;
+
+    NextSame = false;
+    PreviousSame = false;
+    StopNext = false;
 }
 
 /**********************************************************************
