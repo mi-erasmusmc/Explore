@@ -153,6 +153,7 @@ void IOExplore::ClearSettings() {
   ProjectSettings.SubSumption            = false;
   ProjectSettings.Parallel               = false;
   ProjectSettings.ParallelMethod         = ONE;
+  ProjectSettings.BinaryReduction        = false;
 }
 
 /**********************************************************************
@@ -728,6 +729,10 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
             ProjectSettings.ParallelMethod = TWO;
         break;
     }
+    ProjectSettings.BinaryReduction = false;
+    if (Project->GetBinaryReduction()) {
+        ProjectSettings.BinaryReduction = true;
+    }
 
     return SaveSettingsToFile(IOFilename);
 }
@@ -993,6 +998,11 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
           case TWO:
               ProjectFile << "ParallelMethod=TWO" << endl;
               break;
+      }
+      if (ProjectSettings.BinaryReduction) {
+          ProjectFile << "BinaryReduction=yes" << endl;
+      } else {
+          ProjectFile << "BinaryReduction=no" << endl;
       }
 	ProjectFile.flush();
 	ProjectFile.close();
@@ -1569,6 +1579,16 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
                 return false;
             }
         }
+        if (CurrentHeading.compare("BinaryReduction")==0) {
+            if (CurrentValue.compare("yes")==0) {
+                ProjectSettings.BinaryReduction = true;
+            } else if (CurrentValue.compare("no")==0) {
+                ProjectSettings.BinaryReduction = false;
+            } else {
+                ProjectLoadErrors.push_back("Invalid value for binary reduction.");
+                return false;
+            }
+        }
 	  ProjectFile.getline(Buffer,MAX_LINESIZE,ENDL_SEPARATOR);
 	}
     ProjectFile.close();
@@ -1706,6 +1726,7 @@ bool IOExplore::SetupExploreFromStruct() {
   Project->SetSubSumption(ProjectSettings.SubSumption);
   Project->SetParallel(ProjectSettings.Parallel);
   Project->SetParallelMethod(ProjectSettings.ParallelMethod);
+  Project->SetBinaryReduction(ProjectSettings.BinaryReduction);
 
   return true;
 }

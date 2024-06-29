@@ -42,6 +42,7 @@ class RULE {
     bool LastConditionSet{};                                                      // Is this the last instance?
 
     bool BranchBound;                                                           // Should optimization be used when generating rules
+    bool BinaryReduction;
 
     unsigned int CombinationsGenerated;                                         // Number of combinations generated until now
     long FeatureSetsGenerated;                                                  // Number of featuresets generated until now
@@ -203,6 +204,7 @@ unsigned int NoFeatureOperators{};                                            //
     void SetNoFeatures(unsigned int RNoFeatures);                               // Set the maximum number of features of the population
     void SetCurrentLength(unsigned int NRuleLength);                            // Set the length of the rule manually
     void SetBranchBound(bool Optimize);                                         // Should we use optimization for generating rules
+    void SetBinaryReduction(bool BinaryReduction);
 
 	void GetMaxLength(unsigned int RMaxLength);                                 // Set the maximum length of the rule
 	void GetMinLength(unsigned int RMinLength);

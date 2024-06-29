@@ -72,6 +72,7 @@ struct ExploreSettings {
   bool						  SubSumption;
   bool                        Parallel;
   PARALLEL_METHOD             ParallelMethod;
+  bool                        BinaryReduction;
 };
 
 class IOExplore {

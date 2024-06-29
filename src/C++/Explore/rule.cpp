@@ -28,7 +28,8 @@ RULE::RULE() {
     RestrictionSet = false;
     MandatorySet = false;
 
-    BranchBound = true;
+    BranchBound = false;
+    BinaryReduction = false;
 
     CombinationGenerated = false;
     FeatureSetGenerated = false;
@@ -1201,6 +1202,19 @@ void RULE::SetBranchBound(bool Optimize) {
 }
 
 /**********************************************************************
+Function: SetBinaryReduction()
+Category: Modifiers
+Scope: public
+In: bool, optimize or not
+Out: -
+Description: Sets whether explore should use binary optimization when
+generating rules.
+**********************************************************************/
+void RULE::SetBinaryReduction(bool Value) {
+    BinaryReduction = Value;
+}
+
+/**********************************************************************
 Function: AddConjunction()
 Category: Modifiers
 Scope: public
@@ -1662,6 +1676,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
     // Counters as reference
     int ConjunctionSize, ConjunctionNr, ConditionNr, FOperatorNr, MaxFOperator;
     CONDITION* Condition;
+    CONJUNCTION* PreviousConjunction;
 
     // Whatever happens (increment possible or not), ConditionSet has not been generated yet
     CutoffSetGenerated = false;
@@ -1706,6 +1721,21 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
 
                 if (ConditionNr == 0 && ConjunctionNr ==0) {
                     MaxFOperator = std::min(FOperatorNr_end, MaxFOperator);
+                }
+
+                if (ConjunctionNr > 0 && BinaryReduction && Conjunctions[ConjunctionNr].Size==1) {
+                    // No repeats of feature operators for binary reduction
+                    for (unsigned int j=0; j<Conjunctions[0].Conditions.size(); j++) { // Go per condition
+                        for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
+                            if (j<Conjunctions[i].Size) {
+                                if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator) {
+                                    FOperatorNr++;
+                                    i=0;
+                                    j=0;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Iterate from Current FeatureOperator of condition to Max. FeatureOperator
@@ -1760,13 +1790,14 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
 
             // Reset FeatureOperator if we're not in the first conjunction and conjunction size is not equal to 1
             if (ConjunctionNr>0) {
-                if (Conjunctions[ConjunctionNr-1].Size>1) {
+                if (BinaryReduction && Conjunctions[ConjunctionNr].Size==1) {
+                    // Simply go to next FeatureOperator, no repeats
+                } else if (Conjunctions[ConjunctionNr-1].Size>1) {
                     FOperatorNr=0;
                     NumRepeats = 0;
-                }
-                else {//allow multiple occurences of nominal features
+                } else {//allow multiple occurences of nominal features
                     if (FeatureOperators[Conjunctions[ConjunctionNr - 1].Conditions[0].FeatureOperator].Operator ==
-                        EQUAL) {
+                        EQUAL && !BinaryReduction) {
 
                     //allow A=b or A=c in rules if feature is nominal!!
                     //Check if number of nominal values-1 > number of repeats
@@ -1806,7 +1837,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                 FOperatorNr++;                                                          // Increment FeatureOperator
 
                 if (FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].Operator==EQUAL
-                    && Conjunctions[ConjunctionNr].Size==1){
+                    && Conjunctions[ConjunctionNr].Size==1 && !BinaryReduction){
                     NumRepeats++; // ?
                 } else {
                     NumRepeats=0;
@@ -1839,7 +1870,27 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                         NumRepeats = 0;
                     } else {
                         // If  conjunction size is 1 and check if nominal
-                        if (FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator].Operator==EQUAL){
+                        if (BinaryReduction) {
+                            int FONext = Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator+1; // AM: next feature-operator
+
+                            // No repeats of feature operators for binary reduction
+                            for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
+                                PreviousConjunction = &Conjunctions[i];
+                                for (unsigned int j = 0; j < PreviousConjunction->Conditions.size(); j++) {
+                                    if (FONext == PreviousConjunction->Conditions[j].FeatureOperator) {
+                                        FONext++;
+                                        i=0;
+                                        j=0;
+                                    }
+                                }
+                            }
+                            if (FONext<FeatureOperators.size()) {
+                                PreviousCondition = &FeatureOperators[FONext];
+                            } else { // FONext == FeatureOperators.size()-1
+                                return NextFeatureSet(FOperatorNr_start, FOperatorNr_end); // Next feature set
+                                // break;
+                            }
+                        } else if (FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator].Operator==EQUAL){
                             //allow A=b or A=c in rules if feature is nominal!!
                             //Check if number of nominal values-1 > number of repeats
                             //e.g., two nominal values A=a or A=b means is all data and thus
@@ -1872,12 +1923,34 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                 for (; ConditionNr<(int)Conjunctions[ConjunctionNr].Size; ConditionNr++) {   // Traverse conditions within conjunction while resetting FOperatorNr
 
                     Condition = &Conjunctions[ConjunctionNr].Conditions[ConditionNr];    // Save reference to condition
-                    (*Condition) = FeatureOperators[FOperatorNr];                        // Set condition to current FeatureOperator
+
+                    if (ConjunctionNr > 0 && BinaryReduction && Conjunctions[ConjunctionNr].Size==1) { // TODO: ConjunctionNr always 0?
+                        // No repeats of feature operators for binary reduction
+                        for (unsigned int j=0; j<Conjunctions[0].Conditions.size(); j++) { // Go per condition
+                            for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
+                                if (j<Conjunctions[i].Size) {
+                                    if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator) {
+                                        FOperatorNr++;
+                                        i=0;
+                                        j=0;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    if (FOperatorNr<FeatureOperators.size()) {
+                        (*Condition) = FeatureOperators[FOperatorNr];                        // Set condition to current FeatureOperator
+                    } else { // FONext == FeatureOperators.size()-1
+                        return NextFeatureSet(FOperatorNr_start, FOperatorNr_end); // Next feature set
+                    }
+
                     FOperatorNr++;                                                       // Within conjunction increase FOperator by 1 each time a condition is traversed (reset conditions)
 
                 }
                 if (Conjunctions[ConjunctionNr].Size==1 &&
-                    FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].Operator==EQUAL ) {
+                    FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].Operator==EQUAL && !BinaryReduction) {
                     NumRepeats++;
                 }
             }

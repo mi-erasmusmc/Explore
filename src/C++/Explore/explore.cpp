@@ -65,6 +65,8 @@ Explore::Explore() {
     BranchBound                 = true;
 	SubSumption                 = true;
 	Parallel                    = false;
+    ParallelMethod              = ONE;
+    BinaryReduction             = false;
 
     // Output
     IsUpdateRealtime            = false;
@@ -2221,6 +2223,18 @@ PARALLEL_METHOD Explore::GetParallelMethod() {
 }
 
 /**********************************************************************
+Function: GetBinaryReduction()
+Category: Selectors
+Scope: public
+In: -
+Out: bool, rules will be optimized or not when possible
+Description: Returns whether explore will use binary optimization
+**********************************************************************/
+bool Explore::GetBinaryReduction() {
+    return BinaryReduction;
+}
+
+/**********************************************************************
 Function: AddFeature()
 Category: Modifiers
 Scope: public
@@ -2329,6 +2343,19 @@ Description: Determines which method Explore will use in case of parallelization
 **********************************************************************/
 void Explore::SetParallelMethod(PARALLEL_METHOD Value) {
     ParallelMethod = Value;
+}
+
+/**********************************************************************
+Function: SetBinaryReduction()
+Category: Modifiers
+Scope: public
+In: PARALLEL_METHOD
+Out: -
+Description: Determines whether Explore will use binary optimization
+**********************************************************************/
+void Explore::SetBinaryReduction(bool Value) {
+    BinaryReduction = Value;
+    Rule.SetBinaryReduction(BinaryReduction);
 }
 
 /**********************************************************************

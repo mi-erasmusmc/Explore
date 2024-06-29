@@ -88,6 +88,7 @@ class Explore {
     bool Parallel;                                                              // Use parallelization
     PARALLEL_METHOD ParallelMethod;                                             // Method of parallelization
     bool IsUpdateRealtime;                                                      // Print summary information in real-time
+    bool BinaryReduction;
 
 	TIMING RuleLengthTiming;
 	clock_t StartRuleLength;
@@ -203,6 +204,7 @@ class Explore {
     bool GetSubSumption();                                                      // Returns whether Explore will use subsumption
     bool GetParallel();                                                      // Returns whether Explore will use parallelization
     PARALLEL_METHOD GetParallelMethod();                                     // Returns method of parallelization
+    bool GetBinaryReduction();
 
     bool GetPrintSettings();                                                    // Should settings be printed to output
     bool GetPrintPartitions();                                                  // Should population be printed to output
@@ -320,6 +322,7 @@ class Explore {
 	void SetSubSumption(bool Value);                                            // Prune Cutoffs by SubSumption
     void SetParallel(bool Value);                                               // Use parallelization
     void SetParallelMethod(PARALLEL_METHOD Value);                              // Set method for parallelization
+    void SetBinaryReduction(bool Value);
 
     // Interfacing
     void   SetOutput(streambuf *OutputBuffer);                                  // Redirect explore output

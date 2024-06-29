@@ -46,4 +46,5 @@ Subsumption=no
 BranchBound=no
 Parallel=no
 ParallelMethod=ONE
+BinaryReduction=no
 
