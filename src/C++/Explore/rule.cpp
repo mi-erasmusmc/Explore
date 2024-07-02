@@ -2067,29 +2067,32 @@ bool RULE::NextCutoffSet() {
 
                             // Correction binary / categorical features
                             if (ConjunctionNr > 0) {
-                                // TODO: loop over conjunctions?
-                                PreviousConjunction = &Conjunctions[ConjunctionNr - 1];
-                                if (CurrentFeatureOperator->NonSoloIncluded && PreviousConjunction->Size > 1) {
-                                    for (unsigned int j = 0; j < PreviousConjunction->Conditions.size(); j++) {
-                                        PreviousCondition = &PreviousConjunction->Conditions[j];
+                                for (int i=ConjunctionNr-1; i>=0; i--) { // Go through all previous conjunctions (front of rule)
+                                    PreviousConjunction = &Conjunctions[i]; // i = ConjunctionNr - 1
 
-                                        if (PreviousCondition->FeatureOperator == CurrentCondition->FeatureOperator &&
-                                            PreviousCondition->CutoffNumber == CurrentCondition->CutoffNumber) {
-                                            if (MaxCutoff == 2) { // For binary variables
-                                                PreviousCondition->CutoffNumber = 0;
-                                            } else {
-                                                if (CurrentCondition->CutoffNumber + 1 < MaxCutoff) {
-                                                    CurrentCondition->CutoffNumber++;
-                                                } else {
-                                                    // If ALL later cutoffs in rule are at last value -> set PreviousCondition to first value (this has been skipped in the beginning)
-                                                    if (CutoffsAtMax(ConjunctionNr - 1, j)) {
-                                                        PreviousCondition->CutoffNumber = 0; // Reset cutoff
-                                                        ConjunctionNr = ConjunctionNr - 1;
-                                                        ConditionNr = j;
-                                                        PreviousCondition->StopNext = true;
+                                    if (CurrentFeatureOperator->NonSoloIncluded && PreviousConjunction->Size > 1) {
+                                        for (unsigned int j = 0; j < PreviousConjunction->Conditions.size(); j++) {
+                                            PreviousCondition = &PreviousConjunction->Conditions[j];
+
+                                            if (PreviousCondition->FeatureOperator ==
+                                                CurrentCondition->FeatureOperator &&
+                                                PreviousCondition->CutoffNumber == CurrentCondition->CutoffNumber) {
+                                                if (MaxCutoff == 2) { // For binary variables
+                                                    PreviousCondition->CutoffNumber = 0;
+                                                } else { // For categorical variables
+                                                    if (CurrentCondition->CutoffNumber + 1 < MaxCutoff) {
+                                                        CurrentCondition->CutoffNumber++;
                                                     } else {
-                                                        Incremented = false;
-                                                        ConditionNr--;
+                                                        // If ALL later cutoffs in rule are at last value -> set PreviousCondition to first value (this has been skipped in the beginning)
+                                                        if (CutoffsAtMax(ConjunctionNr - 1, j)) {
+                                                            PreviousCondition->CutoffNumber = 0; // Reset cutoff
+                                                            ConjunctionNr = ConjunctionNr - 1;
+                                                            ConditionNr = j;
+                                                            PreviousCondition->StopNext = true;
+                                                        } else {
+                                                            Incremented = false;
+                                                            ConditionNr--;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -2180,21 +2183,30 @@ bool RULE::NextCutoffSet() {
 
                                 // Correction categorical variables
                                 if (CurrentFeatureOperator->NonSoloIncluded && ConjunctionNr > 0) {
-                                    // TODO: loop over conjunctions?
-                                    PreviousConjunction = &Conjunctions[ConjunctionNr-1];
-                                    if (PreviousConjunction->Size>1) {
-                                        for (unsigned int j=0; j<PreviousConjunction->Conditions.size(); j++) {
-                                            PreviousCondition = &PreviousConjunction->Conditions[j];
+                                    if (ConjunctionNr > 0) {
+                                        for (int i = ConjunctionNr - 1;
+                                             i >= 0; i--) { // Go through all previous conjunctions (front of rule)
+                                            PreviousConjunction = &Conjunctions[i]; // i = ConjunctionNr - 1
 
-                                            if (PreviousCondition->FeatureOperator==CurrentCondition->FeatureOperator && PreviousCondition->CutoffNumber == 0) {
-                                                if (PreviousCondition->CutoffNumber + 1 < MaxCutoff) {
-                                                    if (PreviousCondition->Cutoffs.size() == 2) { // BINARY
-                                                        PreviousCondition->CutoffNumber++;
-                                                    } else {
-                                                        CurrentCondition->CutoffNumber++; // CATEGORICAL
+                                            // PreviousConjunction = &Conjunctions[ConjunctionNr-1];
+                                            if (PreviousConjunction->Size > 1) {
+                                                for (unsigned int j = 0;
+                                                     j < PreviousConjunction->Conditions.size(); j++) {
+                                                    PreviousCondition = &PreviousConjunction->Conditions[j];
+
+                                                    if (PreviousCondition->FeatureOperator ==
+                                                        CurrentCondition->FeatureOperator &&
+                                                        PreviousCondition->CutoffNumber == 0) {
+                                                        if (PreviousCondition->CutoffNumber + 1 < MaxCutoff) {
+                                                            if (PreviousCondition->Cutoffs.size() == 2) { // BINARY
+                                                                PreviousCondition->CutoffNumber++;
+                                                            } else {
+                                                                CurrentCondition->CutoffNumber++; // CATEGORICAL
+                                                            }
+                                                        }
+
                                                     }
                                                 }
-
                                             }
                                         }
                                     }
