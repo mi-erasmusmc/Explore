@@ -47,7 +47,8 @@ output/
 
 # EXPLORE result files
 *.result
-inst/doc
+inst/cmake-build-debug
+inst/cmake-build-debug-coverage
 docs
 
 # PaRe Report

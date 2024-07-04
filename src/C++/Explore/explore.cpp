@@ -700,6 +700,14 @@ void Explore::PrintSettings() {
         cout << "No" << endl;
     }
 
+    cout << "Binary Optimization: ";
+    if (BinaryReduction){
+        cout << "Yes" << endl;
+    }
+    else {
+        cout << "No" << endl;
+    }
+
 
   Population.PrintSettings();
 
@@ -2636,10 +2644,12 @@ void Explore::Start() {
 	PrintSummary();
 
 	// TODO: decide which complexity to report (update for parallel options)
-	cout << endl << "COMPLEXITY" << endl << endl;
-	cout << "Combinations: " <<  Rule.GetCombinationsGenerated() << endl;
-	cout << "Feature sets: " << Rule.GetFeatureSetsGenerated() << endl;
-	cout << "Cutoff sets: " << Rule.GetCutoffSetsGenerated() << endl << endl;
+	// cout << endl << "COMPLEXITY" << endl << endl;
+	// cout << "Combinations: " << Rule.GetCombinationsGenerated() << endl;
+    // cout << "Feature sets: " << CountFeatureOperatorPairs << endl;
+    // cout << "Feature sets: " << Rule.GetFeatureSetsGenerated() << endl;
+	// cout << "Cutoff sets: " << CountCutoffSets << endl << endl;
+    // cout << "Cutoff sets: " << Rule.GetCutoffSetsGenerated() << endl << endl;
 
 	cout << endl << "TIMING" << endl << endl;
 	time(&endtime);
@@ -2919,9 +2929,11 @@ bool Explore::RunProject() {
   #endif
 
 	do {
-	    CountCandidatesPartition = 0;
+        // CountCombinations = 0;
         CountFeatureOperatorPairs = 0;
         CountCutoffSets = 0;
+        CountCandidatesPartition = 0;
+
 	  BestLengthPartition = 0;
 	  Final = false;
 
@@ -2938,15 +2950,25 @@ bool Explore::RunProject() {
 
 if (!Parallel) {
     float CandidatePerformance;
+    int FOSets_old = 0;
 
     while (Rule.NextCombinationGenerator()) {
+   //     cout << "FO pairs: " << CountFeatureOperatorPairs - FOSets_old << endl;
+     //   FOSets_old = CountFeatureOperatorPairs;
+
+        cout << "Cutoff sets: " << CountCutoffSets - FOSets_old << endl;
+        FOSets_old = CountCutoffSets;
+
         if (IsPrintCombinations) Rule.PrintCombination();
 
         StartTimeTermTuple = clock();
 
        while (Rule.NextFeatureSetGenerator(0, Rule.GetFeatureOperatorSize())) {
+
+
             if (IsPrintFeatureSets) Rule.PrintFeatureSet();
             CountFeatureOperatorPairs++;
+
             // CalculateProgress();
             while (Rule.NextCutoffSetGenerator()) {
 
@@ -2988,7 +3010,6 @@ if (!Parallel) {
                 }
 
                 CountCutoffSets++;
-
                 // if (IsUpdateRealtime) CalculateProgress();
 
 #ifndef COMMANDVERSION
@@ -3033,8 +3054,6 @@ if (!Parallel) {
             for (int i = r.begin(); i < r.end(); ++i) {
                 StartTimeTermTuple = clock();
 
-                // RULE Rule_i = all_rules.at(i);
-
                 RULE Rule_i = RULE(all_rules[i]); // CREATE DEEP COPY
 
                 float CandidatePerformance;
@@ -3072,7 +3091,6 @@ if (!Parallel) {
 
                 if (IsPrintCombinations) Rule_i.PrintCombination();
 
-                // CANDIDATE PartitionCandidates_i; // doesn't need to be concurrent vector
                 // printf("Combination %d and feature operators set %d and address %p and thread id %d \n", i, j, &Rule_i, tbb::this_task_arena::current_thread_index());
 
                 while (Rule_i.NextFeatureSetGenerator(0, Rule_i.GetFeatureOperatorSize())) {
@@ -3225,7 +3243,6 @@ if (!Parallel) {
 
                         if (IsPrintCombinations) Rule_ij.PrintCombination();
 
-                        // CANDIDATE PartitionCandidates_ij; // doesn't need to be concurrent vector
                         // printf("Combination %d and feature operators set %d and address %p and thread id %d \n", i, j, &Rule_ij, tbb::this_task_arena::current_thread_index());
 
                         while (Rule_ij.NextFeatureSetGenerator(j, j)) {

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.17)
 project(Explore)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3")
+# set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 

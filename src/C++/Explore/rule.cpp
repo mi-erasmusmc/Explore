@@ -1766,7 +1766,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                             }
                         }
                         if (Left<(Conjunctions.size()-1-ConjunctionNr)){
-                            Incremented =false;
+                            Incremented=false;
                         }
                     }
                 } else {
