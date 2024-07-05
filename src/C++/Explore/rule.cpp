@@ -1904,7 +1904,11 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                             }
                         } else {
                             //other operator can occur solo only once
-                            PreviousCondition = &FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator+1]; // AM: take next feature-operator
+                            if (Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator+1<FeatureOperators.size()) {
+                                PreviousCondition = &FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator+1]; // AM: take next feature-operator
+                            } else { // out of bounds
+                                return NextFeatureSet(FOperatorNr_start, FOperatorNr_end); // Next feature set
+                            }
                         }
 
                     }
