@@ -1,4 +1,7 @@
 
+
+# Explore <a href="https://mi-erasmusmc.github.io/Explore/"><img src="man/logo.png" align="right" height="220" alt="" /></a>
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/mi-erasmusmc/Explore/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/mi-erasmusmc/Explore/actions/workflows/check-standard.yaml)
 [![Lifecycle:
