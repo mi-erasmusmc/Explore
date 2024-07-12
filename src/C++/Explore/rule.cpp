@@ -2247,7 +2247,7 @@ bool RULE::NextCutoffSet() {
                             }
 
                             // Reset to next cutoff
-                            if (!(CurrentCondition->Operator==LESS) && CurrentFeatureOperator->IsSolo && CurrentConjunction->Size>1) {
+                            if (!(CurrentCondition->Operator==LESS) && (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature) && CurrentConjunction->Size>1) {
                                 CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureNumber)+1; // TODO: check if correct
                             }
                         }
@@ -2336,9 +2336,9 @@ bool RULE::NextCutoffSet() {
                 CurrentCondition = &Conjunctions[ConjunctionNr].Conditions[ConditionNr];
                 CurrentFeatureOperator = &FeatureOperators[CurrentCondition->FeatureOperator];
 
-                if (CurrentFeatureOperator->IsSolo==true) {                                                  // Is current condition solo?
+                if (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature) {                                                  // Is current condition solo?
                     if (CurrentConjunction->Size>1) {
-                        CurrentFeatureOperator->NonSoloIncluded = true;
+                        CurrentFeatureOperator->NonSoloIncluded = true; // Used for variables with EQUAL operator, will never have RepeatedFeature (only one operator)
 
                         if (!(CurrentCondition->Operator==LESS)) { // If operator = greater or equal, start from next cutoff
                             if (CurrentCondition->Cutoffs.size()>1) {
@@ -2352,7 +2352,7 @@ bool RULE::NextCutoffSet() {
                     } else {
                         CurrentCondition->CutoffNumber = 0; // TODO: unneccesary?
 
-                        if (CurrentFeatureOperator->RepeatedFeature && (CurrentCondition->Operator == GREATER)) {
+                        if ((CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature) && (CurrentCondition->Operator == GREATER)) {
                             if (CurrentCondition->Cutoffs.size()>1) {
                                 CurrentCondition->CutoffNumber = 1;
                             } else {
