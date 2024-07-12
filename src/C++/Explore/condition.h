@@ -44,6 +44,7 @@ class CONDITION {
     bool NonSoloIncluded;                                                       // FeatureOperator included in a conjunction with size>1
 
     // Feature
+    bool IsRepeated;
     bool RepeatedFeature;
 
     // Condition

@@ -2137,10 +2137,12 @@ bool RULE::NextCutoffSet() {
                         }
                     }
                 } else {
-                    if (CurrentFeatureOperator->RepeatedFeature && CurrentConjunction->Size>1) { // && !(CurrentFeatureOperator->Operator == LESS)
-                        if (MaxCutoff == 2 || CurrentFeatureOperator->Operator==LESS) { // MaxCutoff == 2 && Operator==EQUAL?
-                            MaxCutoff--; // Needed for binary, should be removed for categorical
-                        }
+                    if (CurrentFeatureOperator->Operator==EQUAL && MaxCutoff==2){ // Needed for binary,should be removed for categorical
+                        if (CurrentFeatureOperator->RepeatedFeature && CurrentConjunction->Size>1) {MaxCutoff--;}
+                    } else if (CurrentFeatureOperator->NonSoloIncluded){
+                        if (CurrentFeatureOperator->Operator==GREATER) {MaxCutoff--;}
+                    } else if (CurrentFeatureOperator->RepeatedFeature){
+                         if (CurrentFeatureOperator->Operator==LESS && CurrentConjunction->Size>1) {MaxCutoff--;}
                     }
                     if (CurrentCondition->NextSame) { // For greater, also for equal or less?
                         MaxCutoff--;
@@ -2271,6 +2273,7 @@ bool RULE::NextCutoffSet() {
         vector<CONDITION>::iterator LFOperator(FeatureOperators.end());
         for (; CFOperator != LFOperator; CFOperator++) {
             CFOperator->IsSolo = false;
+            CFOperator->IsRepeated = false;
             CFOperator->NonSoloIncluded = false;
             CFOperator->RepeatedFeature = false;
         }
@@ -2321,9 +2324,16 @@ bool RULE::NextCutoffSet() {
                 for (int C=ConjunctionNr-1; C>=0; C--) {
                     CurrentConjunction = &Conjunctions[C];
                     for (ConditionNr=0; ConditionNr<(int)CurrentConjunction->Size; ConditionNr++) {                // Iterate through conditions
-                        if (Conjunctions[C].Conditions[ConditionNr].FeatureNumber ==
+                        if (CurrentConjunction->Conditions[ConditionNr].FeatureNumber ==
                             Conjunctions[ConjunctionNr].Conditions[0].FeatureNumber) {
-                                FeatureOperators[Conjunctions[C].Conditions[ConditionNr].FeatureOperator].RepeatedFeature = true;
+                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = true;
+
+                            FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].IsRepeated=true;
+
+                            if (CurrentConjunction->Size > 1 && CurrentConjunction->Conditions[ConditionNr].FeatureOperator ==
+                                    Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator) {
+                                    FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].NonSoloIncluded = true;
+                                }
                         }
                     }
                 }
@@ -2338,9 +2348,7 @@ bool RULE::NextCutoffSet() {
 
                 if (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature) {                                                  // Is current condition solo?
                     if (CurrentConjunction->Size>1) {
-                        CurrentFeatureOperator->NonSoloIncluded = true; // Used for variables with EQUAL operator, will never have RepeatedFeature (only one operator)
-
-                        if (!(CurrentCondition->Operator==LESS)) { // If operator = greater or equal, start from next cutoff
+                        if (!(CurrentCondition->Operator==GREATER && CurrentFeatureOperator->NonSoloIncluded) && !(CurrentCondition->Operator==LESS && CurrentFeatureOperator->RepeatedFeature)) { // If operator = greater or equal, start from next cutoff
                             if (CurrentCondition->Cutoffs.size()>1) {
                                 CurrentCondition->CutoffNumber = 1;
                             } else {
@@ -2352,7 +2360,7 @@ bool RULE::NextCutoffSet() {
                     } else {
                         CurrentCondition->CutoffNumber = 0; // TODO: unneccesary?
 
-                        if ((CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature) && (CurrentCondition->Operator == GREATER)) {
+                        if ((CurrentFeatureOperator->NonSoloIncluded || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->IsRepeated) && CurrentCondition->Operator == GREATER) {
                             if (CurrentCondition->Cutoffs.size()>1) {
                                 CurrentCondition->CutoffNumber = 1;
                             } else {
