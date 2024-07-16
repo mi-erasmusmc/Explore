@@ -688,14 +688,15 @@ Out: unsigned int, the maximum order of a cutoff
 Description: Returns the order of the maximum cutoff for a specific
 FeatureOperator currently used in the rule.
 **********************************************************************/
-unsigned int RULE::GetMaxCutoff(unsigned int FOperator) {
+unsigned int RULE::GetMaxCutoff(unsigned int Fnum) {
     CONDITION* CurrentCondition;
     unsigned int Result = 0;
 
     for (unsigned int i=0; i<Conjunctions.size(); i++) {
         for (unsigned int j=0; j<Conjunctions[i].Conditions.size() && Conjunctions[i].Size>1; j++) {
             CurrentCondition = &Conjunctions[i].Conditions[j];
-            if (CurrentCondition->FeatureOperator==FOperator) {
+            // if (CurrentCondition->FeatureOperator==FOperator) {
+            if (CurrentCondition->FeatureNumber==Fnum && (Conjunctions[i].Size>1 || FeatureOperators[CurrentCondition->FeatureOperator].RepeatedFeature)) {
                 if (CurrentCondition->CutoffNumber>Result) {
                     Result = CurrentCondition->CutoffNumber;
                 }
@@ -2128,7 +2129,7 @@ bool RULE::NextCutoffSet() {
                             ConditionNr--;
                         }
                     } else if (CurrentCondition-> Operator==GREATER){
-                        MaxCutoff = GetMaxCutoff(CurrentCondition->FeatureOperator);
+                        MaxCutoff = GetMaxCutoff(CurrentCondition->FeatureNumber);
                         if (CurrentCondition->CutoffNumber+1 > MaxCutoff && CurrentCondition->CutoffNumber+1<CurrentCondition->Cutoffs.size()) {
                             CurrentCondition->CutoffNumber++;
                             Incremented = true;
@@ -2226,7 +2227,11 @@ bool RULE::NextCutoffSet() {
 
                             // Or first if maximum reached
                             if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
-                                CurrentCondition->CutoffNumber = 0;
+                                if (!CurrentFeatureOperator->RepeatedFeature){
+                                    CurrentCondition->CutoffNumber = 0;
+                                } else {
+                                    CurrentCondition->CutoffNumber = 1;
+                                }
                             }
                         }
                     } else {
@@ -2249,7 +2254,7 @@ bool RULE::NextCutoffSet() {
                             }
 
                             // Reset to next cutoff
-                            if (!(CurrentCondition->Operator==LESS) && (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature) && CurrentConjunction->Size>1) {
+                            if ((CurrentFeatureOperator->NonSoloIncluded && !(CurrentCondition->Operator==GREATER)) || (CurrentFeatureOperator->RepeatedFeature && !(CurrentCondition->Operator==LESS))) {
                                 CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureNumber)+1; // TODO: check if correct
                             }
                         }
@@ -2326,14 +2331,15 @@ bool RULE::NextCutoffSet() {
                     for (ConditionNr=0; ConditionNr<(int)CurrentConjunction->Size; ConditionNr++) {                // Iterate through conditions
                         if (CurrentConjunction->Conditions[ConditionNr].FeatureNumber ==
                             Conjunctions[ConjunctionNr].Conditions[0].FeatureNumber) {
-                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = true;
+                            FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = true;
 
                             FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].IsRepeated=true;
 
                             if (CurrentConjunction->Size > 1 && CurrentConjunction->Conditions[ConditionNr].FeatureOperator ==
-                                    Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator) {
-                                    FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].NonSoloIncluded = true;
-                                }
+                                                                Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator) {
+                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].NonSoloIncluded = true;
+                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = false;
+                            }
                         }
                     }
                 }
@@ -2346,11 +2352,11 @@ bool RULE::NextCutoffSet() {
                 CurrentCondition = &Conjunctions[ConjunctionNr].Conditions[ConditionNr];
                 CurrentFeatureOperator = &FeatureOperators[CurrentCondition->FeatureOperator];
 
-                if (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature) {                                                  // Is current condition solo?
+                if (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->NonSoloIncluded) {             // Is current condition solo?
                     if (CurrentConjunction->Size>1) {
-                        if (!(CurrentCondition->Operator==GREATER && CurrentFeatureOperator->NonSoloIncluded) && !(CurrentCondition->Operator==LESS && CurrentFeatureOperator->RepeatedFeature)) { // If operator = greater or equal, start from next cutoff
+                        if (!(CurrentCondition->Operator==GREATER && CurrentFeatureOperator->NonSoloIncluded) && !(CurrentCondition->Operator==LESS && CurrentFeatureOperator->RepeatedFeature)) {
                             if (CurrentCondition->Cutoffs.size()>1) {
-                                CurrentCondition->CutoffNumber = 1;
+                                CurrentCondition->CutoffNumber = 1; // Then start from next cutoff
                             } else {
                                 CutoffSetGenerated = false;
                                 return false;
@@ -2362,7 +2368,8 @@ bool RULE::NextCutoffSet() {
 
                         if ((CurrentFeatureOperator->NonSoloIncluded || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->IsRepeated) && CurrentCondition->Operator == GREATER) {
                             if (CurrentCondition->Cutoffs.size()>1) {
-                                CurrentCondition->CutoffNumber = 1;
+                                CurrentCondition->CutoffNumber = GetMaxCutoff(CurrentCondition->FeatureNumber)+1; // TODO: check if correct, or should it be MinCutoff?
+                                // CurrentCondition->CutoffNumber = 1;
                             } else {
                                 CutoffSetGenerated = false;
                                 return false;
