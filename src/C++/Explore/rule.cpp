@@ -2222,15 +2222,19 @@ bool RULE::NextCutoffSet() {
                         } else if (CurrentCondition->Operator==LESS) {
                             CurrentCondition->CutoffNumber = 0;
                         } else if (CurrentCondition->Operator==GREATER) {
-                            // Reset to next cutoff
-                            CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureNumber)+1; // TODO: check if correct
+                            CurrentCondition->CutoffNumber = 0;
 
-                            // Or first if maximum reached
-                            if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
-                                if (!CurrentFeatureOperator->RepeatedFeature){
-                                    CurrentCondition->CutoffNumber = 0;
-                                } else {
-                                    CurrentCondition->CutoffNumber = 1;
+                            // Reset to next cutoff
+                            if (CurrentFeatureOperator->NonSoloIncluded || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->IsRepeated){
+                                CurrentCondition->CutoffNumber = GetMaxCutoff(CurrentCondition->FeatureNumber)+1;
+
+                                // Or first if maximum reached
+                                if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
+                                    if (!CurrentFeatureOperator->RepeatedFeature){
+                                        CurrentCondition->CutoffNumber = 0;
+                                    } else {
+                                        CurrentCondition->CutoffNumber = 1;
+                                    }
                                 }
                             }
                         }
