@@ -2139,7 +2139,7 @@ bool RULE::NextCutoffSet() {
                     }
                 } else {
                     if (CurrentFeatureOperator->Operator==EQUAL && MaxCutoff==2){ // Needed for binary,should be removed for categorical
-                        if (CurrentFeatureOperator->RepeatedFeature && CurrentConjunction->Size>1) {MaxCutoff--;}
+                        if (CurrentFeatureOperator->NonSoloIncluded) {MaxCutoff--;}
                     } else if (CurrentFeatureOperator->NonSoloIncluded){
                         if (CurrentFeatureOperator->Operator==GREATER) {MaxCutoff--;}
                     } else if (CurrentFeatureOperator->RepeatedFeature){
