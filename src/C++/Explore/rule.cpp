@@ -2335,14 +2335,13 @@ bool RULE::NextCutoffSet() {
                     for (ConditionNr=0; ConditionNr<(int)CurrentConjunction->Size; ConditionNr++) {                // Iterate through conditions
                         if (CurrentConjunction->Conditions[ConditionNr].FeatureNumber ==
                             Conjunctions[ConjunctionNr].Conditions[0].FeatureNumber) {
-                            FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = true;
-
                             FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].IsRepeated=true;
 
                             if (CurrentConjunction->Size > 1 && CurrentConjunction->Conditions[ConditionNr].FeatureOperator ==
                                                                 Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator) {
                                 FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].NonSoloIncluded = true;
-                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = false;
+                            } else {
+                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = true;
                             }
                         }
                     }
@@ -2358,7 +2357,7 @@ bool RULE::NextCutoffSet() {
 
                 if (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->NonSoloIncluded) {             // Is current condition solo?
                     if (CurrentConjunction->Size>1) {
-                        if (!(CurrentCondition->Operator==GREATER && CurrentFeatureOperator->NonSoloIncluded) && !(CurrentCondition->Operator==LESS && CurrentFeatureOperator->RepeatedFeature)) {
+                        if ((CurrentFeatureOperator->NonSoloIncluded && !(CurrentCondition->Operator==GREATER)) || (CurrentFeatureOperator->RepeatedFeature && !(CurrentCondition->Operator==LESS))) {
                             if (CurrentCondition->Cutoffs.size()>1) {
                                 CurrentCondition->CutoffNumber = 1; // Then start from next cutoff
                             } else {
