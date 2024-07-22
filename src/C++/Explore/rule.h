@@ -148,7 +148,7 @@ unsigned int NoFeatureOperators{};                                            //
     vector<OPERATOR> GetOperators();                                            // Get a list of operators
     vector<string> GetCutoffs();                                                 // Get a list of cutoffs
 
-    unsigned int GetMinCutoff(unsigned int FOperator);
+    unsigned int GetMinCutoff(unsigned int FOperator, int ConjunctionNr);
     bool CutoffsAtMax(int ConjunctionNr, int ConditionNr);
     unsigned int GetMaxCutoff(unsigned int FOperator);
 
