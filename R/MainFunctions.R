@@ -155,7 +155,7 @@ trainExplore <- function(train_data = NULL,
       # }
         
       coef <- names(cor)[order(-abs(cor))] 
-      train_data <- train_data[,c(coef,ClassFeature_)] # sort data features by LASSO importance
+      train_data <- train_data[,c(coef,ClassFeature_)] # sort data features by importance
     }
     
     saveData(output_path, train_data, file_name)

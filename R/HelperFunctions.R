@@ -80,6 +80,9 @@ saveData <- function(output_path, train_data, file_name) {
   binary_cols <- sapply(1:ncol(train_data), function(c) all(train_data[[c]] %in% 0:1))
   train_data[binary_cols] <- lapply(colnames(train_data[binary_cols]), function(c) factor(train_data[[c]], labels=c(0,1)))
 
+  # Order data (first binary then continuous features)
+  train_data <- cbind(train_data[binary_cols],train_data[!binary_cols]) # Order needed for correct functioning of main algorithm in C++ 
+  
   # Save data as arff file
   if (file.exists(paste0(output_path, file_name, ".arff"))) {file.remove(paste0(output_path, file_name, ".arff"))}
   farff::writeARFF(train_data, paste0(output_path, file_name, ".arff"))
