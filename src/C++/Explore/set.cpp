@@ -423,7 +423,7 @@ string SET::PrintPerformance() {
   return Result.str();
 }
 
-struct AndJibu : public std ::unary_function<int, void>
+struct AndJibu : public std ::__unary_function<int, void>
 {
 	const boost::dynamic_bitset<> Source;
 	boost::dynamic_bitset<> Dest;
