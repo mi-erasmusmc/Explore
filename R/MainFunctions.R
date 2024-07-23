@@ -39,20 +39,22 @@ trainExplore <- function(train_data = NULL,
                          StartRulelength = 1,
                          EndRulelength = 3,
                          OperatorMethod = "EXHAUSTIVE",
-                         CutoffMethod = "RVAC",
+                         CutoffMethod = "ALL",
                          ClassFeature = "'class'",
                          PositiveClass = "'Iris-versicolor'",
                          FeatureInclude = "",
-                         Maximize = "ACCURACY",
+                         Maximize = "BALANCEDACCURACY",
                          Accuracy = 0,
                          BalancedAccuracy = 0,
                          Specificity = 0,
                          PrintSettings = TRUE,
                          PrintPerformance = TRUE,
-                         Subsumption = TRUE,
+                         Subsumption = FALSE,
                          BranchBound = TRUE,
                          Sorted = "none",
-                         Parallel = FALSE) {
+                         Parallel = TRUE,
+                         ParallelMethod = "ONE",
+                         BinaryReduction = FALSE) {
   
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
@@ -103,6 +105,8 @@ trainExplore <- function(train_data = NULL,
                     checkLogical(BranchBound),
                     checkString(Sorted),
                     checkLogical(Parallel),
+                    checkString(ParallelMethod),
+                    checkLogical(BinaryReduction),
                     add = errorMessage,
                     combine = "and"
   )
@@ -113,6 +117,7 @@ trainExplore <- function(train_data = NULL,
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
+  BinaryReduction <- ifelse(BinaryReduction == TRUE, "yes", "no")
   Accuracy <- ifelse(Accuracy == 0, "", Accuracy)
   BalancedAccuracy <- ifelse(BalancedAccuracy == 0, "", BalancedAccuracy)
   Specificity <- ifelse(Specificity == 0, "", Specificity)
@@ -182,7 +187,9 @@ trainExplore <- function(train_data = NULL,
                                    PrintPerformance = PrintPerformance,
                                    Subsumption = Subsumption,
                                    BranchBound = BranchBound,
-                                   Parallel = Parallel)
+                                   Parallel = Parallel,
+                                   ParallelMethod = ParallelMethod,
+                                   BinaryReduction = BinaryReduction)
   
   # Train EXPLORE model
   # TODO: allow to enter settings file instead of path?
@@ -243,15 +250,17 @@ settingsExplore <- function(settings,
                             ClassFeature,
                             PositiveClass,
                             FeatureInclude = "",
-                            Maximize = "ACCURACY",
+                            Maximize = "BALANCEDACCURACY",
                             Accuracy = 0,
                             BalancedAccuracy = 0,
                             Specificity = 0,
                             PrintSettings = "yes",
                             PrintPerformance = "yes",
-                            Subsumption = "yes",
+                            Subsumption = "no",
                             BranchBound = "yes",
-                            Parallel = "no") {
+                            Parallel = "yes",
+                            ParallelMethod = "ONE",
+                            BinaryReduction = "no") {
   
   
   # Insert location training data and cutoff file if train_data is entered
@@ -278,6 +287,8 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption)
   settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound)
   settings <- changeSetting(settings, parameter = "Parallel", input = Parallel)
+  settings <- changeSetting(settings, parameter = "ParallelMethod", input = ParallelMethod)
+  settings <- changeSetting(settings, parameter = "BinaryReduction", input = BinaryReduction)
   
   # Save settings file
   settings_path <- paste0(output_path, file_name,".project")
