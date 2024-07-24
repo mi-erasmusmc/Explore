@@ -1728,7 +1728,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                     for (unsigned int j=0; j<Conjunctions[0].Conditions.size(); j++) { // Go per condition
                         for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
                             if (j<Conjunctions[i].Size) {
-                                if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator) {
+                                if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator && FeatureOperators[Conjunctions[i].Conditions[j].FeatureOperator].Operator==EQUAL) {
                                     FOperatorNr++;
                                     i=0;
                                     j=0;
@@ -1792,9 +1792,16 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
             if (ConjunctionNr>0) {
                 if (BinaryReduction && Conjunctions[ConjunctionNr].Size==1) {
                     // Simply go to next FeatureOperator, no repeats
+
+                    // Unless previous feature is continuous and not also term size 1, then repeat so "go back one"
+                    if (FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[Conjunctions[ConjunctionNr-1].Size-1].FeatureOperator].Operator!=EQUAL
+                        && Conjunctions[ConjunctionNr-1].Size!=1) {
+                        FOperatorNr--;
+                    }
+
                 } else if (Conjunctions[ConjunctionNr-1].Size>1) {
                     FOperatorNr=0;
-                    NumRepeats = 0;
+                    NumRepeats=0;
                 } else {//allow multiple occurences of nominal features
                     if (FeatureOperators[Conjunctions[ConjunctionNr - 1].Conditions[0].FeatureOperator].Operator ==
                         EQUAL && !BinaryReduction) {
@@ -1865,7 +1872,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
 
                     Condition = &Conjunctions[ConjunctionNr].Conditions[ConditionNr];    // Save reference to condition
 
-                    if (Conjunctions[ConjunctionNr].Size>1 ) {
+                    if (Conjunctions[ConjunctionNr].Size>1) {
                         PreviousCondition = &FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator]; // AM: copy previous term
                         NumRepeats = 0;
                     } else {
@@ -1877,7 +1884,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                             for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
                                 PreviousConjunction = &Conjunctions[i];
                                 for (unsigned int j = 0; j < PreviousConjunction->Conditions.size(); j++) {
-                                    if (FONext == PreviousConjunction->Conditions[j].FeatureOperator) {
+                                    if (FONext == PreviousConjunction->Conditions[j].FeatureOperator && FeatureOperators[ PreviousConjunction->Conditions[j].FeatureOperator].Operator==EQUAL) {
                                         FONext++;
                                         i=0;
                                         j=0;
@@ -1933,7 +1940,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                         for (unsigned int j=0; j<Conjunctions[0].Conditions.size(); j++) { // Go per condition
                             for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
                                 if (j<Conjunctions[i].Size) {
-                                    if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator) {
+                                    if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator && FeatureOperators[Conjunctions[i].Conditions[j].FeatureOperator].Operator==EQUAL) {
                                         FOperatorNr++;
                                         i=0;
                                         j=0;
