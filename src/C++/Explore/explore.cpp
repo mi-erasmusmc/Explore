@@ -2929,7 +2929,6 @@ bool Explore::RunProject() {
   #endif
 
 	do {
-        // CountCombinations = 0;
         CountFeatureOperatorPairs = 0;
         CountCutoffSets = 0;
         CountCandidatesPartition = 0;
@@ -2953,23 +2952,20 @@ if (!Parallel) {
     int FOSets_old = 0;
 
     while (Rule.NextCombinationGenerator()) {
-   //     cout << "FO pairs: " << CountFeatureOperatorPairs - FOSets_old << endl;
-     //   FOSets_old = CountFeatureOperatorPairs;
-
-        cout << "Cutoff sets: " << CountCutoffSets - FOSets_old << endl;
-        FOSets_old = CountCutoffSets;
+        // cout << "FO pairs: " << CountFeatureOperatorPairs - FOSets_old << endl;
+        // FOSets_old = CountFeatureOperatorPairs;
 
         if (IsPrintCombinations) Rule.PrintCombination();
 
         StartTimeTermTuple = clock();
 
        while (Rule.NextFeatureSetGenerator(0, Rule.GetFeatureOperatorSize())) {
-
+           // cout << "Cutoff sets: " << CountCutoffSets - FOSets_old << endl;
+           // FOSets_old = CountCutoffSets;
 
             if (IsPrintFeatureSets) Rule.PrintFeatureSet();
             CountFeatureOperatorPairs++;
 
-            // CalculateProgress();
             while (Rule.NextCutoffSetGenerator()) {
 
                 switch (MaximizeMeasure) {
@@ -3034,9 +3030,6 @@ if (!Parallel) {
 //        std::stringstream sstr;
 //        TermTupleTiming.Clear();
 //        TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
-//        Rule.PrintCombination();
-//        cout << TermTupleTiming.PrintTotal();
-//        cout << "Candidates: " <<  Rule.GetCountCandidates() << endl << endl;
         CountCandidatesPartition += Rule.GetCountCandidates();
         Rule.ResetCountCandidates();
     }
@@ -3095,7 +3088,7 @@ if (!Parallel) {
 
                 while (Rule_i.NextFeatureSetGenerator(0, Rule_i.GetFeatureOperatorSize())) {
                     if (IsPrintFeatureSets) Rule_i.PrintFeatureSet_Thread();
-                    // CalculateProgress();
+
                     m0.lock();
                     CountFeatureOperatorPairs++;
                     m0.unlock();
@@ -3176,9 +3169,6 @@ if (!Parallel) {
 //                std::stringstream sstr;
 //                TermTupleTiming.Clear();
 //                TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
-//                Rule_i.PrintCombination();
-//                cout << TermTupleTiming.PrintTotal();
-//                cout << "Candidates: " << Rule_i.GetCountCandidates() << endl << endl;
                 m3.lock();
                 CountCandidatesPartition += Rule_i.GetCountCandidates();
                 m3.unlock();
@@ -3253,7 +3243,6 @@ if (!Parallel) {
                             m0.lock();
                             CountFeatureOperatorPairs++;
                             m0.unlock();
-                            // CalculateProgress();
 
                             while (Rule_ij.NextCutoffSetGenerator()) {
 
@@ -3331,9 +3320,6 @@ if (!Parallel) {
 //                        std::stringstream sstr;
 //                        TermTupleTiming.Clear();
 //                        TermTupleTiming.AddTime(sstr.str(), StartTimeTermTuple, clock());
-//                        Rule_ij.PrintCombination();
-//                        cout << TermTupleTiming.PrintTotal();
-//                        cout << "Candidates: " << Rule_ij.GetCountCandidates() << endl << endl;
                           m3.lock();
                           CountCandidatesPartition += Rule_ij.GetCountCandidates();
                           m3.unlock();
@@ -3368,8 +3354,7 @@ if (!Parallel) {
     if ((GetPartitionMethod())==CROSS_VALIDATION || (GetPartitionMethod())==HOLDOUT) {
         // Re-train model with full train set (learn + validate)
         Population.ResetTestPartitions(); // Sets all partitions to LEARN
-        // PartitionCandidates.clear(); // Remove all the partition candidates used to find BestLength
-        PartitionCandidates.Clear();
+        PartitionCandidates.Clear(); // Remove all the partition candidates used to find BestLength
 
         SetRerun();
 
@@ -3399,8 +3384,8 @@ if (!Parallel) {
 
                         cout << "Total Count Combinations:" << Rule.GetCombinationsGenerated() << endl;
                         cout << "Total Count Feature Operator Pairs:" << CountFeatureOperatorPairs << endl;
-                        cout << "Total Count Cutoff Sets:" << CountCutoffSets << endl; // = CountCandidatesPartition
-                        // cout << "Total Count Candidates:" << CountCandidatesPartition << endl;
+                        cout << "Total Count Cutoff Sets:" << CountCutoffSets << endl; // = CountCandidatesPartition with restrictions (mandatory features) without constraints (accuracy/sensitivity)
+                        cout << "Total Count Candidates (incl constraints):" << CountCandidatesPartition << endl;
 
                     }
                // }
