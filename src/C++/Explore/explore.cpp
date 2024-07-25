@@ -232,12 +232,12 @@ void Explore::ValidateBestCandidate() {
   Start = clock();
 #endif
 
-  if (Initialised) { // TODO: adjust this to train instead of split validation/learn
+  if (Initialised) {
 
 	if (!Final) {
         Rule.SetTestMode(VALIDATION);
 	} else {
-        Rule.SetTestMode(LEARN); // TODO: don't need new type train, remove?
+        Rule.SetTestMode(LEARN); // HERE: VALIDATE is also part of LEARN
 	}
 
 	// cout << endl << "BEST RULES (" << PartitionCandidates.size() << " candidates)" << endl << endl;
@@ -2061,19 +2061,6 @@ bool Explore::GetPrintCutoffSets() {
 }
 
 /**********************************************************************
-Function: GetPrintCutoffSets()
-Category: Selectors
-Scope: public
-In: -
-Out: bool
-Description:
-**********************************************************************/
-bool Explore::GetPrintCutoffSetsBestLength() {
-    return IsPrintCutoffSetsBestLength;
-}
-
-
-/**********************************************************************
 Function: GetPrintPerformance()
 Category: Selectors
 Scope: public
@@ -2487,19 +2474,6 @@ Description: Indicate whether explore has to cout conditionsets.
 void Explore::SetPrintCutoffSets(bool Setting) {
   IsPrintCutoffSets = Setting;
   Rule.SetPrintCutoffSets(Setting);
-}
-
-/**********************************************************************
-Function: SetPrintconditionSets()
-Category: Modifiers
-Scope: public
-In: bool, yes or no
-Out: -
-Description: Indicate whether explore has to cout conditionsets.
-**********************************************************************/
-void Explore::SetPrintCutoffSetsBestLength(bool Setting) {
-    IsPrintCutoffSetsBestLength = Setting;
-    Rule.SetPrintCutoffSetsBestLength(Setting);
 }
 
 /**********************************************************************
@@ -3460,12 +3434,6 @@ void Explore::Induce(int nStart, int nEnd) {
                             RuleOutputMethod, IsPrintPerformance, IsPrintSets)) {
 
               PartitionCandidates = Rule.SaveCandidate(MaximizeMeasure, RestrictionSet);
-          }
-
-
-          if (IsPrintCutoffSetsBestLength) {
-              cout << "Candidate model BestLength: ";
-              Rule.PrintCutoffSet();
           }
           
 		#ifndef COMMANDVERSION

@@ -146,7 +146,6 @@ void IOExplore::ClearSettings() {
   ProjectSettings.PrintCombinations      = false;
   ProjectSettings.PrintFeatureSets       = false;
   ProjectSettings.PrintCutoffSets        = false;
-  ProjectSettings.PrintCutoffSetsBestLength        = false;
   ProjectSettings.PrintPerformance       = false;
   ProjectSettings.PrintSets              = false;
   ProjectSettings.BranchBound            = false;
@@ -691,10 +690,6 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
     ProjectSettings.PrintCutoffSets = false;
     if (Project->GetPrintCutoffSets()) {
       ProjectSettings.PrintCutoffSets = true;
-    }
-    ProjectSettings.PrintCutoffSetsBestLength = false;
-    if (Project->GetPrintCutoffSetsBestLength()) {
-        ProjectSettings.PrintCutoffSetsBestLength = true;
     }
     ProjectSettings.PrintPerformance = false;
     if (Project->GetPrintPerformance()) {
@@ -1498,16 +1493,6 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
         }
       }
 
-        if (CurrentHeading.compare("PrintCutoffSetsBestLength")==0) {                       // Print cutoffsets
-            if (CurrentValue.compare("yes")==0) {
-                ProjectSettings.PrintCutoffSetsBestLength = true;
-            } else if (CurrentValue.compare("no")==0) {
-                ProjectSettings.PrintCutoffSetsBestLength = false;
-            } else {
-                ProjectLoadErrors.push_back("Invalid value for print cutoffsets bestlength.");
-                return false;
-            }
-        }
       if (CurrentHeading.compare("PrintPerformance")==0) {                      // Print performance
         if (CurrentValue.compare("yes")==0) {
           ProjectSettings.PrintPerformance = true;
@@ -1718,7 +1703,6 @@ bool IOExplore::SetupExploreFromStruct() {
   Project->SetPrintCombinations(ProjectSettings.PrintCombinations);
   Project->SetPrintFeatureSets(ProjectSettings.PrintFeatureSets);
   Project->SetPrintCutoffSets(ProjectSettings.PrintCutoffSets);
-  Project->SetPrintCutoffSetsBestLength(ProjectSettings.PrintCutoffSetsBestLength);
   Project->SetPrintPerformance(ProjectSettings.PrintPerformance);
   Project->SetPrintSets(ProjectSettings.PrintSets);
   Project->SetSavePartitions(ProjectSettings.SavePartitions);

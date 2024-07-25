@@ -2796,18 +2796,6 @@ void RULE::SetPrintCutoffSets(bool Setting) {
     IsPrintCutoffSets = Setting;
 }
 
-/**********************************************************************
-Function: SetPrintCutoffSets()
-Category: Modifiers
-Scope: public
-In: bool, yes or no
-Out: -
-Description: Rule must cout conditionsets that it generates.
-**********************************************************************/
-void RULE::SetPrintCutoffSetsBestLength(bool Setting) {
-    IsPrintCutoffSetsBestLength = Setting;
-}
-
 
 /**********************************************************************
 Function: SetTestMode()
@@ -2829,9 +2817,6 @@ void RULE::SetTestMode(PARTITION_TYPE PType) {
                 break;
             case VALIDATION:
                 PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetValidationClasses();
-                break;
-            case TRAIN: // both learn and validation set
-                PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetTrainClasses();
                 break;
         }
         FeatureOperators[j].InitialiseSets(PartitionClasses);
@@ -3683,167 +3668,6 @@ CANDIDATE RULE::SaveCandidate(PERFORMANCE_MEASURE MaximizeMeasure, bool Restrict
     End = clock();
     ExploreTiming.AddTime("EXPLORE::SaveCandidate", Start, End);
 #endif
-}
-
-/**********************************************************************
-Function: BestLength()
-Category: Modifiers
-Scope: public
-In: -
-Out: -
-Description: is stop criterium met?
-**********************************************************************/
-int RULE::FindBestLength(bool Initialised, CANDIDATE PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure) {
-    float best;
-    float current;
-    int Opt=0;
-
-    CANDIDATE BestCandidate;
-
-    if (Initialised) {
-        SetTestMode(VALIDATION);
-
-        if (PartitionCandidates.IsValid()) {
-            // if (PartitionCandidates.size()>0) {
-            for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
-                BestCandidate = ChooseBestCandidate(i, Initialised, PartitionCandidates, MaximizeMeasure);
-
-                if (BestCandidate.Performance.Accuracy.Value != 0) {  // Check if BestCandidate not empty
-                    if (SetRule(BestCandidate))
-                    {
-                        cout << "RULELENGTH " << i << endl << endl;
-                        cout << "Best candidate (within this partition): ";
-                        PrintCutoffSet();
-                        cout << endl;
-                        cout << "Learn-set: ";
-                        BestCandidate.Performance.Print();
-                        cout << endl;
-
-                        if (!(PartitionMethod==RESUBSTITUTION)){
-                            BestCandidate.Performance = CalculatePerformance();          // Test BestCandidate on validation partition
-                            cout << "Validation-set: ";
-                            BestCandidate.Performance.Print();
-                            cout << endl;
-                        }
-                        switch (MaximizeMeasure){
-
-                            case ACCURACY:
-                                current = BestCandidate.Performance.Accuracy.Value;
-                                break;
-                            case SENSITIVITY:
-                                current = BestCandidate.Performance.Sensitivity.Value;
-                                break;
-                            case SPECIFICITY:
-                                current = BestCandidate.Performance.Specificity.Value;
-                                break;
-                            case NPV:
-                                current = BestCandidate.Performance.NPV.Value;
-                                break;
-                            case PPV:
-                                current = BestCandidate.Performance.PPV.Value;
-                                break;
-                            case BALANCEDACCURACY:
-                                current = BestCandidate.Performance.BalancedAccuracy.Value;
-                                break;
-                            case F1SCORE:
-                                current = BestCandidate.Performance.F1score.Value;
-                                break;
-                        }
-                        if (i==1) {
-                            best = current;
-                            Opt = 1;
-                        }
-                        else {
-                            if (current > best) {
-                                best = current;
-                                Opt = i;
-                            }
-                        }
-                    }
-                }
-            }
-            return Opt;
-        } else {
-#if defined(EXPLORE_MPI_DEBUG)
-            cout << "--> No Candidates" << endl;
-#endif
-        }
-    }
-    return 0;
-}
-
-
-
-/**********************************************************************
-Function: ChooseBestCandidate()
-Category: Modifiers
-Scope: public
-In: insigned int, rule length
-Out: -
-Description: Retrieves the best candidate and puts it in
-BestCandidate.
-**********************************************************************/
-CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure) {
-#ifdef DEBUG_TIMING
-    clock_t Start, End;
-  Start = clock();
-#endif
-//    bool Found = false;
-//    CANDIDATE BestCandidate;
-//
-//    if (Initialised) {
-//        tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
-//        tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
-//
-//        // TODO: check if better place to create variable
-//        BestCandidate = (*CurrentCandidate);
-//
-//        float CurrentValue;
-//        float BestValue;
-//
-//        while (CurrentCandidate != LastCandidate) {
-//            CurrentValue = 0;
-//            if ((*CurrentCandidate).Features.size()==RuleLength){
-//                switch (MaximizeMeasure) {
-//                    case SENSITIVITY:
-//                        CurrentValue = (*CurrentCandidate).Performance.Sensitivity.Value;
-//                        break;
-//                    case SPECIFICITY:
-//                        CurrentValue = (*CurrentCandidate).Performance.Specificity.Value;
-//                        break;
-//                    case NPV:
-//                        CurrentValue = (*CurrentCandidate).Performance.NPV.Value;
-//                        break;
-//                    case PPV:
-//                        CurrentValue = (*CurrentCandidate).Performance.PPV.Value;
-//                        break;
-//                    case ACCURACY:
-//                        CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
-//                        break;
-//                }
-//
-//                if (BestValue<=CurrentValue) {
-//                    BestCandidate = (*CurrentCandidate);
-//                    BestValue = CurrentValue;
-//                    Found = true;
-//                }
-//            }
-//            CurrentCandidate++;
-//        }
-//    }
-//
-//#ifdef DEBUG_TIMING
-//    End = clock();
-//  ExploreTiming.AddTime("EXPLORE::ChooseBestCandidate", Start, End);
-//#endif
-//
-//  if (Found) {
-//      return BestCandidate;
-//  } else {
-//      return CANDIDATE();
-//  }
-
-    return PartitionCandidates;
 }
 
 /**********************************************************************

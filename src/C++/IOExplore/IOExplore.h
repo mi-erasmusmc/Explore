@@ -64,7 +64,6 @@ struct ExploreSettings {
   bool                        PrintCombinations;
   bool                        PrintFeatureSets;
   bool                        PrintCutoffSets;
-  bool                        PrintCutoffSetsBestLength;
   bool                        PrintPerformance;
   bool                        PrintSets;
   bool                        SavePartitions;

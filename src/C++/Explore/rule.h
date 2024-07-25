@@ -86,7 +86,6 @@ class RULE {
     bool IsPrintCombinations{};
     bool IsPrintFeatureSets{};
     bool IsPrintCutoffSets{};
-    bool IsPrintCutoffSetsBestLength{};
 
     vector<ROC> ROCCurves;
 
@@ -176,7 +175,6 @@ unsigned int NoFeatureOperators{};                                            //
     void SetPrintCombinations(bool Setting);
     void SetPrintFeatureSets(bool Setting);
     void SetPrintCutoffSets(bool Setting);
-    void SetPrintCutoffSetsBestLength(bool Setting);
 
     void PrintSettings();
     void PrintCombination();                                                    // Print partition information of the rule
