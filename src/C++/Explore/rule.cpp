@@ -3615,7 +3615,7 @@ bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised
                 break;
         }
 
-        if (CandidateValue<=RuleValue) { // TODO: why = included here?
+        if (CandidateValue<RuleValue) {
 #ifdef DEBUG_TIMING
             End = clock();
         ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
@@ -3623,7 +3623,7 @@ bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised
             return true;
         }
 
-        if (CandidateValue>RuleValue) {
+        if (CandidateValue>=RuleValue) {
 #ifdef DEBUG_TIMING
             End = clock();
         ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
