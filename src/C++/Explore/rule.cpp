@@ -3448,11 +3448,9 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float Cand
                 CountCandidates++;
 
                 if (CompareBestCandidate(CurrentPerformance, Initialised, CandidatePerformance, MaximizeMeasure)) {
-                    // PartitionCandidates = SaveCandidate(CurrentPerformance, PartitionCandidates, MaximizeMeasure, RestrictionSet);
                     Found = true;
                 }
             } else {
-                // PartitionCandidates = SaveCandidate(CurrentPerformance, PartitionCandidates, MaximizeMeasure, RestrictionSet);
 
                 Candidate = true;
                 CountCandidates++;
@@ -3488,8 +3486,7 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float Cand
     End = clock();
     ExploreTiming.AddTime("EXPLORE::TestRule", Start, End);
 #endif
-    // TODO: indicate when partition candidates NOT updated or return Candidate instead?
-    // return Candidate;
+
     return Found;
 }
 
