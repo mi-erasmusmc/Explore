@@ -53,3 +53,7 @@ docs
 # PaRe Report
 Report.html
 Report_files/
+
+# Local renv
+renv/
+.Rprofile
