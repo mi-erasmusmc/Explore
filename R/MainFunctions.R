@@ -318,6 +318,10 @@ predictExplore <- function(model, test_data) {
     return(NULL)
   }
   
+  # Clean string
+  model <- stringr::str_remove_all(model, '\"')
+  model <- stringr::str_replace_all(model, "=", "==") # TODO: check here!
+  
   # Split string 
   all_terms <- stringr::str_split_fixed(model, "OR", n=Inf)
   
