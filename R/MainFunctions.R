@@ -320,7 +320,8 @@ predictExplore <- function(model, test_data) {
   
   # Clean string
   model <- stringr::str_remove_all(model, '\"')
-  model <- stringr::str_replace_all(model, "=", "==") # TODO: check here!
+  model <- stringr::str_replace_all(model, "=", "==") 
+  model <- stringr::str_replace_all(model, "<=", "<") # to correct initial case <= -> <== -> <= 
   
   # Split string 
   all_terms <- stringr::str_split_fixed(model, "OR", n=Inf)
@@ -343,7 +344,7 @@ predictExplore <- function(model, test_data) {
     data_model <- cbind(data_model, as.integer(col==length(all_literals)))
   }
   
-  colnames(data_model) <- all_terms
+  colnames(data_model) <- all_terms # TODO: CHECK HERE WHY DATA_MODEL NO COLUMNS
   predictions <- as.integer(rowSums(data_model)>0)
   
   return(predictions)
@@ -369,19 +370,22 @@ modelsCurveExplore <- function(train_data = NULL,
                                StartRulelength = 1,
                                EndRulelength = 3,
                                OperatorMethod = "EXHAUSTIVE",
-                               CutoffMethod = "RVAC",
+                               CutoffMethod = "ALL",
                                ClassFeature = "'class'",
                                PositiveClass = "'Iris-versicolor'",
                                FeatureInclude = "",
-                               Maximize = "ACCURACY",
+                               Maximize = "BALANCEDACCURACY",
                                Accuracy = 0,
                                BalancedAccuracy = 0,
                                Specificity = 0,
                                PrintSettings = TRUE,
                                PrintPerformance = TRUE,
-                               Subsumption = TRUE,
+                               Subsumption = FALSE,
                                BranchBound = TRUE,
-                               Parallel = FALSE) {
+                               Sorted = "none",
+                               Parallel = TRUE,
+                               ParallelMethod = "ONE",
+                               BinaryReduction = FALSE) {
   # TODO: only input required variables?
   
   # Range of specificities to check
