@@ -106,3 +106,23 @@ jaccard <- function(a, b) {
   union = length(a) + length(b) - intersection
   return (intersection/union)
 }
+
+phi <- function(a, b) {
+  contingency_tb <- table(a, b)
+  
+  r.sum <- rowSums(contingency_tb)
+  c.sum <- colSums(contingency_tb)
+  
+  total <- sum(r.sum)
+  r.sum <- r.sum/total
+  c.sum <- c.sum/total
+  
+  v <- prod(r.sum, c.sum)
+  phi <- (contingency_tb[1,1] / total - c.sum[1] * r.sum[1] / sqrt(v))
+  names(phi) <- NULL
+  
+  return(phi)
+}
+
+
+

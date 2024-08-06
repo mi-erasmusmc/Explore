@@ -151,7 +151,9 @@ trainExplore <- function(train_data = NULL,
         cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) cor(col, train_data[ClassFeature_]==PositiveClass_, method=Sorted))
       } else if (Sorted == "jaccard") {
         cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) jaccard(col, train_data[ClassFeature_]==PositiveClass_))
-      }
+      } else if (Sorted == "phi") { 
+        cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) phi(col, train_data[ClassFeature_]==PositiveClass_))
+      } 
       # else if (Sorted == "LASSO") { 
       #   model_lasso <- glmnet::cv.glmnet(x=data.matrix(train_data[, -which(names(train_data) == ClassFeature_)]), y = train_data[ClassFeature_]==PositiveClass_, alpha = 1, lambda = 10^seq(3, -2, by = -.1), maxit=10000000, standardize = TRUE, nfolds = 5, family = "binomial")
       #   coef <- as.matrix(coef(model_lasso, s = "lambda.min")) # get importance
