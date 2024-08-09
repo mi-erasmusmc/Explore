@@ -395,12 +395,12 @@ void Explore::SummarisePerformance() {
           case ACCURACY:
             CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
             break;
-            case BALANCEDACCURACY:
-                CurrentValue = (*CurrentCandidate).Performance.BalancedAccuracy.Value;
-                break;
-            case F1SCORE:
-                CurrentValue = (*CurrentCandidate).Performance.F1score.Value;
-                break;
+        case BALANCEDACCURACY:
+            CurrentValue = (*CurrentCandidate).Performance.BalancedAccuracy.Value;
+            break;
+        case F1SCORE:
+            CurrentValue = (*CurrentCandidate).Performance.F1score.Value;
+            break;
         }
 		// Calculate minimum performance
         if (CurrentValue<MinimumPerformance) {

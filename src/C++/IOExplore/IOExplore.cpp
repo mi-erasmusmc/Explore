@@ -62,8 +62,8 @@ IOExplore::IOExplore() {
   Dummy.push_back("Accuracy");
   Dummy.push_back("PPV");
   Dummy.push_back("NPV");
-    Dummy.push_back("BalancedAccuracy");
-    Dummy.push_back("F1score");
+  Dummy.push_back("BalancedAccuracy");
+  Dummy.push_back("F1score");
   Sections.push_back(Dummy);
   Dummy.clear();
 
@@ -585,13 +585,12 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
       case NPV:
         ProjectSettings.Maximize = NPV;        
         break;
-
-        case BALANCEDACCURACY:
-            ProjectSettings.Maximize = BALANCEDACCURACY;
-            break;
-        case F1SCORE:
-            ProjectSettings.Maximize = F1SCORE;
-            break;
+      case BALANCEDACCURACY:
+        ProjectSettings.Maximize = BALANCEDACCURACY;
+        break;
+      case F1SCORE:
+        ProjectSettings.Maximize = F1SCORE;
+        break;
     }
 
     vector<CONSTRAINT> Constraints = Project->GetConstraints();
@@ -624,16 +623,16 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
             ProjectSettings.Accuracy = (*CurrentConstraint).Value;
           }
           break;
-          case BALANCEDACCURACY:
-              if ((*CurrentConstraint).Value != 0){
-                  ProjectSettings.BalancedAccuracy = (*CurrentConstraint).Value;
-              }
-              break;
-          case F1SCORE:
-              if ((*CurrentConstraint).Value != 0){
-                  ProjectSettings.F1score = (*CurrentConstraint).Value;
-              }
-              break;
+        case BALANCEDACCURACY:
+          if ((*CurrentConstraint).Value != 0){
+              ProjectSettings.BalancedAccuracy = (*CurrentConstraint).Value;
+          }
+          break;
+        case F1SCORE:
+          if ((*CurrentConstraint).Value != 0){
+              ProjectSettings.F1score = (*CurrentConstraint).Value;
+          }
+          break;
       }
     }
     ProjectFile.flush();
@@ -865,12 +864,12 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
       case NPV:
         ProjectFile << "Maximize=NPV" << endl;
         break;
-        case BALANCEDACCURACY:
-            ProjectFile << "Maximize=BALANCEDACCURACY" << endl;
-            break;
-        case F1SCORE:
-            ProjectFile << "Maximize=F1SCORE" << endl;
-            break;
+      case BALANCEDACCURACY:
+        ProjectFile << "Maximize=BALANCEDACCURACY" << endl;
+        break;
+      case F1SCORE:
+        ProjectFile << "Maximize=F1SCORE" << endl;
+        break;
     }
     if (ProjectSettings.Sensitivity>0) {
       ProjectFile << "Sensitivity=" << ProjectSettings.Sensitivity << endl;
@@ -887,12 +886,12 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
     if (ProjectSettings.Accuracy>0) {
       ProjectFile << "Accuracy=" << ProjectSettings.Accuracy << endl;
     }
-      if (ProjectSettings.BalancedAccuracy>0) {
-          ProjectFile << "BalancedAccuracy=" << ProjectSettings.BalancedAccuracy << endl;
-      }
-      if (ProjectSettings.F1score>0) {
-          ProjectFile << "F1score=" << ProjectSettings.F1score << endl;
-      }
+    if (ProjectSettings.BalancedAccuracy>0) {
+      ProjectFile << "BalancedAccuracy=" << ProjectSettings.BalancedAccuracy << endl;
+    }
+    if (ProjectSettings.F1score>0) {
+      ProjectFile << "F1score=" << ProjectSettings.F1score << endl;
+    }
     ProjectFile << "[Output]" << endl;
     switch (ProjectSettings.OutputMethod) {
       case EVERY:
@@ -1366,7 +1365,7 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
             if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
                 ProjectSettings.BalancedAccuracy = atof(CurrentValue.c_str());
             } else {
-                ProjectLoadErrors.push_back("Invalid value for constraint NPV.");
+                ProjectLoadErrors.push_back("Invalid value for constraint Balanced Accuracy.");
                 return false;
             }
         }
@@ -1375,7 +1374,7 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
             if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
                 ProjectSettings.F1score = atof(CurrentValue.c_str());
             } else {
-                ProjectLoadErrors.push_back("Invalid value for constraint NPV.");
+                ProjectLoadErrors.push_back("Invalid value for constraint F1score.");
                 return false;
             }
         }

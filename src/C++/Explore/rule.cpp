@@ -3528,6 +3528,12 @@ bool RULE::CompareConstraints(PERFORMANCE CurrentPerformance, bool Initialised, 
                         break;
                     case ACCURACY:
                         RuleValue = CurrentPerformance.Accuracy.Value;
+                        break;
+                    case BALANCEDACCURACY:
+                        RuleValue = CurrentPerformance.BalancedAccuracy.Value;
+                        break;
+                    case F1SCORE:
+                        RuleValue = CurrentPerformance.F1score.Value;
                 }
                 ConstraintValue = (*CurrentConstraint).Value;
                 if (ConstraintValue > RuleValue) {

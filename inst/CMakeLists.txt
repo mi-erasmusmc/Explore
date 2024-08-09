@@ -38,9 +38,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb")
 # set(CMAKE_PREFIX_PATH "/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8")
 # find_library(TBB_LIB tbb)
 # find_path(TBB_PATH
- #       HINTS /opt/intel/oneapi/tbb/latest/include
- #       NAMES tbb/parallel_for.h)
- 
+#       HINTS /opt/intel/oneapi/tbb/latest/include
+#       NAMES tbb/parallel_for.h)
+
 set(SOURCE_FILES
         Clion/main.cpp
         ../src/C++/CMExplore/cmdline.h
@@ -93,8 +93,7 @@ set(SOURCE_FILES
         ../src/C++/IOExplore/IOExplore.h
         ../src/C++/common.cpp
         ../src/C++/common.h
-        ../src/C++/stl.h
-        ../src/C++/stlpmt.lib)
+        ../src/C++/stl.h)
 
 add_executable(Explore ${SOURCE_FILES})
 
