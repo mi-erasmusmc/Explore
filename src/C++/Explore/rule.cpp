@@ -3461,7 +3461,9 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float Cand
 
     switch (RuleOutputMethod) {
         case EVERY:
-            PrintCutoffSet();
+            if (Candidate) {
+                PrintCutoffSet();
+            }
             if (IsPrintPerformance) {
                 PrintPerformance();
             }

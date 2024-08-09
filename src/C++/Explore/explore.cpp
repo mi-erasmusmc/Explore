@@ -243,6 +243,7 @@ void Explore::ValidateBestCandidate() {
     if (PartitionCandidates.IsValid()) {
         CANDIDATE BestCandidate = PartitionCandidates;
 
+        cout << endl;
 		cout << "Best length: " << BestCandidate.Size() << endl;
 		  if (Rule.SetRule(BestCandidate)) {
 			cout << "Best candidate: ";
