@@ -205,10 +205,11 @@ trainExplore <- function(train_data = NULL,
   results <- paste(readLines(getSetting(settings, "OutputFile", type = "value")), collapse="\n")
   
   # Load model
-  rule_string <- stringr::str_extract(results, "Best candidate \\(overall\\):.*?\u000A")
+  rule_string <- stringr::str_extract_all(results, "Best candidate:.*?\u000A")
+  rule_string <- unlist(rule_string)[[length(rule_string)]] # Select the last rule as this is the final candidate
   
   # Clean string
-  rule_string <- stringr::str_replace(rule_string, "Best candidate \\(overall\\):", "")
+  rule_string <- stringr::str_replace(rule_string, "Best candidate:", "")
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
   rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
   
@@ -260,6 +261,7 @@ settingsExplore <- function(settings,
                             Accuracy = 0,
                             BalancedAccuracy = 0,
                             Specificity = 0,
+                            OutputMethod = "BEST",
                             PrintSettings = "yes",
                             PrintPerformance = "no",
                             Subsumption = "no",
@@ -355,6 +357,22 @@ predictExplore <- function(model, test_data) {
   predictions <- as.integer(rowSums(data_model)>0)
   
   return(predictions)
+}
+
+#' Return the number of candidate rules for EXPLORE
+#' @param OutputFile output file = paste0(output_path, file_name, ".result")
+#'
+#' @export
+candidatesExplore <- function(OutputFile) {
+  
+  # Read in results file
+  results <- paste(readLines(OutputFile), collapse="\n")
+  
+  num_candidates <- stringr::str_extract_all(results, "Total Count Candidates \\(incl constraints\\):.*?\u000A")[[1]]
+  num_candidates <- as.data.frame(stringr::str_remove_all(num_candidates, "Total Count Candidates \\(incl constraints\\):"))
+  num_candidates <- stringr::str_replace_all(num_candidates, "\\n", "")
+  
+  return(as.numeric(num_candidates))
 }
 
 
