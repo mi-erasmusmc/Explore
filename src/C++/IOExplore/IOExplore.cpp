@@ -1361,23 +1361,22 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
           return false;
         }
       }
-        if (CurrentHeading.compare("BalancedAccuracy")==0) {                                   // Balanced accuracy constraint
-            if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
-                ProjectSettings.BalancedAccuracy = atof(CurrentValue.c_str());
-            } else {
-                ProjectLoadErrors.push_back("Invalid value for constraint Balanced Accuracy.");
-                return false;
-            }
+    if (CurrentHeading.compare("BalancedAccuracy")==0) {                                   // Balanced accuracy constraint
+        if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
+            ProjectSettings.BalancedAccuracy = atof(CurrentValue.c_str());
+        } else {
+            ProjectLoadErrors.push_back("Invalid value for constraint Balanced Accuracy.");
+            return false;
         }
-
-        if (CurrentHeading.compare("F1score")==0) {                                   // F1 score constraint
-            if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
-                ProjectSettings.F1score = atof(CurrentValue.c_str());
-            } else {
-                ProjectLoadErrors.push_back("Invalid value for constraint F1score.");
-                return false;
-            }
+    }
+    if (CurrentHeading.compare("F1score")==0) {                                   // F1 score constraint
+        if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
+            ProjectSettings.F1score = atof(CurrentValue.c_str());
+        } else {
+            ProjectLoadErrors.push_back("Invalid value for constraint F1score.");
+            return false;
         }
+    }
       // Output Settings
       if (CurrentHeading.compare("OutputMethod")==0) {                          // Output method (ALL, INCREMENTAL or BEST)
         if (CurrentValue.compare("EVERY")==0) {

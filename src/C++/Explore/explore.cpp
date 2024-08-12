@@ -836,12 +836,12 @@ void Explore::PrintConstraints() {
     case ACCURACY:
       cout << "Accuracy";
       break;
-      case BALANCEDACCURACY:
-          cout << "Balanced Accuracy";
-          break;
-      case F1SCORE:
-          cout << "F1 score";
-          break;
+   case BALANCEDACCURACY:
+      cout << "Balanced Accuracy";
+      break;
+   case F1SCORE:
+      cout << "F1 score";
+      break;
   }
   cout << endl;
 
@@ -862,12 +862,12 @@ void Explore::PrintConstraints() {
       case ACCURACY:
         cout << "Accuracy >= ";
         break;
-        case BALANCEDACCURACY:
-            cout << "Balanced Accuracy >= ";
-            break;
-        case F1SCORE:
-            cout << "F1 score >= ";
-            break;
+     case BALANCEDACCURACY:
+        cout << "Balanced Accuracy >= ";
+        break;
+     case F1SCORE:
+        cout << "F1 score >= ";
+        break;
     }
     cout << (*CurrentConstraint).Value << endl;
   }
@@ -1217,10 +1217,8 @@ bool Explore::Initialise() {
 
 	// Print project settings
     if (IsPrintSettings) {
-      PrintSettings();
-    }
-    if (IsPrintPerformance) {
-      PrintConstraints();
+        PrintSettings();
+        PrintConstraints();
     }
 
     if (IsPrintFeatureOperators) {                                              // Print FeatureOperators
