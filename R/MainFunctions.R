@@ -47,13 +47,14 @@ trainExplore <- function(train_data = NULL,
                          Accuracy = 0,
                          BalancedAccuracy = 0,
                          Specificity = 0,
+                         OutputMethod = "BEST", 
                          PrintSettings = TRUE,
-                         PrintPerformance = TRUE,
+                         PrintPerformance = FALSE,
                          Subsumption = FALSE,
                          BranchBound = TRUE,
                          Sorted = "none",
                          Parallel = TRUE,
-                         ParallelMethod = "ONE",
+                         ParallelMethod = "TWO",
                          BinaryReduction = FALSE) {
   
   if (!dir.exists(output_path)) {
@@ -99,6 +100,7 @@ trainExplore <- function(train_data = NULL,
                     checkDouble(Accuracy),
                     checkDouble(BalancedAccuracy),
                     checkDouble(Specificity),
+                    checkString(OutputMethod),
                     checkLogical(PrintSettings),
                     checkLogical(PrintPerformance),
                     checkLogical(Subsumption),
@@ -185,6 +187,7 @@ trainExplore <- function(train_data = NULL,
                                    Accuracy = Accuracy,
                                    BalancedAccuracy = BalancedAccuracy,
                                    Specificity = Specificity,
+                                   OutputMethod = OutputMethod, 
                                    PrintSettings = PrintSettings,
                                    PrintPerformance = PrintPerformance,
                                    Subsumption = Subsumption,
@@ -232,6 +235,7 @@ trainExplore <- function(train_data = NULL,
 #' @param Maximize One of list with strings, list = "ACCURACY", ...
 #' @param Accuracy Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)
 #' @param Specificity  float 0-1, default = 0
+#' @param OutputMethod string EVERY, BEST, INCREMENT
 #' @param PrintSettings True or False
 #' @param PrintPerformance True or False
 #' @param Subsumption True or False
@@ -257,11 +261,11 @@ settingsExplore <- function(settings,
                             BalancedAccuracy = 0,
                             Specificity = 0,
                             PrintSettings = "yes",
-                            PrintPerformance = "yes",
+                            PrintPerformance = "no",
                             Subsumption = "no",
                             BranchBound = "yes",
                             Parallel = "yes",
-                            ParallelMethod = "ONE",
+                            ParallelMethod = "TWO",
                             BinaryReduction = "no") {
   
   
@@ -284,6 +288,7 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy)
   settings <- changeSetting(settings, parameter = "BalancedAccuracy", input = BalancedAccuracy)
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity)
+  settings <- changeSetting(settings, parameter = "OutputMethod", input = OutputMethod)
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings)
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance)
   settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption)
@@ -380,13 +385,14 @@ modelsCurveExplore <- function(train_data = NULL,
                                Accuracy = 0,
                                BalancedAccuracy = 0,
                                Specificity = 0,
+                               OutputMethod = "BEST", 
                                PrintSettings = TRUE,
-                               PrintPerformance = TRUE,
+                               PrintPerformance = FALSE,
                                Subsumption = FALSE,
                                BranchBound = TRUE,
                                Sorted = "none",
                                Parallel = TRUE,
-                               ParallelMethod = "ONE",
+                               ParallelMethod = "TWO",
                                BinaryReduction = FALSE) {
   # TODO: only input required variables?
   
@@ -407,9 +413,9 @@ modelsCurveExplore <- function(train_data = NULL,
                                      ClassFeature = ClassFeature, PositiveClass = PositiveClass,
                                      FeatureInclude = FeatureInclude, Maximize = "SENSITIVITY",
                                      Accuracy = Accuracy, BalancedAccuracy = BalancedAccuracy, Specificity = constraint,
-                                     PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
+                                     OutputMethod = OutputMethod, PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
                                      Subsumption = Subsumption, BranchBound = BranchBound,
-                                     Parallel = Parallel)
+                                     Parallel = Parallel, ParallelMethod = ParallelMethod)
       
       return(model)
     })
