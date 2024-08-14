@@ -1670,9 +1670,6 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
   Start = clock();
 #endif
 
-    // int FOperatorNr_start = 1;
-    // int FOperatorNr_end = FOperatorNr_start+1;
-
     // Counters as reference
     int ConjunctionSize, ConjunctionNr, ConditionNr, FOperatorNr, MaxFOperator;
     CONDITION* Condition;
@@ -1783,8 +1780,8 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
     } else {
         // AM: Algorithm 6
         Incremented = true;                                                         // First FeatureSet generated for current Combination
-        // FOperatorNr = 0;
         FOperatorNr = FOperatorNr_start;
+
         // Iterate through conjunctions (from front to back)
         for (ConjunctionNr=0; ConjunctionNr<=(int)Conjunctions.size()-1; ConjunctionNr++) {
 
@@ -1793,9 +1790,11 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                 if (BinaryReduction && Conjunctions[ConjunctionNr].Size==1) {
                     // Simply go to next FeatureOperator, no repeats
 
-                    // Unless previous feature is continuous and not also term size 1, then repeat so "go back one"
-                    if (FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[Conjunctions[ConjunctionNr-1].Size-1].FeatureOperator].Operator!=EQUAL
-                        && Conjunctions[ConjunctionNr-1].Size!=1) {
+                    if (FOperatorNr_start > 0 && Conjunctions[ConjunctionNr-1].Size!=1) { // For Parallel = TWO when starting with higher FOperatorNr
+                        FOperatorNr=0;
+                        NumRepeats=0;
+                    } else if (FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[Conjunctions[ConjunctionNr-1].Size-1].FeatureOperator].Operator!=EQUAL
+                        && Conjunctions[ConjunctionNr-1].Size!=1) { // Unless previous feature is continuous and not also term size 1, then repeat so "go back one"
                         FOperatorNr--;
                     }
 
@@ -1925,7 +1924,6 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                 }
 
             }
-
 
             // Not the conjunction at which we started, conjunction sizes do not match
             if (ConjunctionNr!=StartConjunctionNr && Conjunctions[ConjunctionNr].Size!=Conjunctions[ConjunctionNr-1].Size) {
