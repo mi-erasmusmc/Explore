@@ -2874,9 +2874,9 @@ bool Explore::RunProject() {
   time_t dummy;
   unsigned int ActiveRuleLength;
 
-  int CountCandidatesPartition;
-  int CountFeatureOperatorPairs;
-  int CountCutoffSets;
+  unsigned int CountCandidatesPartition;
+  unsigned int CountFeatureOperatorPairs;
+  unsigned int CountCutoffSets;
 
   CANDIDATE BestCandidate;
   int BestLengthPartition;
