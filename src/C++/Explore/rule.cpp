@@ -3460,6 +3460,7 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float Cand
     switch (RuleOutputMethod) {
         case EVERY:
             if (Candidate) {
+                cout << "Candidate model: ";
                 PrintCutoffSet();
             }
             if (IsPrintPerformance) {

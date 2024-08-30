@@ -363,7 +363,7 @@ predictExplore <- function(model, test_data) {
 #' @param OutputFile output file = paste0(output_path, file_name, ".result")
 #'
 #' @export
-candidatesExplore <- function(OutputFile) {
+candidateNumberExplore <- function(OutputFile) {
   
   # Read in results file
   results <- paste(readLines(OutputFile), collapse="\n")
@@ -373,6 +373,25 @@ candidatesExplore <- function(OutputFile) {
   num_candidates <- stringr::str_replace_all(num_candidates, "\\n", "")
   
   return(as.numeric(num_candidates))
+}
+
+
+#' Return the generated candidate rules for EXPLORE 
+#' @param OutputFile output file = paste0(output_path, file_name, ".result")
+#'
+#' @export
+candidateModelsExplore <- function(OutputFile) {
+  
+  # TODO: this function requires running EXPLORE with OutputMethod = EVERY -> check this in results file first?
+  
+  # Read in results file
+  results <- paste(readLines(OutputFile), collapse="\n")
+  
+  cand_models_lines <- strsplit(results, "\n")
+  candidate_models <- grep("Candidate model:", unlist(cand_models_lines), value = TRUE)
+  # length(candidate_models)
+  
+  return(candidate_models)
 }
 
 
