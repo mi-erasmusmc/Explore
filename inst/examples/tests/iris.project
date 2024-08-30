@@ -37,10 +37,10 @@ PrintOperatorMethod=no
 PrintOperatorValues=no
 PrintCombinations=no
 PrintFeatureSets=no
-PrintCutoffSets=no
+PrintCutoffSets=yes
 PrintCutOffsetsBestLength=no
 PrintPerformance=yes
-PrintSets=no
+PrintSets=yes
 SavePartitions=no
 [Run]
 OptimizeRules=yes

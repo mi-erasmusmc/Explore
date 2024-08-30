@@ -249,9 +249,12 @@ settingsExplore <- function(settings,
                             Specificity = 0,
                             PrintSettings = "yes",
                             PrintPerformance = "yes",
+                            PrintCutoffSets = "yes",
                             Subsumption = "yes",
                             BranchBound = "yes",
-                            Parallel = "no") {
+                            Parallel = "no",
+                            OutputMethod = "EVERY",
+                            BinaryReduction = "no") {
   
   
   # Insert location training data and cutoff file if train_data is entered
@@ -275,9 +278,12 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity)
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings)
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance)
+  settings <- changeSetting(settings, parameter = "PrintCutoffSets", input = PrintCutoffSets)
   settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption)
   settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound)
   settings <- changeSetting(settings, parameter = "Parallel", input = Parallel)
+  settings <- changeSetting(settings, parameter = "OutputMethod", input = OutputMethod)
+  settings <- changeSetting(settings, parameter = "BinaryReduction", input = BinaryReduction)
   
   # Save settings file
   settings_path <- paste0(output_path, file_name,".project")
