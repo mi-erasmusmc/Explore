@@ -264,9 +264,10 @@ settingsExplore <- function(settings,
                             OutputMethod = "BEST",
                             PrintSettings = "yes",
                             PrintPerformance = "no",
+                            PrintCutoffSets = "no",
                             Subsumption = "no",
                             BranchBound = "yes",
-                            Parallel = "yes",
+                            Parallel = "no",
                             ParallelMethod = "TWO",
                             BinaryReduction = "no") {
   
@@ -290,13 +291,14 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "Accuracy", input = Accuracy)
   settings <- changeSetting(settings, parameter = "BalancedAccuracy", input = BalancedAccuracy)
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity)
-  settings <- changeSetting(settings, parameter = "OutputMethod", input = OutputMethod)
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings)
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance)
+  settings <- changeSetting(settings, parameter = "PrintCutoffSets", input = PrintCutoffSets)
   settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption)
   settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound)
   settings <- changeSetting(settings, parameter = "Parallel", input = Parallel)
   settings <- changeSetting(settings, parameter = "ParallelMethod", input = ParallelMethod)
+  settings <- changeSetting(settings, parameter = "OutputMethod", input = OutputMethod)
   settings <- changeSetting(settings, parameter = "BinaryReduction", input = BinaryReduction)
   
   # Save settings file
