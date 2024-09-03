@@ -40,7 +40,7 @@ testExplore <- function(dataset = "iris", StartRulelength = 2, EndRulelength = 2
   Specificity <- 0
   PrintSettings <- TRUE
   PrintPerformance <- TRUE
-  PrintCutoffSets <- TRUE
+  PrintCutoffSets <- FALSE
   Subsumption <- FALSE
   BranchBound <- FALSE
   Sorted <- "none"
