@@ -25,8 +25,9 @@ FeatureRule=
 Maximize=BALANCEDACCURACY
 Accuracy=
 Specificity=
+BalancedAccuracy=0.6268
 [Output]
-OutputMethod=BEST
+OutputMethod=EVERY
 PrintSettings=yes
 PrintPartitions=no
 PrintFeatureOperators=no
@@ -34,17 +35,17 @@ PrintCutoffMethod=no
 PrintCutoffValues=no
 PrintOperatorMethod=no
 PrintOperatorValues=no
-PrintCombinations=yes
-PrintFeatureSets=yes
+PrintCombinations=no
+PrintFeatureSets=no
 PrintCutoffSets=no
 PrintCutOffsetsBestLength=no
-PrintPerformance=yes
+PrintPerformance=no
 PrintSets=no
 SavePartitions=no
 [Run]
 Subsumption=no
 BranchBound=no
 Parallel=no
-ParallelMethod=ONE
+ParallelMethod=TWO
 BinaryReduction=no
 

@@ -38,13 +38,12 @@ PrintOperatorValues=no
 PrintCombinations=no
 PrintFeatureSets=no
 PrintCutoffSets=no
-PrintCutOffsetsBestLength=no
-PrintPerformance=yes
+PrintPerformance=no
 PrintSets=no
 SavePartitions=no
 [Run]
 Subsumption=no
 BranchBound=yes
 Parallel=yes
-ParallelMethod=ONE
+ParallelMethod=TWO
 BinaryReduction=no

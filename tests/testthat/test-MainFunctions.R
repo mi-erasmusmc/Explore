@@ -110,3 +110,60 @@ test_that("compute AUC", {
   expect_true(auroc < 100)
   expect_true(auroc > 0)
 })
+
+test_that("mandatory features", {
+  ### Tests for EXPLORE using iris dataset
+  data_path <- system.file("examples", "tests", "iris.arff", package = "Explore")
+  settings_path <- system.file("examples", "tests", "iris.project", package = "Explore")
+  output_path <- paste0(tempdir(), "/", "Test1")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  output_path <- paste0(output_path, "/")
+  data <- farff::readARFF(data_path)
+  model <- Explore::trainExplore(output_path = output_path,
+                                 file_name = "iris",
+                                 train_data = data,
+                                 ClassFeature = "'class'",
+                                 PositiveClass = '"Iris-versicolor"',
+                                 FeatureInclude = "'sepalwidth';'sepallength'")
+  expect_equal(class(model), "character")
+  # expect_true(is.na(model), info = "Test failed because model is NA")
+  expect_equal(model, "'sepallength'>4.9AND'sepalwidth'<=3.2AND'petalwidth'<=1.7")
+})
+
+test_that("balanced accuracy constraint ", {
+  data_path <- system.file("examples", "complexity", "mix_4.arff", package = "Explore")
+  output_path <- paste0(getwd(), "/", "Test1")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  output_path <- paste0(output_path, "/")
+  
+  data <- farff::readARFF(data_path)
+  data <-as.data.frame(apply(data,2,as.numeric))
+
+  model_without <- Explore::trainExplore(output_path = output_path,
+                                 file_name = "mix_4",
+                                 train_data = data,
+                                 StartRulelength = 3,
+                                 ClassFeature = "'outcomeCount'",
+                                 PositiveClass = '"1"')
+  num_without <- Explore::candidatesExplore(paste0(output_path, "mix_4", ".result"))
+  
+  model_with <- Explore::trainExplore(output_path = output_path,
+                                         file_name = "mix_4",
+                                         train_data = data,
+                                         StartRulelength = 3,
+                                         ClassFeature = "'outcomeCount'",
+                                         PositiveClass = '"1"',
+                                         BalancedAccuracy = 0.6,
+                                         OutputMethod = "EVERY",
+                                         Parallel = FALSE)
+  num_with <- Explore::candidatesExplore(paste0(output_path, "mix_4", ".result"))
+  
+  expect_equal(num_without, 1940)
+  expect_equal(num_with, 36)
+})

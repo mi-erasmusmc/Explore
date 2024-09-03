@@ -13,19 +13,23 @@ modelsCurveExplore(
   StartRulelength = 1,
   EndRulelength = 3,
   OperatorMethod = "EXHAUSTIVE",
-  CutoffMethod = "RVAC",
+  CutoffMethod = "ALL",
   ClassFeature = "'class'",
   PositiveClass = "'Iris-versicolor'",
   FeatureInclude = "",
-  Maximize = "ACCURACY",
+  Maximize = "BALANCEDACCURACY",
   Accuracy = 0,
   BalancedAccuracy = 0,
   Specificity = 0,
+  OutputMethod = "BEST",
   PrintSettings = TRUE,
-  PrintPerformance = TRUE,
-  Subsumption = TRUE,
+  PrintPerformance = FALSE,
+  Subsumption = FALSE,
   BranchBound = TRUE,
-  Parallel = FALSE
+  Sorted = "none",
+  Parallel = TRUE,
+  ParallelMethod = "TWO",
+  BinaryReduction = FALSE
 )
 }
 \arguments{
