@@ -25,7 +25,11 @@ trainExplore(
   PrintPerformance = TRUE,
   Subsumption = TRUE,
   BranchBound = TRUE,
-  Parallel = FALSE
+  Parallel = FALSE,
+  PrintCutoffSets = TRUE,
+  Sorted = "none",
+  OutputMethod = "EVERY",
+  BinaryReduction = BinaryReduction
 )
 }
 \arguments{
@@ -51,7 +55,7 @@ trainExplore(
 
 \item{PositiveClass}{1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'}
 
-\item{FeatureInclude}{Empty or string (should be name of one of columns in data train)}
+\item{FeatureInclude}{Empty or string (should be name of one or more columns in data train separated by ;)}
 
 \item{Maximize}{One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...}
 
@@ -70,6 +74,8 @@ trainExplore(
 \item{BranchBound}{True or False}
 
 \item{Parallel}{True or False}
+
+\item{Sorted}{One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered}
 }
 \value{
 Model

@@ -51,8 +51,12 @@ trainExplore <- function(train_data = NULL,
                          PrintPerformance = TRUE,
                          Subsumption = TRUE,
                          BranchBound = TRUE,
+                         Parallel = FALSE,
+                         PrintCutoffSets = TRUE,
                          Sorted = "none",
-                         Parallel = FALSE) {
+                         OutputMethod = "EVERY",
+                         BinaryReduction = FALSE,
+                         resultType = c("model", "candidate_models", "cutoff_sets")) {
   
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
@@ -101,8 +105,11 @@ trainExplore <- function(train_data = NULL,
                     checkLogical(PrintPerformance),
                     checkLogical(Subsumption),
                     checkLogical(BranchBound),
-                    checkString(Sorted),
                     checkLogical(Parallel),
+                    checkLogical(PrintCutoffSets),
+                    checkString(Sorted),
+                    checkString(OutputMethod),
+                    checkLogical(BinaryReduction),
                     add = errorMessage,
                     combine = "and"
   )
@@ -110,12 +117,14 @@ trainExplore <- function(train_data = NULL,
   
   PrintSettings <- ifelse(PrintSettings == TRUE, "yes", "no")
   PrintPerformance <- ifelse(PrintPerformance == TRUE, "yes", "no")
+  PrintCutoffSets <- ifelse(PrintCutoffSets == TRUE, "yes", "no")
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
   Accuracy <- ifelse(Accuracy == 0, "", Accuracy)
   BalancedAccuracy <- ifelse(BalancedAccuracy == 0, "", BalancedAccuracy)
   Specificity <- ifelse(Specificity == 0, "", Specificity)
+  BinaryReduction <- ifelse(BinaryReduction == TRUE, "yes", "no")
   
   # Create project setting
   if (is.null(settings_path)) {
@@ -180,9 +189,12 @@ trainExplore <- function(train_data = NULL,
                                    Specificity = Specificity,
                                    PrintSettings = PrintSettings,
                                    PrintPerformance = PrintPerformance,
+                                   PrintCutoffSets = PrintCutoffSets,
                                    Subsumption = Subsumption,
                                    BranchBound = BranchBound,
-                                   Parallel = Parallel)
+                                   Parallel = Parallel,
+                                   OutputMethod = OutputMethod,
+                                   BinaryReduction = BinaryReduction)
   
   # Train EXPLORE model
   # TODO: allow to enter settings file instead of path?
@@ -192,6 +204,13 @@ trainExplore <- function(train_data = NULL,
   settings <- paste(readLines(settings_path), collapse="\n")
   results <- paste(readLines(getSetting(settings, "OutputFile", type = "value")), collapse="\n")
   
+  cand_models_lines <- strsplit(results, "\n")
+  candidate_models <- grep("Candidate model:", unlist(cand_models_lines), value = TRUE)
+  # length(candidate_models)
+  cutoff_sets<- grep("Total Count Cutoff Sets:", unlist(cand_models_lines), value = TRUE)
+  # result <- list("candidate_models" = candidate_models,
+  #                "cutoff_sets" = cutoff_sets)
+  
   # Load model
   rule_string <- stringr::str_extract(results, "Best candidate \\(overall\\):.*?\u000A")
   
@@ -200,7 +219,14 @@ trainExplore <- function(train_data = NULL,
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
   rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
   
-  return(model = rule_string)
+  
+  results <- list("model" = rule_string,
+                 "candidate_models" = candidate_models,
+                 "cutoff_sets" = cutoff_sets)
+  
+  result <- results[resultType]
+  
+  return(result)
 }
 
 
