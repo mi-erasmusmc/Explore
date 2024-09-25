@@ -23,9 +23,12 @@ settingsExplore(
   Specificity = 0,
   PrintSettings = "yes",
   PrintPerformance = "yes",
+  PrintCutoffSets = "yes",
   Subsumption = "yes",
   BranchBound = "yes",
-  Parallel = "no"
+  Parallel = "no",
+  OutputMethod = "EVERY",
+  BinaryReduction = "no"
 )
 }
 \arguments{
