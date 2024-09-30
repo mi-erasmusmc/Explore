@@ -226,8 +226,8 @@ trainExplore <- function(train_data = NULL,
   
   
   results <- list("model" = rule_string,
-                 "candidate_models" = candidate_models,
-                 "cutoff_sets" = cutoff_sets)
+                  "candidate_models" = candidate_models,
+                  "cutoff_sets" = cutoff_sets)
   
   result <- results[resultType]
   
@@ -377,6 +377,30 @@ predictExplore <- function(model, test_data) {
   predictions <- as.integer(rowSums(data_model)>0)
   
   return(predictions)
+}
+
+#' Return a set of results from EXPLORE output file
+#' @param outputFile outputfile = paste0(output_path, file_name, ".result")
+#'
+#' @export
+resultsExplore <- function(outputFile) {
+  
+  # Read in results file
+  results <- paste(readLines(OutputFile), collapse="\n")
+  results_lines <- strsplit(results, "\n") %>% unlist()
+  
+  result <- list()
+  
+  for (line in results_lines) {
+    if (grepl(":", line)) {
+      split_line <- strsplit(line, ":")[[1]]
+      key <- trimws(split_line[1])
+      value <- trimws(split_line[2])
+      result[[key]] <- value
+    }
+  }
+  
+  return(result)
 }
 
 #' Return the number of candidate rules for EXPLORE
