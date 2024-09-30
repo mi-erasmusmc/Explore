@@ -47,15 +47,16 @@ trainExplore <- function(train_data = NULL,
                          Accuracy = 0,
                          BalancedAccuracy = 0,
                          Specificity = 0,
-                         OutputMethod = "BEST", 
                          PrintSettings = TRUE,
                          PrintPerformance = FALSE,
                          Subsumption = FALSE,
                          BranchBound = TRUE,
+                         Parallel = FALSE,
+                         PrintCutoffSets = TRUE,
                          Sorted = "none",
-                         Parallel = TRUE,
-                         ParallelMethod = "TWO",
-                         BinaryReduction = FALSE) {
+                         OutputMethod = "EVERY",
+                         BinaryReduction = FALSE,
+                         resultType = c("model", "candidate_models", "cutoff_sets")) {
   
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
@@ -105,9 +106,10 @@ trainExplore <- function(train_data = NULL,
                     checkLogical(PrintPerformance),
                     checkLogical(Subsumption),
                     checkLogical(BranchBound),
-                    checkString(Sorted),
                     checkLogical(Parallel),
-                    checkString(ParallelMethod),
+                    checkLogical(PrintCutoffSets),
+                    checkString(Sorted),
+                    checkString(OutputMethod),
                     checkLogical(BinaryReduction),
                     add = errorMessage,
                     combine = "and"
@@ -116,6 +118,7 @@ trainExplore <- function(train_data = NULL,
   
   PrintSettings <- ifelse(PrintSettings == TRUE, "yes", "no")
   PrintPerformance <- ifelse(PrintPerformance == TRUE, "yes", "no")
+  PrintCutoffSets <- ifelse(PrintCutoffSets == TRUE, "yes", "no")
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
@@ -123,6 +126,7 @@ trainExplore <- function(train_data = NULL,
   Accuracy <- ifelse(Accuracy == 0, "", Accuracy)
   BalancedAccuracy <- ifelse(BalancedAccuracy == 0, "", BalancedAccuracy)
   Specificity <- ifelse(Specificity == 0, "", Specificity)
+  BinaryReduction <- ifelse(BinaryReduction == TRUE, "yes", "no")
   
   # Create project setting
   if (is.null(settings_path)) {
@@ -190,10 +194,11 @@ trainExplore <- function(train_data = NULL,
                                    OutputMethod = OutputMethod, 
                                    PrintSettings = PrintSettings,
                                    PrintPerformance = PrintPerformance,
+                                   PrintCutoffSets = PrintCutoffSets,
                                    Subsumption = Subsumption,
                                    BranchBound = BranchBound,
                                    Parallel = Parallel,
-                                   ParallelMethod = ParallelMethod,
+                                   OutputMethod = OutputMethod,
                                    BinaryReduction = BinaryReduction)
   
   # Train EXPLORE model
@@ -204,6 +209,13 @@ trainExplore <- function(train_data = NULL,
   settings <- paste(readLines(settings_path), collapse="\n")
   results <- paste(readLines(getSetting(settings, "OutputFile", type = "value")), collapse="\n")
   
+  cand_models_lines <- strsplit(results, "\n")
+  candidate_models <- grep("Candidate model:", unlist(cand_models_lines), value = TRUE)
+  # length(candidate_models)
+  cutoff_sets<- grep("Total Count Cutoff Sets:", unlist(cand_models_lines), value = TRUE)
+  # result <- list("candidate_models" = candidate_models,
+  #                "cutoff_sets" = cutoff_sets)
+  
   # Load model
   rule_string <- stringr::str_extract_all(results, "Best candidate:.*?\u000A")
   rule_string <- unlist(rule_string)[[length(rule_string)]] # Select the last rule as this is the final candidate
@@ -213,7 +225,14 @@ trainExplore <- function(train_data = NULL,
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
   rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
   
-  return(model = rule_string)
+  
+  results <- list("model" = rule_string,
+                 "candidate_models" = candidate_models,
+                 "cutoff_sets" = cutoff_sets)
+  
+  result <- results[resultType]
+  
+  return(result)
 }
 
 
@@ -376,26 +395,6 @@ candidateNumberExplore <- function(OutputFile) {
   
   return(as.numeric(num_candidates))
 }
-
-
-#' Return the generated candidate rules for EXPLORE 
-#' @param OutputFile output file = paste0(output_path, file_name, ".result")
-#'
-#' @export
-candidateModelsExplore <- function(OutputFile) {
-  
-  # TODO: this function requires running EXPLORE with OutputMethod = EVERY -> check this in results file first?
-  
-  # Read in results file
-  results <- paste(readLines(OutputFile), collapse="\n")
-  
-  cand_models_lines <- strsplit(results, "\n")
-  candidate_models <- grep("Candidate model:", unlist(cand_models_lines), value = TRUE)
-  # length(candidate_models)
-  
-  return(candidate_models)
-}
-
 
 #' modelsCurveExplore # TODO: update documentation?
 #'

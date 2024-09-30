@@ -21,15 +21,16 @@ trainExplore(
   Accuracy = 0,
   BalancedAccuracy = 0,
   Specificity = 0,
-  OutputMethod = "BEST",
   PrintSettings = TRUE,
   PrintPerformance = FALSE,
   Subsumption = FALSE,
   BranchBound = TRUE,
+  Parallel = FALSE,
+  PrintCutoffSets = TRUE,
   Sorted = "none",
-  Parallel = TRUE,
-  ParallelMethod = "TWO",
-  BinaryReduction = FALSE
+  OutputMethod = "EVERY",
+  BinaryReduction = FALSE,
+  resultType = c("model", "candidate_models", "cutoff_sets")
 )
 }
 \arguments{
@@ -73,9 +74,9 @@ trainExplore(
 
 \item{BranchBound}{True or False}
 
-\item{Sorted}{One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered}
-
 \item{Parallel}{True or False}
+
+\item{Sorted}{One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered}
 }
 \value{
 Model

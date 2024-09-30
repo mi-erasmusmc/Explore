@@ -24,9 +24,10 @@ settingsExplore(
   OutputMethod = "BEST",
   PrintSettings = "yes",
   PrintPerformance = "no",
+  PrintCutoffSets = "no",
   Subsumption = "no",
   BranchBound = "yes",
-  Parallel = "yes",
+  Parallel = "no",
   ParallelMethod = "TWO",
   BinaryReduction = "no"
 )
