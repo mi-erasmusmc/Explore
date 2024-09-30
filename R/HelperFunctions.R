@@ -78,7 +78,9 @@ saveData <- function(output_path, train_data, file_name) {
   
   # Fix col type for binary data
   binary_cols <- sapply(1:ncol(train_data), function(c) all(train_data[[c]] %in% 0:1))
-  train_data[binary_cols] <- lapply(colnames(train_data[binary_cols]), function(c) factor(train_data[[c]], levels=c("0","1"), labels=c(0,1)))
+  
+  # Convert TRUE/FALSE to 1/0
+  train_data <- convert_logical(train_data)
 
   # Order data (first binary then continuous features)
   train_data <- cbind(train_data[binary_cols],train_data[!binary_cols]) # Order needed for correct functioning of main algorithm in C++ 
@@ -98,6 +100,20 @@ saveData <- function(output_path, train_data, file_name) {
               row.names = FALSE)
   
   # TODO: Support other file formats?
+}
+
+convert_logical <- function(train_data) {
+  
+  binary_cols <- sapply(train_data, function(col) all(col %in% c(0, 1, TRUE, FALSE)))
+  
+  # Convert TRUE/FALSE to 1/0 and create factors
+  train_data[binary_cols] <- lapply(train_data[binary_cols], function(col) {
+    col <- as.numeric(as.logical(col))  # Convert TRUE/FALSE to 1/0
+    factor(col, levels = c(0, 1), labels = c(0, 1))  # Convert to factors
+  })
+  
+  return(train_data)
+  
 }
 
 # Correlation metric for binary data.
