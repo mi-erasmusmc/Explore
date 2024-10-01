@@ -172,8 +172,6 @@ test_that("Results Explore", {
   
   dataset <- "binary_3"
   config <- getDataSetPath(dataset = dataset) 
-  
-  ### Tests for EXPLORE using iris dataset
   train_data <- farff::readARFF(config$data_path)
   output_path <- paste0(tempdir(), "/", glue::glue("{getRandomId()}"), "/")
   file_name <- paste0(dataset, "_train_data")
