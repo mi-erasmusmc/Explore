@@ -13,23 +13,24 @@ trainExplore(
   StartRulelength = 1,
   EndRulelength = 3,
   OperatorMethod = "EXHAUSTIVE",
-  CutoffMethod = "RVAC",
+  CutoffMethod = "ALL",
   ClassFeature = "'class'",
   PositiveClass = "'Iris-versicolor'",
   FeatureInclude = "",
-  Maximize = "ACCURACY",
+  Maximize = "BALANCEDACCURACY",
   Accuracy = 0,
   BalancedAccuracy = 0,
   Specificity = 0,
   PrintSettings = TRUE,
-  PrintPerformance = TRUE,
-  Subsumption = TRUE,
+  PrintPerformance = FALSE,
+  Subsumption = FALSE,
   BranchBound = TRUE,
   Parallel = FALSE,
   PrintCutoffSets = TRUE,
   Sorted = "none",
   OutputMethod = "EVERY",
-  BinaryReduction = BinaryReduction
+  BinaryReduction = FALSE,
+  resultType = c("model", "candidate_models", "cutoff_sets")
 )
 }
 \arguments{

@@ -1,4 +1,7 @@
-testExplore <- function(dataset = "iris", StartRulelength = 2, EndRulelength = 2, BinaryReduction = FALSE) {
+testExplore <- function(dataset = "iris", 
+                        StartRulelength = 2, 
+                        EndRulelength = 2, 
+                        BinaryReduction = FALSE) {
   # dataset = "iris"
   # dataset = "binary_3"
   # dataset = "binary_10"

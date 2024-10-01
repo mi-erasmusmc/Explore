@@ -425,14 +425,14 @@ string SET::PrintPerformance() {
 
 struct AndJibu : public std ::unary_function<int, void>
 {
-	const boost::dynamic_bitset<> Source;
-	boost::dynamic_bitset<> Dest;
-	AndJibu(const boost::dynamic_bitset<> Source,boost::dynamic_bitset<> Dest) :
-	Source(Source), Dest(Dest){}
-	void operator()(int x)
-	{
-	 Dest[x]=Dest[x] & Source[x];
-	}
+  const boost::dynamic_bitset<> Source;
+  boost::dynamic_bitset<> Dest;
+  AndJibu(const boost::dynamic_bitset<> Source,boost::dynamic_bitset<> Dest) :
+    Source(Source), Dest(Dest){}
+  void operator()(int x)
+  {
+    Dest[x]=Dest[x] & Source[x];
+  }
 };
 
 /**********************************************************************
