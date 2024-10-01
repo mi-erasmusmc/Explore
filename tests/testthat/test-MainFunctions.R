@@ -167,3 +167,36 @@ test_that("balanced accuracy constraint ", {
   expect_equal(num_without, 1940)
   expect_equal(num_with, 36)
 })
+
+test_that("Results Explore", {
+  
+  dataset <- "binary_3"
+  config <- getDataSetPath(dataset = dataset) 
+  train_data <- farff::readARFF(config$data_path)
+  output_path <- paste0(tempdir(), "/", glue::glue("{getRandomId()}"), "/")
+  file_name <- paste0(dataset, "_train_data")
+  dir.create(output_path)
+  if (.Platform$OS.type == "windows") {
+    output_path <- gsub("\\\\", "/", output_path)
+  }
+  
+  result <- trainExplore(train_data = train_data,
+                         settings_path = NULL,
+                         output_path = output_path,
+                         file_name = file_name,
+                         StartRulelength = 1,
+                         EndRulelength = 2,
+                         CutoffMethod = "RVAC",
+                         ClassFeature = "'outcomeCount'",
+                         PositiveClass = "\"1\"",
+                         Maximize = "ACCURACY",
+                         PrintPerformance = TRUE,
+                         Subsumption = TRUE)
+  
+  
+  outputFile <- paste0(output_path, file_name, ".result")
+  results_list <- resultsExplore(outputFile = outputFile)
+  expect_equal(results_list$total_count_cutoff_sets, "16")
+  expect_length(results_list$candidate_model, 32)
+
+})

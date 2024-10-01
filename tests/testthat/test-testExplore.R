@@ -1,3 +1,48 @@
+test_that("binary_3 trainExplore resultsExplore", {
+    
+    dataset <- "binary_3"
+    config <- getDataSetPath(dataset = dataset) 
+    train_data <- farff::readARFF(config$data_path)
+    output_path <- paste0(tempdir(), "/", glue::glue("{getRandomId()}"), "/")
+    file_name <- paste0(dataset, "_train_data")
+    dir.create(output_path)
+    if (.Platform$OS.type == "windows") {
+      output_path <- gsub("\\\\", "/", output_path)
+    }
+    
+    result <- trainExplore(train_data = train_data,
+                           settings_path = NULL,
+                           output_path = output_path,
+                           file_name = file_name,
+                           OutputFile = NULL,
+                           StartRulelength = 1,
+                           EndRulelength = 1,
+                           OperatorMethod = "MEDIAN",
+                           CutoffMethod = "RVAC",
+                           ClassFeature = config$class_feature,
+                           PositiveClass = config$positive_class,
+                           FeatureInclude = "",
+                           Maximize = "ACCURACY",
+                           Accuracy = 0,
+                           BalancedAccuracy = 0,
+                           Specificity = 0,
+                           PrintSettings = TRUE,
+                           PrintPerformance = TRUE,
+                           Subsumption = TRUE,
+                           BranchBound = TRUE,
+                           Parallel = FALSE,
+                           PrintCutoffSets = TRUE,
+                           Sorted = "none",
+                           OutputMethod = "EVERY",
+                           BinaryReduction = FALSE)
+    
+    outputFile <- paste0(output_path, file_name, ".result")
+    results_list <- resultsExplore(outputFile = outputFile)
+    expect_length(results_list$candidate_model, 6)
+    unlink(output_path, recursive = TRUE)
+
+})
+
 test_that("Test binary_3", {
   
   # Binary reduction FALSE
