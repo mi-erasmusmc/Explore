@@ -1,4 +1,4 @@
-test_that("binary_3 trainExplore", {
+test_that("binary_3 trainExplore resultsExplore", {
     
     dataset <- "binary_3"
     config <- getDataSetPath(dataset = dataset) 
