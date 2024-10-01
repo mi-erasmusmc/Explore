@@ -392,11 +392,19 @@ resultsExplore <- function(outputFile) {
   result <- list()
   
   for (line in results_lines) {
+    # line <- "Candidate model: '198124209' = \"0\"" 
     if (grepl(":", line)) {
-      split_line <- strsplit(line, ":")[[1]]
-      key <- trimws(split_line[1])
-      value <- trimws(split_line[2])
-      result[[key]] <- value
+      if (grepl("Candidate model", line)) {
+        split_line <- strsplit(line, ":")[[1]]
+        key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
+        value <- trimws(split_line[2]) 
+        result[[key]] <- c(result[[key]], value)
+      } else {
+        split_line <- strsplit(line, ":")[[1]]
+        key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
+        value <- trimws(split_line[2])
+        result[[key]] <- value
+      }
     }
   }
   
