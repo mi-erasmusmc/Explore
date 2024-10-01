@@ -386,7 +386,7 @@ predictExplore <- function(model, test_data) {
 resultsExplore <- function(outputFile) {
   
   # Read in results file
-  results <- paste(readLines(OutputFile), collapse="\n")
+  results <- paste(readLines(outputFile), collapse="\n")
   results_lines <- strsplit(results, "\n") %>% unlist()
   
   result <- list()
