@@ -186,31 +186,18 @@ test_that("Results Explore", {
                          settings_path = NULL,
                          output_path = output_path,
                          file_name = file_name,
-                         OutputFile = NULL,
                          StartRulelength = 1,
                          EndRulelength = 2,
-                         OperatorMethod = "EXHAUSTIVE",
                          CutoffMethod = "RVAC",
-                         ClassFeature = config$class_feature,
-                         PositiveClass = config$positive_class,
-                         FeatureInclude = "",
+                         ClassFeature = "'outcomeCount'",
+                         PositiveClass = "\"1\"",
                          Maximize = "ACCURACY",
-                         Accuracy = 0,
-                         BalancedAccuracy = 0,
-                         Specificity = 0,
-                         PrintSettings = TRUE,
                          PrintPerformance = TRUE,
-                         Subsumption = TRUE,
-                         BranchBound = TRUE,
-                         Parallel = FALSE,
-                         PrintCutoffSets = TRUE,
-                         Sorted = "none",
-                         OutputMethod = "EVERY",
-                         BinaryReduction = FALSE)
+                         Subsumption = TRUE)
   
   
   outputFile <- paste0(output_path, file_name, ".result")
   results_list <- resultsExplore(outputFile = outputFile)
-  expect_equal(results_list$`Total Count Cutoff Sets`, "13")
+  expect_equal(results_list$`Total Count Cutoff Sets`, "16")
 
 })
