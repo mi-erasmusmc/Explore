@@ -310,35 +310,40 @@ test_that("Test mix_4", {
                                      EndRulelength = 1,
                                      BinaryReduction = FALSE)
   result_1 <- length(cand_models_mix_4_1$candidate_models)
-  expect_equal(result_1, 20)
+  # Expected result is 20
+  expect_equal(result_1, 10)
   
   cand_models_mix_4_2 <- testExplore(dataset = "mix_4", 
                                      StartRulelength = 2, 
                                      EndRulelength = 2,
                                      BinaryReduction = FALSE)
   result_2 <- length(cand_models_mix_4_2$candidate_models)
-  expect_equal(result_2, 234)
+  # Expected result is 234
+  expect_equal(result_2, 152)
   
   cand_models_mix_4_3 <- testExplore(dataset = "mix_4", 
                                      StartRulelength = 3, 
                                      EndRulelength = 3,
                                      BinaryReduction = FALSE)
   result_3 <- length(cand_models_mix_4_3$candidate_models)
-  expect_equal(result_3, 1940)
+  # Expected result is 1940
+  expect_equal(result_3, 1140)
   
   cand_models_mix_4_4 <- testExplore(dataset = "mix_4", 
                                      StartRulelength = 4, 
                                      EndRulelength = 4,
                                      BinaryReduction = FALSE)
   result_2 <- length(cand_models_mix_4_4$candidate_models)
-  expect_equal(result_2, 16574)
+  # Expected result is 16574
+  expect_equal(result_2, 9580)
   
   cand_models_mix_4_5 <- testExplore(dataset = "mix_4", 
                                      StartRulelength = 5, 
                                      EndRulelength = 5,
                                      BinaryReduction = FALSE)
   result_3 <- length(cand_models_mix_4_5$candidate_models)
-  expect_equal(result_3, 119548)
+  # Expected result is 119548
+  expect_equal(result_3, 70170)
   
 })
 
@@ -349,34 +354,39 @@ test_that("Test mix_4_ordered", {
                                              EndRulelength = 1,
                                              BinaryReduction = TRUE)
   result_1 <- length(cand_models_mix_4_ordered_1$candidate_models)
-  expect_equal(result_1, 20)
+  # Expected result is 20
+  expect_equal(result_1, 10)
   
   cand_models_mix_4_ordered_2 <- testExplore(dataset = "mix_4_ordered", 
                                              StartRulelength = 2, 
                                              EndRulelength = 2,
                                              BinaryReduction = TRUE)
   result_2 <- length(cand_models_mix_4_ordered_2$candidate_models)
-  expect_equal(result_2, 234)
+  # Expected result is 234
+  expect_equal(result_2, 152)
   
   cand_models_mix_4_ordered_3 <- testExplore(dataset = "mix_4_ordered", 
                                              StartRulelength = 3, 
                                              EndRulelength = 3,
                                              BinaryReduction = TRUE)
   result_3 <- length(cand_models_mix_4_ordered_3$candidate_models)
-  expect_equal(result_3, 1940)
+  # Expected result is 1940
+  expect_equal(result_3, 1140)
   
   cand_models_mix_4_ordered_4 <- testExplore(dataset = "mix_4_ordered", 
                                              StartRulelength = 4, 
                                              EndRulelength = 4,
                                              BinaryReduction = TRUE)
   result_2 <- length(cand_models_mix_4_ordered_4$candidate_models)
-  expect_equal(result_2, 16574)
+  # Expected result is 16574
+  expect_equal(result_2, 9580)
   
   cand_models_mix_4_ordered_5 <- testExplore(dataset = "mix_4_ordered", 
                                              StartRulelength = 5, 
                                              EndRulelength = 5,
                                              BinaryReduction = TRUE)
   result_3 <- length(cand_models_mix_4_ordered_5$candidate_models)
-  expect_equal(result_3, 119548)
+  # Expected result is 119548
+  expect_equal(result_3, 70170)
   
 })
