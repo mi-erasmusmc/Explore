@@ -3,6 +3,7 @@
 export(candidateNumberExplore)
 export(modelsCurveExplore)
 export(predictExplore)
+export(resultsExplore)
 export(rocCurveExplore)
 export(trainExplore)
 import(Rcpp)
