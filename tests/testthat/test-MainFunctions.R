@@ -193,10 +193,14 @@ test_that("Results Explore", {
                          PrintPerformance = TRUE,
                          Subsumption = TRUE)
   
-  
   outputFile <- paste0(output_path, file_name, ".result")
   results_list <- resultsExplore(outputFile = outputFile)
-  expect_equal(results_list$total_count_cutoff_sets, "16")
-  expect_length(results_list$candidate_model, 32)
+  expect_equal(names(results_list), c("model", 
+                                      "candidateModels", 
+                                      "countCombinations", 
+                                      "countFeatureOperatorPairs", 
+                                      "countRulesWithoutConstraints",
+                                      "countRulesWithConstraints"))
+  expect_length(results_list$candidateModels, 32)
 
 })

@@ -389,7 +389,7 @@ resultsExplore <- function(outputFile) {
   results <- paste(readLines(outputFile), collapse="\n")
   results_lines <- strsplit(results, "\n") %>% unlist()
   
-  result <- list()
+  result_data <- list()
   
   for (line in results_lines) {
     # line <- "Candidate model: '198124209' = \"0\"" 
@@ -398,15 +398,23 @@ resultsExplore <- function(outputFile) {
         split_line <- strsplit(line, ":")[[1]]
         key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
         value <- trimws(split_line[2]) 
-        result[[key]] <- c(result[[key]], value)
+        result_data[[key]] <- c(result_data[[key]], value)
       } else {
         split_line <- strsplit(line, ":")[[1]]
         key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
         value <- trimws(split_line[2])
-        result[[key]] <- value
+        result_data[[key]] <- value
       }
     }
   }
+  
+  
+  result <- list("model" = result_data$best_candidate,
+                 "candidateModels" = result_data$candidate_model,
+                 "countCombinations" = result_data$total_count_combinations,
+                 "countFeatureOperatorPairs" = result_data$total_count_feature_operator_pairs,
+                 "countRulesWithoutConstraints" = result_data$total_count_cutoff_sets,
+                 "countRulesWithConstraints" = result_data$`total_count_candidates_(incl_constraints)`)
   
   return(result)
 }
