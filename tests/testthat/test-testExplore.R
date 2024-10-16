@@ -39,7 +39,7 @@ test_that("binary_3 trainExplore resultsExplore", {
     outputFile <- paste0(output_path, file_name, ".result")
     results_list <- resultsExplore(outputFile = outputFile)
     # Expected result is 6
-    expect_length(results_list$candidate_model, 8)
+    expect_length(results_list$candidateModels, 8)
     unlink(output_path, recursive = TRUE)
 
 })
