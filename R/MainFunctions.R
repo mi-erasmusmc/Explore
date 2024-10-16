@@ -224,16 +224,31 @@ trainExplore <- function(train_data = NULL,
   rule_string <- stringr::str_replace_all(rule_string, " ", "")
   rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
   
+  result <- list("model" = rule_string, 
+                 "summary_results" = list("candidate_models" = candidate_models,
+                                          "cutoff_sets" = cutoff_sets))
   
-  results <- list("model" = rule_string,
-                  "candidate_models" = candidate_models,
-                  "cutoff_sets" = cutoff_sets)
+  class(result) <- "explore_model"
   
-  result <- results[resultType]
+  # result <- results[resultType]
   
   return(result)
 }
 
+
+#' @export
+print.explore_model <- function(x, ...) {
+  cat(x$model, "\n")
+}
+
+#' @export
+summary_results <- function(x) {
+  if (inherits(x, "explore_model")) {
+    return(x$summary_results)
+  } else {
+    stop("Object is not of class 'explore_model'")
+  }
+}
 
 #' Writes settings in a table for Explore
 #' 
