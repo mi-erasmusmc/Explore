@@ -52,11 +52,11 @@ trainExplore <- function(train_data = NULL,
                          Subsumption = FALSE,
                          BranchBound = TRUE,
                          Parallel = FALSE,
-                         PrintCutoffSets = TRUE,
+                         PrintCutoffSets = FALSE,
                          Sorted = "none",
-                         OutputMethod = "EVERY",
+                         OutputMethod = "BEST",
                          BinaryReduction = FALSE,
-                         resultType = c("model", "candidate_models", "cutoff_sets")) {
+                         resultType = c("model")) {
   
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
@@ -205,30 +205,10 @@ trainExplore <- function(train_data = NULL,
   
   # Load results file
   settings <- paste(readLines(settings_path), collapse="\n")
-  results <- paste(readLines(getSetting(settings, "OutputFile", type = "value")), collapse="\n")
+  outputFile <- getSetting(settings, "OutputFile", type = "value")
   
-  cand_models_lines <- strsplit(results, "\n")
-  candidate_models <- grep("Candidate model:", unlist(cand_models_lines), value = TRUE)
-  # length(candidate_models)
-  cutoff_sets<- grep("Total Count Cutoff Sets:", unlist(cand_models_lines), value = TRUE)
-  # result <- list("candidate_models" = candidate_models,
-  #                "cutoff_sets" = cutoff_sets)
-  
-  # Load model
-  rule_string <- stringr::str_extract_all(results, "Best candidate:.*?\u000A")
-  rule_string <- unlist(rule_string)[[length(rule_string)]] # Select the last rule as this is the final candidate
-  
-  # Clean string
-  rule_string <- stringr::str_replace(rule_string, "Best candidate:", "")
-  rule_string <- stringr::str_replace_all(rule_string, " ", "")
-  rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
-  
-  
-  results <- list("model" = rule_string,
-                  "candidate_models" = candidate_models,
-                  "cutoff_sets" = cutoff_sets)
-  
-  result <- results[resultType]
+  results <- resultsExplore(outputFile=outputFile) 
+  result <- results[[resultType]]
   
   return(result)
 }
@@ -391,6 +371,8 @@ resultsExplore <- function(outputFile) {
   result_data <- list()
   
   for (line in results_lines) {
+    line <- trimws(line) # remove spaces
+    
     # line <- "Candidate model: '198124209' = \"0\"" 
     if (grepl(":", line)) {
       if (grepl("Candidate model", line)) {
@@ -406,7 +388,6 @@ resultsExplore <- function(outputFile) {
       }
     }
   }
-  
   
   result <- list("model" = result_data$best_candidate,
                  "candidateModels" = result_data$candidate_model,
