@@ -371,24 +371,23 @@ resultsExplore <- function(outputFile) {
   result_data <- list()
   
   for (line in results_lines) {
-    line <- trimws(line) # remove spaces
-    
     # line <- "Candidate model: '198124209' = \"0\"" 
+
     if (grepl(":", line)) {
       if (grepl("Candidate model", line)) {
         split_line <- strsplit(line, ":")[[1]]
         key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
-        value <- trimws(split_line[2]) 
+        value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
         result_data[[key]] <- c(result_data[[key]], value)
       } else {
         split_line <- strsplit(line, ":")[[1]]
         key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
-        value <- trimws(split_line[2])
+        value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
         result_data[[key]] <- value
       }
     }
   }
-  
+
   result <- list("model" = result_data$best_candidate,
                  "candidateModels" = result_data$candidate_model,
                  "countCombinations" = result_data$total_count_combinations,
