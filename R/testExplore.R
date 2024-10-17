@@ -8,8 +8,8 @@ testExplore <- function(dataset = "iris",
   # dataset = "continuous_4"
   # dataset = "categorical_4"
   # dataset = "mix_4"
-  # StartRulelength = 2
-  # EndRulelength = 3
+  # StartRulelength = 1
+  # EndRulelength = 1
   # BinaryReduction = FALSE
   # BinaryReduction = TRUE
   
@@ -48,7 +48,8 @@ testExplore <- function(dataset = "iris",
                          PrintCutoffSets = TRUE,
                          Sorted = "none",
                          OutputMethod = "BEST", #"EVERY",
-                         BinaryReduction = BinaryReduction)
+                         BinaryReduction = BinaryReduction,
+                         resultType = c("candidateModels"))
   
   unlink(output_path, recursive = TRUE)
   return(result)
