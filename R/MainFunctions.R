@@ -126,7 +126,6 @@ trainExplore <- function(train_data = NULL,
   Accuracy <- ifelse(Accuracy == 0, "", Accuracy)
   BalancedAccuracy <- ifelse(BalancedAccuracy == 0, "", BalancedAccuracy)
   Specificity <- ifelse(Specificity == 0, "", Specificity)
-  BinaryReduction <- ifelse(BinaryReduction == TRUE, "yes", "no")
   
   # Create project setting
   if (is.null(settings_path)) {
