@@ -61,6 +61,8 @@ settingsExplore(
 
 \item{Accuracy}{Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)}
 
+\item{BalancedAccuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
+
 \item{Specificity}{float 0-1, default = 0}
 
 \item{OutputMethod}{string EVERY, BEST, INCREMENT}
@@ -69,11 +71,17 @@ settingsExplore(
 
 \item{PrintPerformance}{True or False}
 
+\item{PrintCutoffSets}{True or False}
+
 \item{Subsumption}{True or False}
 
 \item{BranchBound}{True or False}
 
 \item{Parallel}{True or False}
+
+\item{ParallelMethod}{In character, e.g. "TRUE"}
+
+\item{BinaryReduction}{True or False}
 }
 \value{
 Settings path

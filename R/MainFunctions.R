@@ -25,7 +25,10 @@
 #' @param Subsumption True or False
 #' @param BranchBound True or False
 #' @param Sorted One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered
+#' @param OutputMethod string EVERY, BEST, INCREMENT
 #' @param Parallel True or False
+#' @param PrintCutoffSets True or False
+#' @param BinaryReduction True or False
 #' @param resultType Select one of: "model", "candidateModels", "countCombinations", "countFeatureOperatorPairs", "countRulesWithoutConstraints", "countRulesWithConstraints"
 #'
 #' @return Model
@@ -233,13 +236,17 @@ trainExplore <- function(train_data = NULL,
 #' @param FeatureInclude Empty or string (should be name of one of columns in data train)
 #' @param Maximize One of list with strings, list = "ACCURACY", ...
 #' @param Accuracy Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param BalancedAccuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
 #' @param Specificity  float 0-1, default = 0
 #' @param OutputMethod string EVERY, BEST, INCREMENT
 #' @param PrintSettings True or False
 #' @param PrintPerformance True or False
+#' @param PrintCutoffSets True or False
 #' @param Subsumption True or False
 #' @param BranchBound True or False
 #' @param Parallel True or False
+#' @param ParallelMethod In character, e.g. "TRUE"
+#' @param BinaryReduction True or False
 #'
 #' @return Settings path
 #' @import checkmate
@@ -414,14 +421,34 @@ candidateNumberExplore <- function(OutputFile) {
   return(as.numeric(num_candidates))
 }
 
-#' modelsCurveExplore # TODO: update documentation?
-#'
-#' @param output_path A string declaring the path to the settings
+#' `modelsCurveExplore`
+#' 
 #' @param train_data Train data
 #' @param settings_path A string declaring the path to the settings
+#' @param output_path A string declaring the path to the settings
 #' @param file_name A string declaring the the path to the file name
-#' @param ... List of arguments
-#'
+#' @param OutputFile A string declaring the path to the output file
+#' @param StartRulelength Positive integer
+#' @param EndRulelength Positive integer
+#' @param OperatorMethod One of list with strings, e.g. list = "EXHAUSTIVE", ...
+#' @param CutoffMethod One of list with strings, list = "RVAC", ...
+#' @param ClassFeature  String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
+#' @param PositiveClass 1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'
+#' @param FeatureInclude Empty or string (should be name of one or more columns in data train separated by ;)
+#' @param Maximize One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...
+#' @param Accuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param BalancedAccuracy Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)
+#' @param Specificity float 0-0.999, default = 0
+#' @param OutputMethod In character, "EVERY", BEST" or "INCREMENT"
+#' @param PrintSettings True or False
+#' @param Parallel TRUE or FALSE
+#' @param ParallelMethod In character, e.g. "TRUE"
+#' @param PrintPerformance True or False
+#' @param Subsumption True or False
+#' @param BranchBound True or False
+#' @param Sorted One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered
+#' @param BinaryReduction True or False
+#' 
 #' @import checkmate
 #' @return models for different sensitivities/specificities
 #' @export
@@ -484,7 +511,11 @@ modelsCurveExplore <- function(train_data = NULL,
 
 
 #' rocCurveExplore
-#'
+#' 
+#' @param modelsCurve modelsCurve
+#' @param data data 
+#' @param labels labels
+#' 
 #' @return auc value for EXPLORE
 #' @export
 #' @importFrom caret confusionMatrix

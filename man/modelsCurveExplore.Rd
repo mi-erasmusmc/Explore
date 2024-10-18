@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunctions.R
 \name{modelsCurveExplore}
 \alias{modelsCurveExplore}
-\title{modelsCurveExplore # TODO: update documentation?}
+\title{`modelsCurveExplore`}
 \usage{
 modelsCurveExplore(
   train_data = NULL,
@@ -41,11 +41,51 @@ modelsCurveExplore(
 
 \item{file_name}{A string declaring the the path to the file name}
 
-\item{...}{List of arguments}
+\item{OutputFile}{A string declaring the path to the output file}
+
+\item{StartRulelength}{Positive integer}
+
+\item{EndRulelength}{Positive integer}
+
+\item{OperatorMethod}{One of list with strings, e.g. list = "EXHAUSTIVE", ...}
+
+\item{CutoffMethod}{One of list with strings, list = "RVAC", ...}
+
+\item{ClassFeature}{String, should be name of one of columns in data train. Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'}
+
+\item{PositiveClass}{1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'}
+
+\item{FeatureInclude}{Empty or string (should be name of one or more columns in data train separated by ;)}
+
+\item{Maximize}{One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...}
+
+\item{Accuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
+
+\item{BalancedAccuracy}{Float 0-0.999 -> default = 0 (if 0, make empty = computationally more beneficial)}
+
+\item{Specificity}{float 0-0.999, default = 0}
+
+\item{OutputMethod}{In character, "EVERY", BEST" or "INCREMENT"}
+
+\item{PrintSettings}{True or False}
+
+\item{PrintPerformance}{True or False}
+
+\item{Subsumption}{True or False}
+
+\item{BranchBound}{True or False}
+
+\item{Sorted}{One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered}
+
+\item{Parallel}{TRUE or FALSE}
+
+\item{ParallelMethod}{In character, e.g. "TRUE"}
+
+\item{BinaryReduction}{True or False}
 }
 \value{
 models for different sensitivities/specificities
 }
 \description{
-modelsCurveExplore # TODO: update documentation?
+`modelsCurveExplore`
 }

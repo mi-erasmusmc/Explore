@@ -76,7 +76,13 @@ trainExplore(
 
 \item{Parallel}{True or False}
 
+\item{PrintCutoffSets}{True or False}
+
 \item{Sorted}{One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered}
+
+\item{OutputMethod}{string EVERY, BEST, INCREMENT}
+
+\item{BinaryReduction}{True or False}
 
 \item{resultType}{Select one of: "model", "candidateModels", "countCombinations", "countFeatureOperatorPairs", "countRulesWithoutConstraints", "countRulesWithConstraints"}
 }
