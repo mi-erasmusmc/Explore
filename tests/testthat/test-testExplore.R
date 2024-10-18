@@ -197,30 +197,25 @@ test_that("Test continuous_4_small", {
 
 test_that("Test continuous_4", {
   
-  # cand_models_continuous_4_1 <- testExplore(dataset = "continuous_4",
-  #                                           StartRulelength = 1,
-  #                                           EndRulelength = 1,
-  #                                           BinaryReduction = FALSE)
-  # # FAIL: `actual`: 64 `expected`: 80
-  # expect_length(cand_models_continuous_4_1, 80)
+  cand_models_continuous_4_1 <- testExplore(dataset = "continuous_4",
+                                            StartRulelength = 1,
+                                            EndRulelength = 1,
+                                            BinaryReduction = FALSE)
+  expect_length(cand_models_continuous_4_1, 80)
 
-  
-  # TEST CRASHES R
-  # cand_models_continuous_4_2 <- testExplore(dataset = "continuous_4", 
-  #                                           StartRulelength = 2, 
-  #                                           EndRulelength = 2,
-  #                                           BinaryReduction = FALSE)
-  # # Expected result is 5840
-  # expect_length(cand_models_continuous_4_2, 254)
+  cand_models_continuous_4_2 <- testExplore(dataset = "continuous_4",
+                                            StartRulelength = 2,
+                                            EndRulelength = 2,
+                                            BinaryReduction = FALSE)
+  # Expected result is 5160
+  expect_length(cand_models_continuous_4_2, 5160)
 
-  
-  # TEST CRASHES R  
-  # cand_models_continuous_4_3 <- testExplore(dataset = "continuous_4", 
-  #                                           StartRulelength = 3, 
+  # cand_models_continuous_4_3 <- testExplore(dataset = "continuous_4",
+  #                                           StartRulelength = 3,
   #                                           EndRulelength = 3,
   #                                           BinaryReduction = FALSE)
-  # # Expected result is 5840
-  # expect_length(cand_models_continuous_4_3, 1134)
+  # # Expected result is 235608 
+  # expect_length(cand_models_continuous_4_3, 235608)
   
 })
 
