@@ -207,9 +207,9 @@ test_that("Test continuous_4", {
                                             StartRulelength = 2,
                                             EndRulelength = 2,
                                             BinaryReduction = FALSE)
-  # Expected result is 5160
   expect_length(cand_models_continuous_4_2, 5160)
 
+  # NO EXPECTED VALUE YET
   # cand_models_continuous_4_3 <- testExplore(dataset = "continuous_4",
   #                                           StartRulelength = 3,
   #                                           EndRulelength = 3,
@@ -220,7 +220,8 @@ test_that("Test continuous_4", {
 })
 
 # test_that("Test categorical_4", {
-# 
+#   # NO EXPECTED VALUE YET
+
 #   cand_models_categorical_4_1 <- testExplore(dataset = "categorical_4",
 #                                              StartRulelength = 1,
 #                                              EndRulelength = 1,
@@ -245,6 +246,7 @@ test_that("Test continuous_4", {
 # })
 
 # test_that("Test categorical_4_large", {
+#   # NO EXPECTED VALUE YET
 # 
 #   cand_models_categorical_4_large_1 <- testExplore(dataset = "categorical_4_large",
 #                                                    StartRulelength = 1,
