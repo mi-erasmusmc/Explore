@@ -78,8 +78,13 @@ saveData <- function(output_path, train_data, file_name) {
   
   # Fix col type for binary data
   binary_cols <- sapply(1:ncol(train_data), function(c) all(train_data[[c]] %in% 0:1))
-  train_data[binary_cols] <- lapply(colnames(train_data[binary_cols]), function(c) factor(train_data[[c]], labels=c(0,1)))
+  
+  # Convert TRUE/FALSE to 1/0
+  train_data <- convert_logical(train_data)
 
+  # Order data (first binary then continuous features)
+  train_data <- cbind(train_data[binary_cols],train_data[!binary_cols]) # Order needed for correct functioning of main algorithm in C++ 
+  
   # Save data as arff file
   if (file.exists(paste0(output_path, file_name, ".arff"))) {file.remove(paste0(output_path, file_name, ".arff"))}
   farff::writeARFF(train_data, paste0(output_path, file_name, ".arff"))
@@ -97,9 +102,43 @@ saveData <- function(output_path, train_data, file_name) {
   # TODO: Support other file formats?
 }
 
+convert_logical <- function(train_data) {
+  
+  binary_cols <- sapply(train_data, function(col) all(col %in% c(0, 1, TRUE, FALSE)))
+  
+  # Convert TRUE/FALSE to 1/0 and create factors
+  train_data[binary_cols] <- lapply(train_data[binary_cols], function(col) {
+    col <- as.numeric(as.logical(col))  # Convert TRUE/FALSE to 1/0
+    factor(col, levels = c(0, 1), labels = c(0, 1))  # Convert to factors
+  })
+  
+  return(train_data)
+  
+}
+
 # Correlation metric for binary data.
 jaccard <- function(a, b) {
   intersection = length(intersect(a, b))
   union = length(a) + length(b) - intersection
   return (intersection/union)
 }
+
+phi <- function(a, b) {
+  contingency_tb <- table(a, b)
+  
+  r.sum <- rowSums(contingency_tb)
+  c.sum <- colSums(contingency_tb)
+  
+  total <- sum(r.sum)
+  r.sum <- r.sum/total
+  c.sum <- c.sum/total
+  
+  v <- prod(r.sum, c.sum)
+  phi <- (contingency_tb[1,1] / total - c.sum[1] * r.sum[1] / sqrt(v))
+  names(phi) <- NULL
+  
+  return(phi)
+}
+
+
+

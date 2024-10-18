@@ -37,7 +37,6 @@ PrintOperatorValues=no
 PrintCombinations=no
 PrintFeatureSets=no
 PrintCutoffSets=no
-PrintCutOffsetsBestLength=no
 PrintPerformance=yes
 PrintSets=no
 SavePartitions=no

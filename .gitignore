@@ -43,3 +43,4 @@ Report_files/
 renv.lock
 renv
 .Rprofile
+@OutputFile

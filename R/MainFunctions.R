@@ -26,6 +26,7 @@
 #' @param BranchBound True or False
 #' @param Sorted One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered
 #' @param Parallel True or False
+#' @param resultType Select one of: "model", "candidateModels", "countCombinations", "countFeatureOperatorPairs", "countRulesWithoutConstraints", "countRulesWithConstraints"
 #'
 #' @return Model
 #' @export
@@ -39,20 +40,24 @@ trainExplore <- function(train_data = NULL,
                          StartRulelength = 1,
                          EndRulelength = 3,
                          OperatorMethod = "EXHAUSTIVE",
-                         CutoffMethod = "RVAC",
+                         CutoffMethod = "ALL",
                          ClassFeature = "'class'",
                          PositiveClass = "'Iris-versicolor'",
                          FeatureInclude = "",
-                         Maximize = "ACCURACY",
+                         Maximize = "BALANCEDACCURACY",
                          Accuracy = 0,
                          BalancedAccuracy = 0,
                          Specificity = 0,
                          PrintSettings = TRUE,
-                         PrintPerformance = TRUE,
-                         Subsumption = TRUE,
+                         PrintPerformance = FALSE,
+                         Subsumption = FALSE,
                          BranchBound = TRUE,
+                         Parallel = FALSE,
+                         PrintCutoffSets = FALSE,
                          Sorted = "none",
-                         Parallel = FALSE) {
+                         OutputMethod = "BEST",
+                         BinaryReduction = FALSE,
+                         resultType = c("model")) {
   
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
@@ -97,12 +102,16 @@ trainExplore <- function(train_data = NULL,
                     checkDouble(Accuracy),
                     checkDouble(BalancedAccuracy),
                     checkDouble(Specificity),
+                    checkString(OutputMethod),
                     checkLogical(PrintSettings),
                     checkLogical(PrintPerformance),
                     checkLogical(Subsumption),
                     checkLogical(BranchBound),
-                    checkString(Sorted),
                     checkLogical(Parallel),
+                    checkLogical(PrintCutoffSets),
+                    checkString(Sorted),
+                    checkString(OutputMethod),
+                    checkLogical(BinaryReduction),
                     add = errorMessage,
                     combine = "and"
   )
@@ -110,9 +119,11 @@ trainExplore <- function(train_data = NULL,
   
   PrintSettings <- ifelse(PrintSettings == TRUE, "yes", "no")
   PrintPerformance <- ifelse(PrintPerformance == TRUE, "yes", "no")
+  PrintCutoffSets <- ifelse(PrintCutoffSets == TRUE, "yes", "no")
   Subsumption <- ifelse(Subsumption == TRUE, "yes", "no")
   BranchBound <- ifelse(BranchBound == TRUE, "yes", "no")
   Parallel <- ifelse(Parallel == TRUE, "yes", "no")
+  BinaryReduction <- ifelse(BinaryReduction == TRUE, "yes", "no")
   Accuracy <- ifelse(Accuracy == 0, "", Accuracy)
   BalancedAccuracy <- ifelse(BalancedAccuracy == 0, "", BalancedAccuracy)
   Specificity <- ifelse(Specificity == 0, "", Specificity)
@@ -146,7 +157,9 @@ trainExplore <- function(train_data = NULL,
         cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) cor(col, train_data[ClassFeature_]==PositiveClass_, method=Sorted))
       } else if (Sorted == "jaccard") {
         cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) jaccard(col, train_data[ClassFeature_]==PositiveClass_))
-      }
+      } else if (Sorted == "phi") { 
+        cor <- sapply(train_data[, -which(names(train_data) == ClassFeature_)], function(col) phi(col, train_data[ClassFeature_]==PositiveClass_))
+      } 
       # else if (Sorted == "LASSO") { 
       #   model_lasso <- glmnet::cv.glmnet(x=data.matrix(train_data[, -which(names(train_data) == ClassFeature_)]), y = train_data[ClassFeature_]==PositiveClass_, alpha = 1, lambda = 10^seq(3, -2, by = -.1), maxit=10000000, standardize = TRUE, nfolds = 5, family = "binomial")
       #   coef <- as.matrix(coef(model_lasso, s = "lambda.min")) # get importance
@@ -155,7 +168,7 @@ trainExplore <- function(train_data = NULL,
       # }
         
       coef <- names(cor)[order(-abs(cor))] 
-      train_data <- train_data[,c(coef,ClassFeature_)] # sort data features by LASSO importance
+      train_data <- train_data[,c(coef,ClassFeature_)] # sort data features by importance
     }
     
     saveData(output_path, train_data, file_name)
@@ -180,9 +193,12 @@ trainExplore <- function(train_data = NULL,
                                    Specificity = Specificity,
                                    PrintSettings = PrintSettings,
                                    PrintPerformance = PrintPerformance,
+                                   PrintCutoffSets = PrintCutoffSets,
                                    Subsumption = Subsumption,
                                    BranchBound = BranchBound,
-                                   Parallel = Parallel)
+                                   Parallel = Parallel,
+                                   OutputMethod = OutputMethod,
+                                   BinaryReduction = BinaryReduction)
   
   # Train EXPLORE model
   # TODO: allow to enter settings file instead of path?
@@ -190,17 +206,12 @@ trainExplore <- function(train_data = NULL,
   
   # Load results file
   settings <- paste(readLines(settings_path), collapse="\n")
-  results <- paste(readLines(getSetting(settings, "OutputFile", type = "value")), collapse="\n")
+  outputFile <- getSetting(settings, "OutputFile", type = "value")
   
-  # Load model
-  rule_string <- stringr::str_extract(results, "Best candidate \\(overall\\):.*?\u000A")
+  results <- resultsExplore(outputFile=outputFile) 
+  result <- results[[resultType]]
   
-  # Clean string
-  rule_string <- stringr::str_replace(rule_string, "Best candidate \\(overall\\):", "")
-  rule_string <- stringr::str_replace_all(rule_string, " ", "")
-  rule_string <- stringr::str_replace_all(rule_string, "\\n", "")
-  
-  return(model = rule_string)
+  return(result)
 }
 
 
@@ -223,6 +234,7 @@ trainExplore <- function(train_data = NULL,
 #' @param Maximize One of list with strings, list = "ACCURACY", ...
 #' @param Accuracy Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)
 #' @param Specificity  float 0-1, default = 0
+#' @param OutputMethod string EVERY, BEST, INCREMENT
 #' @param PrintSettings True or False
 #' @param PrintPerformance True or False
 #' @param Subsumption True or False
@@ -243,15 +255,19 @@ settingsExplore <- function(settings,
                             ClassFeature,
                             PositiveClass,
                             FeatureInclude = "",
-                            Maximize = "ACCURACY",
+                            Maximize = "BALANCEDACCURACY",
                             Accuracy = 0,
                             BalancedAccuracy = 0,
                             Specificity = 0,
+                            OutputMethod = "BEST",
                             PrintSettings = "yes",
-                            PrintPerformance = "yes",
-                            Subsumption = "yes",
+                            PrintPerformance = "no",
+                            PrintCutoffSets = "no",
+                            Subsumption = "no",
                             BranchBound = "yes",
-                            Parallel = "no") {
+                            Parallel = "no",
+                            ParallelMethod = "TWO",
+                            BinaryReduction = "no") {
   
   
   # Insert location training data and cutoff file if train_data is entered
@@ -275,9 +291,13 @@ settingsExplore <- function(settings,
   settings <- changeSetting(settings, parameter = "Specificity", input = Specificity)
   settings <- changeSetting(settings, parameter = "PrintSettings", input = PrintSettings)
   settings <- changeSetting(settings, parameter = "PrintPerformance", input = PrintPerformance)
+  settings <- changeSetting(settings, parameter = "PrintCutoffSets", input = PrintCutoffSets)
   settings <- changeSetting(settings, parameter = "Subsumption", input = Subsumption)
   settings <- changeSetting(settings, parameter = "BranchBound", input = BranchBound)
   settings <- changeSetting(settings, parameter = "Parallel", input = Parallel)
+  settings <- changeSetting(settings, parameter = "ParallelMethod", input = ParallelMethod)
+  settings <- changeSetting(settings, parameter = "OutputMethod", input = OutputMethod)
+  settings <- changeSetting(settings, parameter = "BinaryReduction", input = BinaryReduction)
   
   # Save settings file
   settings_path <- paste0(output_path, file_name,".project")
@@ -307,6 +327,11 @@ predictExplore <- function(model, test_data) {
     return(NULL)
   }
   
+  # Clean string
+  model <- stringr::str_remove_all(model, '\"')
+  model <- stringr::str_replace_all(model, "=", "==") 
+  model <- stringr::str_replace_all(model, "<=", "<") # to correct initial case <= -> <== -> <= 
+  
   # Split string 
   all_terms <- stringr::str_split_fixed(model, "OR", n=Inf)
   
@@ -328,12 +353,94 @@ predictExplore <- function(model, test_data) {
     data_model <- cbind(data_model, as.integer(col==length(all_literals)))
   }
   
-  colnames(data_model) <- all_terms
+  colnames(data_model) <- all_terms # TODO: CHECK HERE WHY DATA_MODEL NO COLUMNS
   predictions <- as.integer(rowSums(data_model)>0)
   
   return(predictions)
 }
 
+#' Return a set of results from EXPLORE output file
+#' @param outputFile outputfile = paste0(output_path, file_name, ".result")
+#'
+#' @export
+resultsExplore <- function(outputFile) {
+  
+  # Read in results file
+  results <- paste(readLines(outputFile), collapse="\n")
+  results_lines <- strsplit(results, "\n") %>% unlist()
+  
+  model <- grep("Best candidate:", unlist(results_lines), value = TRUE)
+  model <- gsub("Best candidate:", "", model[1])
+  
+  candidateModels <- strsplit(results_lines, "\n")
+  candidateModels <- grep("Candidate model:", candidateModels, value = TRUE)
+  
+  countCombinations <- grep("Total Count Combinations:", results_lines, value = TRUE)
+  countCombinations <- gsub("Total Count Combinations:", "", countCombinations[1]) %>% as.numeric()
+  
+  countFeatureOperatorPairs <- grep("Total Count Cutoff Sets:", results_lines, value = TRUE)
+  countFeatureOperatorPairs <- gsub("Total Count Cutoff Sets:", "", countFeatureOperatorPairs) %>% as.numeric()
+
+  countRulesWithoutConstraints <- grep("Total Count Feature Operator Pairs:", results_lines, value = TRUE)
+  countRulesWithoutConstraints <- gsub("Total Count Feature Operator Pairs:", "", countRulesWithoutConstraints) %>% as.numeric()
+  
+  countRulesWithConstraints <- grep("Total Count Candidates \\(incl constraints\\):", results_lines, value = TRUE)
+  countRulesWithConstraints <- trimws(gsub("Total Count Candidates \\(incl constraints\\):", "", countRulesWithConstraints)) %>% as.numeric()
+  
+  
+  # result_data <- list()
+  # 
+  # for (line in results_lines) {
+  #   # line <- "Candidate model: '198124209' = \"0\"" 
+  # 
+  #   if (grepl(":", line)) {
+  #     if (grepl("Candidate model", line)) {
+  #       split_line <- strsplit(line, ":")[[1]]
+  #       key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
+  #       value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
+  #       result_data[[key]] <- c(result_data[[key]], value)
+  #     } else {
+  #       split_line <- strsplit(line, ":")[[1]]
+  #       key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
+  #       value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
+  #       result_data[[key]] <- value
+  #     }
+  #   }
+  # }
+
+  # result <- list("model" = result_data$best_candidate,
+  #                "candidateModels" = candidate_models,
+  #                "countCombinations" = result_data$total_count_combinations,
+  #                "countFeatureOperatorPairs" = result_data$total_count_feature_operator_pairs,
+  #                "countRulesWithoutConstraints" = countRulesWithoutConstraints,
+  #                "countRulesWithConstraints" = result_data$`total_count_candidates_(incl_constraints)`)
+  
+  
+  result <- list("model" = model,
+                 "candidateModels" = candidateModels,
+                 "countCombinations" = countCombinations,
+                 "countFeatureOperatorPairs" = countFeatureOperatorPairs,
+                 "countRulesWithoutConstraints" = countRulesWithoutConstraints,
+                 "countRulesWithConstraints" = countRulesWithConstraints)
+  
+  return(result)
+}
+
+#' Return the number of candidate rules for EXPLORE
+#' @param OutputFile output file = paste0(output_path, file_name, ".result")
+#'
+#' @export
+candidateNumberExplore <- function(OutputFile) {
+  
+  # Read in results file
+  results <- paste(readLines(OutputFile), collapse="\n")
+  
+  num_candidates <- stringr::str_extract_all(results, "Total Count Candidates \\(incl constraints\\):.*?\u000A")[[1]]
+  num_candidates <- as.data.frame(stringr::str_remove_all(num_candidates, "Total Count Candidates \\(incl constraints\\):"))
+  num_candidates <- stringr::str_replace_all(num_candidates, "\\n", "")
+  
+  return(as.numeric(num_candidates))
+}
 
 #' modelsCurveExplore # TODO: update documentation?
 #'
@@ -354,19 +461,23 @@ modelsCurveExplore <- function(train_data = NULL,
                                StartRulelength = 1,
                                EndRulelength = 3,
                                OperatorMethod = "EXHAUSTIVE",
-                               CutoffMethod = "RVAC",
+                               CutoffMethod = "ALL",
                                ClassFeature = "'class'",
                                PositiveClass = "'Iris-versicolor'",
                                FeatureInclude = "",
-                               Maximize = "ACCURACY",
+                               Maximize = "BALANCEDACCURACY",
                                Accuracy = 0,
                                BalancedAccuracy = 0,
                                Specificity = 0,
+                               OutputMethod = "BEST", 
                                PrintSettings = TRUE,
-                               PrintPerformance = TRUE,
-                               Subsumption = TRUE,
+                               PrintPerformance = FALSE,
+                               Subsumption = FALSE,
                                BranchBound = TRUE,
-                               Parallel = FALSE) {
+                               Sorted = "none",
+                               Parallel = TRUE,
+                               ParallelMethod = "TWO",
+                               BinaryReduction = FALSE) {
   # TODO: only input required variables?
   
   # Range of specificities to check
@@ -386,9 +497,9 @@ modelsCurveExplore <- function(train_data = NULL,
                                      ClassFeature = ClassFeature, PositiveClass = PositiveClass,
                                      FeatureInclude = FeatureInclude, Maximize = "SENSITIVITY",
                                      Accuracy = Accuracy, BalancedAccuracy = BalancedAccuracy, Specificity = constraint,
-                                     PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
+                                     OutputMethod = OutputMethod, PrintSettings = PrintSettings, PrintPerformance = PrintPerformance,
                                      Subsumption = Subsumption, BranchBound = BranchBound,
-                                     Parallel = Parallel)
+                                     Parallel = Parallel, ParallelMethod = ParallelMethod)
       
       return(model)
     })

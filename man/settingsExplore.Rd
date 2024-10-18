@@ -17,15 +17,19 @@ settingsExplore(
   ClassFeature,
   PositiveClass,
   FeatureInclude = "",
-  Maximize = "ACCURACY",
+  Maximize = "BALANCEDACCURACY",
   Accuracy = 0,
   BalancedAccuracy = 0,
   Specificity = 0,
+  OutputMethod = "BEST",
   PrintSettings = "yes",
-  PrintPerformance = "yes",
-  Subsumption = "yes",
+  PrintPerformance = "no",
+  PrintCutoffSets = "no",
+  Subsumption = "no",
   BranchBound = "yes",
-  Parallel = "no"
+  Parallel = "no",
+  ParallelMethod = "TWO",
+  BinaryReduction = "no"
 )
 }
 \arguments{
@@ -58,6 +62,8 @@ settingsExplore(
 \item{Accuracy}{Float 0-1 -> default = 0 (if 0, make empty = computationally more beneficial)}
 
 \item{Specificity}{float 0-1, default = 0}
+
+\item{OutputMethod}{string EVERY, BEST, INCREMENT}
 
 \item{PrintSettings}{True or False}
 
