@@ -423,7 +423,11 @@ string SET::PrintPerformance() {
   return Result.str();
 }
 
-struct AndJibu : public std ::unary_function<int, void>
+#ifdef _WIN32
+struct AndJibu : public std::unary_function<int, void>
+#else
+struct AndJibu : public std::__unary_function<int, void>
+#endif
 { 
   const boost::dynamic_bitset<> Source;
   boost::dynamic_bitset<> Dest;
