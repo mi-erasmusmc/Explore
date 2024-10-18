@@ -52,19 +52,23 @@
 <span>  StartRulelength <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  EndRulelength <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  OperatorMethod <span class="op">=</span> <span class="st">"EXHAUSTIVE"</span>,</span>
-<span>  CutoffMethod <span class="op">=</span> <span class="st">"RVAC"</span>,</span>
+<span>  CutoffMethod <span class="op">=</span> <span class="st">"ALL"</span>,</span>
 <span>  ClassFeature <span class="op">=</span> <span class="st">"'class'"</span>,</span>
 <span>  PositiveClass <span class="op">=</span> <span class="st">"'Iris-versicolor'"</span>,</span>
 <span>  FeatureInclude <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  Maximize <span class="op">=</span> <span class="st">"ACCURACY"</span>,</span>
+<span>  Maximize <span class="op">=</span> <span class="st">"BALANCEDACCURACY"</span>,</span>
 <span>  Accuracy <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  BalancedAccuracy <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  Specificity <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  OutputMethod <span class="op">=</span> <span class="st">"BEST"</span>,</span>
 <span>  PrintSettings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  PrintPerformance <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  Subsumption <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  PrintPerformance <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  Subsumption <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  BranchBound <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  Parallel <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  Sorted <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  Parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ParallelMethod <span class="op">=</span> <span class="st">"TWO"</span>,</span>
+<span>  BinaryReduction <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -106,7 +110,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>

@@ -56,15 +56,19 @@
 <span>  <span class="va">ClassFeature</span>,</span>
 <span>  <span class="va">PositiveClass</span>,</span>
 <span>  FeatureInclude <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  Maximize <span class="op">=</span> <span class="st">"ACCURACY"</span>,</span>
+<span>  Maximize <span class="op">=</span> <span class="st">"BALANCEDACCURACY"</span>,</span>
 <span>  Accuracy <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  BalancedAccuracy <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  Specificity <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  OutputMethod <span class="op">=</span> <span class="st">"BEST"</span>,</span>
 <span>  PrintSettings <span class="op">=</span> <span class="st">"yes"</span>,</span>
-<span>  PrintPerformance <span class="op">=</span> <span class="st">"yes"</span>,</span>
-<span>  Subsumption <span class="op">=</span> <span class="st">"yes"</span>,</span>
+<span>  PrintPerformance <span class="op">=</span> <span class="st">"no"</span>,</span>
+<span>  PrintCutoffSets <span class="op">=</span> <span class="st">"no"</span>,</span>
+<span>  Subsumption <span class="op">=</span> <span class="st">"no"</span>,</span>
 <span>  BranchBound <span class="op">=</span> <span class="st">"yes"</span>,</span>
-<span>  Parallel <span class="op">=</span> <span class="st">"no"</span></span>
+<span>  Parallel <span class="op">=</span> <span class="st">"no"</span>,</span>
+<span>  ParallelMethod <span class="op">=</span> <span class="st">"TWO"</span>,</span>
+<span>  BinaryReduction <span class="op">=</span> <span class="st">"no"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -132,6 +136,10 @@
 <dd><p>float 0-1, default = 0</p></dd>
 
 
+<dt id="arg-outputmethod">OutputMethod<a class="anchor" aria-label="anchor" href="#arg-outputmethod"></a></dt>
+<dd><p>string EVERY, BEST, INCREMENT</p></dd>
+
+
 <dt id="arg-printsettings">PrintSettings<a class="anchor" aria-label="anchor" href="#arg-printsettings"></a></dt>
 <dd><p>True or False</p></dd>
 
@@ -166,7 +174,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>
