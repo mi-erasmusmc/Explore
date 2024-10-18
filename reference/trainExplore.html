@@ -65,11 +65,11 @@
 <span>  Subsumption <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  BranchBound <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  Parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  PrintCutoffSets <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  PrintCutoffSets <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  Sorted <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>  OutputMethod <span class="op">=</span> <span class="st">"EVERY"</span>,</span>
+<span>  OutputMethod <span class="op">=</span> <span class="st">"BEST"</span>,</span>
 <span>  BinaryReduction <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  resultType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"candidate_models"</span>, <span class="st">"cutoff_sets"</span><span class="op">)</span></span>
+<span>  resultType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -163,6 +163,10 @@
 
 <dt id="arg-sorted">Sorted<a class="anchor" aria-label="anchor" href="#arg-sorted"></a></dt>
 <dd><p>One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered</p></dd>
+
+
+<dt id="arg-resulttype">resultType<a class="anchor" aria-label="anchor" href="#arg-resulttype"></a></dt>
+<dd><p>Select one of: "model", "candidateModels", "countCombinations", "countFeatureOperatorPairs", "countRulesWithoutConstraints", "countRulesWithConstraints"</p></dd>
 
 </dl></div>
     <div class="section level2">
