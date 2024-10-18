@@ -26,6 +26,7 @@
 #' @param BranchBound True or False
 #' @param Sorted One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered
 #' @param Parallel True or False
+#' @param resultType Select one of: "model", "candidateModels", "countCombinations", "countFeatureOperatorPairs", "countRulesWithoutConstraints", "countRulesWithConstraints"
 #'
 #' @return Model
 #' @export
@@ -368,32 +369,59 @@ resultsExplore <- function(outputFile) {
   results <- paste(readLines(outputFile), collapse="\n")
   results_lines <- strsplit(results, "\n") %>% unlist()
   
-  result_data <- list()
+  model <- grep("Best candidate:", unlist(results_lines), value = TRUE)
+  model <- gsub("Best candidate:", "", model[1])
   
-  for (line in results_lines) {
-    # line <- "Candidate model: '198124209' = \"0\"" 
+  candidateModels <- strsplit(results_lines, "\n")
+  candidateModels <- grep("Candidate model:", candidateModels, value = TRUE)
+  
+  countCombinations <- grep("Total Count Combinations:", results_lines, value = TRUE)
+  countCombinations <- gsub("Total Count Combinations:", "", countCombinations[1]) %>% as.numeric()
+  
+  countFeatureOperatorPairs <- grep("Total Count Cutoff Sets:", results_lines, value = TRUE)
+  countFeatureOperatorPairs <- gsub("Total Count Cutoff Sets:", "", countFeatureOperatorPairs) %>% as.numeric()
 
-    if (grepl(":", line)) {
-      if (grepl("Candidate model", line)) {
-        split_line <- strsplit(line, ":")[[1]]
-        key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
-        value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
-        result_data[[key]] <- c(result_data[[key]], value)
-      } else {
-        split_line <- strsplit(line, ":")[[1]]
-        key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
-        value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
-        result_data[[key]] <- value
-      }
-    }
-  }
+  countRulesWithoutConstraints <- grep("Total Count Feature Operator Pairs:", results_lines, value = TRUE)
+  countRulesWithoutConstraints <- gsub("Total Count Feature Operator Pairs:", "", countRulesWithoutConstraints) %>% as.numeric()
+  
+  countRulesWithConstraints <- grep("Total Count Candidates \\(incl constraints\\):", results_lines, value = TRUE)
+  countRulesWithConstraints <- trimws(gsub("Total Count Candidates \\(incl constraints\\):", "", countRulesWithConstraints)) %>% as.numeric()
+  
+  
+  # result_data <- list()
+  # 
+  # for (line in results_lines) {
+  #   # line <- "Candidate model: '198124209' = \"0\"" 
+  # 
+  #   if (grepl(":", line)) {
+  #     if (grepl("Candidate model", line)) {
+  #       split_line <- strsplit(line, ":")[[1]]
+  #       key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
+  #       value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
+  #       result_data[[key]] <- c(result_data[[key]], value)
+  #     } else {
+  #       split_line <- strsplit(line, ":")[[1]]
+  #       key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
+  #       value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
+  #       result_data[[key]] <- value
+  #     }
+  #   }
+  # }
 
-  result <- list("model" = result_data$best_candidate,
-                 "candidateModels" = result_data$candidate_model,
-                 "countCombinations" = result_data$total_count_combinations,
-                 "countFeatureOperatorPairs" = result_data$total_count_feature_operator_pairs,
-                 "countRulesWithoutConstraints" = result_data$total_count_cutoff_sets,
-                 "countRulesWithConstraints" = result_data$`total_count_candidates_(incl_constraints)`)
+  # result <- list("model" = result_data$best_candidate,
+  #                "candidateModels" = candidate_models,
+  #                "countCombinations" = result_data$total_count_combinations,
+  #                "countFeatureOperatorPairs" = result_data$total_count_feature_operator_pairs,
+  #                "countRulesWithoutConstraints" = countRulesWithoutConstraints,
+  #                "countRulesWithConstraints" = result_data$`total_count_candidates_(incl_constraints)`)
+  
+  
+  result <- list("model" = model,
+                 "candidateModels" = candidateModels,
+                 "countCombinations" = countCombinations,
+                 "countFeatureOperatorPairs" = countFeatureOperatorPairs,
+                 "countRulesWithoutConstraints" = countRulesWithoutConstraints,
+                 "countRulesWithConstraints" = countRulesWithConstraints)
   
   return(result)
 }
