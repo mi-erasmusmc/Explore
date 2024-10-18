@@ -1,5 +1,13 @@
 # Explore 0.4.0
 
+* Improved testing for different datasets. 
+
+* trainExplore has a parameter to select the result type.  
+
+* Added testExplore for test configuration. 
+
+* Added resultExplore to access results. 
+
 # Explore 0.3.0
 
 * Package tested on Windows, MacOs and Linux. R-CMD-Check without errors.

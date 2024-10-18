@@ -363,6 +363,7 @@ predictExplore <- function(model, test_data) {
 #' @param outputFile outputfile = paste0(output_path, file_name, ".result")
 #'
 #' @export
+#' @importFrom magrittr %>%
 resultsExplore <- function(outputFile) {
   
   # Read in results file
@@ -386,35 +387,6 @@ resultsExplore <- function(outputFile) {
   
   countRulesWithConstraints <- grep("Total Count Candidates \\(incl constraints\\):", results_lines, value = TRUE)
   countRulesWithConstraints <- trimws(gsub("Total Count Candidates \\(incl constraints\\):", "", countRulesWithConstraints)) %>% as.numeric()
-  
-  
-  # result_data <- list()
-  # 
-  # for (line in results_lines) {
-  #   # line <- "Candidate model: '198124209' = \"0\"" 
-  # 
-  #   if (grepl(":", line)) {
-  #     if (grepl("Candidate model", line)) {
-  #       split_line <- strsplit(line, ":")[[1]]
-  #       key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
-  #       value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
-  #       result_data[[key]] <- c(result_data[[key]], value)
-  #     } else {
-  #       split_line <- strsplit(line, ":")[[1]]
-  #       key <- trimws(split_line[1]) %>% tolower() %>% gsub(" ", "_", .) 
-  #       value <- stringr::str_replace_all(split_line[2], " ", "") # remove spaces
-  #       result_data[[key]] <- value
-  #     }
-  #   }
-  # }
-
-  # result <- list("model" = result_data$best_candidate,
-  #                "candidateModels" = candidate_models,
-  #                "countCombinations" = result_data$total_count_combinations,
-  #                "countFeatureOperatorPairs" = result_data$total_count_feature_operator_pairs,
-  #                "countRulesWithoutConstraints" = countRulesWithoutConstraints,
-  #                "countRulesWithConstraints" = result_data$`total_count_candidates_(incl_constraints)`)
-  
   
   result <- list("model" = model,
                  "candidateModels" = candidateModels,

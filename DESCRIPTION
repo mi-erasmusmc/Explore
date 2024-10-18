@@ -18,7 +18,9 @@ Imports:
     RcppParallel,
     stringr,
     caret,
-    pracma
+    pracma,
+    glue,
+    magrittr
 Encoding: UTF-8
 LinkingTo: Rcpp, BH (>= 1.51.0), RcppParallel
 RoxygenNote: 7.3.2

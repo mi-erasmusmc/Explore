@@ -26,11 +26,11 @@ trainExplore(
   Subsumption = FALSE,
   BranchBound = TRUE,
   Parallel = FALSE,
-  PrintCutoffSets = TRUE,
+  PrintCutoffSets = FALSE,
   Sorted = "none",
-  OutputMethod = "EVERY",
+  OutputMethod = "BEST",
   BinaryReduction = FALSE,
-  resultType = c("model", "candidate_models", "cutoff_sets")
+  resultType = c("model")
 )
 }
 \arguments{
@@ -77,6 +77,8 @@ trainExplore(
 \item{Parallel}{True or False}
 
 \item{Sorted}{One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered}
+
+\item{resultType}{Select one of: "model", "candidateModels", "countCombinations", "countFeatureOperatorPairs", "countRulesWithoutConstraints", "countRulesWithConstraints"}
 }
 \value{
 Model
