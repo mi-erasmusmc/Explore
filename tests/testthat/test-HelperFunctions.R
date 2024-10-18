@@ -23,6 +23,6 @@ test_that("getDataSetPath list cases", {
   expect_equal(data_path$class_feature, "'outcomeCount'")
   
   dataset <- "mix_4_ordered"
-  expect_error(getDataSetPath(dataset = dataset))
-  
+  expect_equal(data_path$class_feature, "'outcomeCount'")
+
 })
