@@ -62,8 +62,8 @@ IOExplore::IOExplore() {
   Dummy.push_back("Accuracy");
   Dummy.push_back("PPV");
   Dummy.push_back("NPV");
-    Dummy.push_back("BalancedAccuracy");
-    Dummy.push_back("F1score");
+  Dummy.push_back("BalancedAccuracy");
+  Dummy.push_back("F1score");
   Sections.push_back(Dummy);
   Dummy.clear();
 
@@ -146,7 +146,6 @@ void IOExplore::ClearSettings() {
   ProjectSettings.PrintCombinations      = false;
   ProjectSettings.PrintFeatureSets       = false;
   ProjectSettings.PrintCutoffSets        = false;
-  ProjectSettings.PrintCutoffSetsBestLength        = false;
   ProjectSettings.PrintPerformance       = false;
   ProjectSettings.PrintSets              = false;
   ProjectSettings.BranchBound            = false;
@@ -586,13 +585,12 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
       case NPV:
         ProjectSettings.Maximize = NPV;        
         break;
-
-        case BALANCEDACCURACY:
-            ProjectSettings.Maximize = BALANCEDACCURACY;
-            break;
-        case F1SCORE:
-            ProjectSettings.Maximize = F1SCORE;
-            break;
+      case BALANCEDACCURACY:
+        ProjectSettings.Maximize = BALANCEDACCURACY;
+        break;
+      case F1SCORE:
+        ProjectSettings.Maximize = F1SCORE;
+        break;
     }
 
     vector<CONSTRAINT> Constraints = Project->GetConstraints();
@@ -625,16 +623,16 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
             ProjectSettings.Accuracy = (*CurrentConstraint).Value;
           }
           break;
-          case BALANCEDACCURACY:
-              if ((*CurrentConstraint).Value != 0){
-                  ProjectSettings.BalancedAccuracy = (*CurrentConstraint).Value;
-              }
-              break;
-          case F1SCORE:
-              if ((*CurrentConstraint).Value != 0){
-                  ProjectSettings.F1score = (*CurrentConstraint).Value;
-              }
-              break;
+        case BALANCEDACCURACY:
+          if ((*CurrentConstraint).Value != 0){
+              ProjectSettings.BalancedAccuracy = (*CurrentConstraint).Value;
+          }
+          break;
+        case F1SCORE:
+          if ((*CurrentConstraint).Value != 0){
+              ProjectSettings.F1score = (*CurrentConstraint).Value;
+          }
+          break;
       }
     }
     ProjectFile.flush();
@@ -691,10 +689,6 @@ bool IOExplore::SaveExploreToProject(string IOFilename) {
     ProjectSettings.PrintCutoffSets = false;
     if (Project->GetPrintCutoffSets()) {
       ProjectSettings.PrintCutoffSets = true;
-    }
-    ProjectSettings.PrintCutoffSetsBestLength = false;
-    if (Project->GetPrintCutoffSetsBestLength()) {
-        ProjectSettings.PrintCutoffSetsBestLength = true;
     }
     ProjectSettings.PrintPerformance = false;
     if (Project->GetPrintPerformance()) {
@@ -870,12 +864,12 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
       case NPV:
         ProjectFile << "Maximize=NPV" << endl;
         break;
-        case BALANCEDACCURACY:
-            ProjectFile << "Maximize=BALANCEDACCURACY" << endl;
-            break;
-        case F1SCORE:
-            ProjectFile << "Maximize=F1SCORE" << endl;
-            break;
+      case BALANCEDACCURACY:
+        ProjectFile << "Maximize=BALANCEDACCURACY" << endl;
+        break;
+      case F1SCORE:
+        ProjectFile << "Maximize=F1SCORE" << endl;
+        break;
     }
     if (ProjectSettings.Sensitivity>0) {
       ProjectFile << "Sensitivity=" << ProjectSettings.Sensitivity << endl;
@@ -892,12 +886,12 @@ bool IOExplore::SaveSettingsToFile(string IOFilename) {
     if (ProjectSettings.Accuracy>0) {
       ProjectFile << "Accuracy=" << ProjectSettings.Accuracy << endl;
     }
-      if (ProjectSettings.BalancedAccuracy>0) {
-          ProjectFile << "BalancedAccuracy=" << ProjectSettings.BalancedAccuracy << endl;
-      }
-      if (ProjectSettings.F1score>0) {
-          ProjectFile << "F1score=" << ProjectSettings.F1score << endl;
-      }
+    if (ProjectSettings.BalancedAccuracy>0) {
+      ProjectFile << "BalancedAccuracy=" << ProjectSettings.BalancedAccuracy << endl;
+    }
+    if (ProjectSettings.F1score>0) {
+      ProjectFile << "F1score=" << ProjectSettings.F1score << endl;
+    }
     ProjectFile << "[Output]" << endl;
     switch (ProjectSettings.OutputMethod) {
       case EVERY:
@@ -1367,23 +1361,22 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
           return false;
         }
       }
-        if (CurrentHeading.compare("BalancedAccuracy")==0) {                                   // Balanced accuracy constraint
-            if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
-                ProjectSettings.BalancedAccuracy = atof(CurrentValue.c_str());
-            } else {
-                ProjectLoadErrors.push_back("Invalid value for constraint NPV.");
-                return false;
-            }
+    if (CurrentHeading.compare("BalancedAccuracy")==0) {                                   // Balanced accuracy constraint
+        if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
+            ProjectSettings.BalancedAccuracy = atof(CurrentValue.c_str());
+        } else {
+            ProjectLoadErrors.push_back("Invalid value for constraint Balanced Accuracy.");
+            return false;
         }
-
-        if (CurrentHeading.compare("F1score")==0) {                                   // F1 score constraint
-            if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
-                ProjectSettings.F1score = atof(CurrentValue.c_str());
-            } else {
-                ProjectLoadErrors.push_back("Invalid value for constraint NPV.");
-                return false;
-            }
+    }
+    if (CurrentHeading.compare("F1score")==0) {                                   // F1 score constraint
+        if (atof(CurrentValue.c_str())>0 && atof(CurrentValue.c_str())<1) {
+            ProjectSettings.F1score = atof(CurrentValue.c_str());
+        } else {
+            ProjectLoadErrors.push_back("Invalid value for constraint F1score.");
+            return false;
         }
+    }
       // Output Settings
       if (CurrentHeading.compare("OutputMethod")==0) {                          // Output method (ALL, INCREMENTAL or BEST)
         if (CurrentValue.compare("EVERY")==0) {
@@ -1498,16 +1491,6 @@ bool IOExplore::SetupExploreFromProject(string IOFilename) {
         }
       }
 
-        if (CurrentHeading.compare("PrintCutoffSetsBestLength")==0) {                       // Print cutoffsets
-            if (CurrentValue.compare("yes")==0) {
-                ProjectSettings.PrintCutoffSetsBestLength = true;
-            } else if (CurrentValue.compare("no")==0) {
-                ProjectSettings.PrintCutoffSetsBestLength = false;
-            } else {
-                ProjectLoadErrors.push_back("Invalid value for print cutoffsets bestlength.");
-                return false;
-            }
-        }
       if (CurrentHeading.compare("PrintPerformance")==0) {                      // Print performance
         if (CurrentValue.compare("yes")==0) {
           ProjectSettings.PrintPerformance = true;
@@ -1718,7 +1701,6 @@ bool IOExplore::SetupExploreFromStruct() {
   Project->SetPrintCombinations(ProjectSettings.PrintCombinations);
   Project->SetPrintFeatureSets(ProjectSettings.PrintFeatureSets);
   Project->SetPrintCutoffSets(ProjectSettings.PrintCutoffSets);
-  Project->SetPrintCutoffSetsBestLength(ProjectSettings.PrintCutoffSetsBestLength);
   Project->SetPrintPerformance(ProjectSettings.PrintPerformance);
   Project->SetPrintSets(ProjectSettings.PrintSets);
   Project->SetSavePartitions(ProjectSettings.SavePartitions);

@@ -4,7 +4,7 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Codecov test
-coverage](https://codecov.io/github/mi-erasmusmc/Explore/branch/develop/graph/badge.svg)](https://app.codecov.io/github/mi-erasmusmc/Explore?branch=develop)
+coverage](https://codecov.io/github/mi-erasmusmc/Explore/branch/main/graph/badge.svg)](https://app.codecov.io/github/mi-erasmusmc/Explore)
 <!-- badges: end -->
 
 ## Package overview

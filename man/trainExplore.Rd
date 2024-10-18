@@ -13,19 +13,24 @@ trainExplore(
   StartRulelength = 1,
   EndRulelength = 3,
   OperatorMethod = "EXHAUSTIVE",
-  CutoffMethod = "RVAC",
+  CutoffMethod = "ALL",
   ClassFeature = "'class'",
   PositiveClass = "'Iris-versicolor'",
   FeatureInclude = "",
-  Maximize = "ACCURACY",
+  Maximize = "BALANCEDACCURACY",
   Accuracy = 0,
   BalancedAccuracy = 0,
   Specificity = 0,
   PrintSettings = TRUE,
-  PrintPerformance = TRUE,
-  Subsumption = TRUE,
+  PrintPerformance = FALSE,
+  Subsumption = FALSE,
   BranchBound = TRUE,
-  Parallel = FALSE
+  Parallel = FALSE,
+  PrintCutoffSets = FALSE,
+  Sorted = "none",
+  OutputMethod = "BEST",
+  BinaryReduction = FALSE,
+  resultType = c("model")
 )
 }
 \arguments{
@@ -51,7 +56,7 @@ trainExplore(
 
 \item{PositiveClass}{1 or string (?) (should be one of elements of column 'ClassFeature' in data train). Always provided by the user. The string should be enclused in single quotation marks, e.g. 'class'}
 
-\item{FeatureInclude}{Empty or string (should be name of one of columns in data train)}
+\item{FeatureInclude}{Empty or string (should be name of one or more columns in data train separated by ;)}
 
 \item{Maximize}{One of list with strings, list = "ACCURACY", "SENSITIVITY", "SPECIFICITY", ...}
 
@@ -70,6 +75,16 @@ trainExplore(
 \item{BranchBound}{True or False}
 
 \item{Parallel}{True or False}
+
+\item{PrintCutoffSets}{True or False}
+
+\item{Sorted}{One of list with strings, e.g. "none", "jaccard", ... Sort features based on correlation with outcome variable, NOTE: only when train_data is entered}
+
+\item{OutputMethod}{string EVERY, BEST, INCREMENT}
+
+\item{BinaryReduction}{True or False}
+
+\item{resultType}{Select one of: "model", "candidateModels", "countCombinations", "countFeatureOperatorPairs", "countRulesWithoutConstraints", "countRulesWithConstraints"}
 }
 \value{
 Model

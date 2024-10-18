@@ -1,7 +1,7 @@
 Package: Explore
 Type: Package
 Title: Exhaustive Procedure for LOgic-Rule Extraction (EXPLORE)
-Version: 0.3.0
+Version: 0.4.0
 Date: 2020-12-14
 Authors@R: c(
     person("Aniek", "Markus", , "a.markus@erasmusmc.nl", role = c("aut"), comment = c(ORCID = "0000-0001-5779-4794")),
@@ -18,10 +18,12 @@ Imports:
     RcppParallel,
     stringr,
     caret,
-    pracma
+    pracma,
+    glue,
+    magrittr
 Encoding: UTF-8
 LinkingTo: Rcpp, BH (>= 1.51.0), RcppParallel
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0),
     knitr,

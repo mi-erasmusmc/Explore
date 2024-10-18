@@ -42,7 +42,11 @@ class CONDITION {
     // FeatureOperator
     bool IsSolo;                                                                // FeatureOperator occurs within rule on it's own
     bool NonSoloIncluded;                                                       // FeatureOperator included in a conjunction with size>1
-    
+
+    // Feature
+    bool IsRepeated;
+    bool RepeatedFeature;
+
     // Condition
     bool PreviousSame;                                                          // Feature is equal to previous feature within conjunction (left one)
     bool NextSame;                                                              // Feature is equal to next feature (right one)

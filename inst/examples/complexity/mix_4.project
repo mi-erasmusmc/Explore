@@ -1,9 +1,9 @@
 [General]
 Name=test
 Remarks=test
-DataFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/src/C++/Test/train_data.arff
+DataFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/inst/examples/complexity/mix_4.arff
 Output=File
-OutputFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/src/C++/Test/train_data.result
+OutputFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/inst/examples/complexity/mix_4.result
 IncrementalOutputFile=false
 [Setup]
 PartitionMethod=RESUBSTITUTION
@@ -14,9 +14,9 @@ LearnRatio=0.8
 NumberofPartitions=1
 OperatorMethod=EXHAUSTIVE
 CutoffMethod=ALL
-CutoffFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/src/C++/Test/train_data.cutoff
+CutoffFile=/Users/aniekmarkus/Documents/Git/_Projects/Explore/inst/examples/complexity/mix_4.cutoff
 ClassFeature='outcomeCount'
-PositiveClass=1
+PositiveClass="TRUE"
 [Restrictions]
 Rule=
 FeatureInclude=
@@ -25,8 +25,9 @@ FeatureRule=
 Maximize=BALANCEDACCURACY
 Accuracy=
 Specificity=
+BalancedAccuracy=0.6268
 [Output]
-OutputMethod=BEST
+OutputMethod=EVERY
 PrintSettings=yes
 PrintPartitions=no
 PrintFeatureOperators=no
@@ -37,13 +38,14 @@ PrintOperatorValues=no
 PrintCombinations=no
 PrintFeatureSets=no
 PrintCutoffSets=no
-PrintPerformance=yes
+PrintCutOffsetsBestLength=no
+PrintPerformance=no
 PrintSets=no
 SavePartitions=no
 [Run]
 Subsumption=no
 BranchBound=no
 Parallel=no
-ParallelMethod=ONE
-BinaryOptimization=no
+ParallelMethod=TWO
+BinaryReduction=no
 
