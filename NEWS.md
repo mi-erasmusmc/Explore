@@ -1,3 +1,5 @@
+# Explore 0.4.0
+
 # Explore 0.3.0
 
 * Package tested on Windows, MacOs and Linux. R-CMD-Check without errors.
