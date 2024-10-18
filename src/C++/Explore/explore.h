@@ -107,7 +107,6 @@ class Explore {
     bool IsPrintCombinations;                                                   // Print combinations to output
     bool IsPrintFeatureSets;                                                    // Print featuresets to output
     bool IsPrintCutoffSets;                                                     // Print conditionsets to output
-    bool IsPrintCutoffSetsBestLength;
     bool IsPrintPerformance;                                                    // Print performance to output
     bool IsPrintSets;                                                           // Print sets to output
     bool IsPrintOperatorMethod;                                                 // Print operator-method information to output
@@ -211,7 +210,6 @@ class Explore {
     bool GetPrintCombinations();                                                // Should combinations be printed to output
     bool GetPrintFeatureSets();                                                 // Should featuresets be printed to output
     bool GetPrintCutoffSets();                                                  // Should conditionsets be printed to output
-    bool GetPrintCutoffSetsBestLength();                                                  // Should conditionsets be printed to output
     bool GetPrintPerformance();                                                 // Should performance be printed to output
 	bool GetPrintSets();                                                        // Should sets be printed to output
 	bool GetPrintOperatorMethod();                                              // Should operator-method information be printed to output
@@ -258,7 +256,6 @@ class Explore {
     void SetPrintCombinations(bool Setting);                                    // Print combinations to output
     void SetPrintFeatureSets(bool Setting);                                     // Print featuresets to output
     void SetPrintCutoffSets(bool Setting);                                      // Print conditionsets to output
-    void SetPrintCutoffSetsBestLength(bool Setting);                                      // Print conditionsets to output
     void SetPrintPerformance(bool Setting);                                     // Print performance to output
     void SetPrintSets(bool Setting);                                            // Print sets to output
     void SetPrintOperatorMethod(bool Setting);                                  // Print operator-method information to output

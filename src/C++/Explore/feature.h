@@ -18,7 +18,7 @@
 class FEATURE {
 private:
     vector<OBSERVATION> Observations;                                           // Vector of observations enabling direct access
-    vector<CUTOFF> Cutoffs;                                                     // Vector of cutoffs enabling direct access
+    // Vector of cutoffs enabling direct access
 
     vector<CLASSES> LearnClasses;                                               // List of pointers to class objects of observations ordered on value for learning
     vector<CLASSES> ValidationClasses;                                          // List of pointers to class objects of observations ordered on value for validation
@@ -160,6 +160,7 @@ public:
 
     string PrintCutoffMethod();                                                 // Print cutoff method information
     string PrintOperatorMethod();                                               // Print operator method information
+    vector<CUTOFF> Cutoffs;
 };
 
 #endif

@@ -21,7 +21,9 @@ CONDITION::CONDITION() {
   
   // Needed for cutoffsets
   IsSolo = false;
+  IsRepeated = false;
   NonSoloIncluded = false;
+  RepeatedFeature = false;
 
   NextSame = false;
   PreviousSame = false;
@@ -49,7 +51,9 @@ CONDITION::CONDITION(unsigned int CNumber, string CName, vector<CUTOFF> CCutoffs
 
     // Needed for cutoffsets
     IsSolo = false;
+    IsRepeated = false;
     NonSoloIncluded = false;
+    RepeatedFeature = false;
 
     NextSame = false;
     PreviousSame = false;

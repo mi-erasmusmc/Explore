@@ -20,3 +20,14 @@ data <- data %>% ungroup() %>% select(c("sepallength","sepalwidth","petallength"
 
 save_path <- "~/Documents/Git/_Projects/Explore/inst/examples/complexity/continuous_4_small.arff"
 farff::writeARFF(as.data.frame(data), save_path)
+
+# Adapt plp dataset
+data_path <- "~/Documents/Git/_Projects/Explore/inst/examples/complexity/mix_4.arff"
+data <- farff::readARFF(data_path)
+
+data$age <- sample(18:80, nrow(data), replace = TRUE)
+data$age <- round(data$age/10)*10 # age per decade
+data <- data[,c("outcomeCount", "age", "198124209", "316139209", "316139210")]
+
+save_path <-  "~/Documents/Git/_Projects/Explore/inst/examples/complexity/mix_4_ordered.arff"
+farff::writeARFF(as.data.frame(data), save_path)

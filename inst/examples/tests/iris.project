@@ -38,9 +38,8 @@ PrintOperatorValues=no
 PrintCombinations=no
 PrintFeatureSets=no
 PrintCutoffSets=no
-PrintCutOffsetsBestLength=no
 PrintPerformance=yes
-PrintSets=no
+PrintSets=yes
 SavePartitions=no
 [Run]
 OptimizeRules=yes

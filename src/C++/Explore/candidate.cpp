@@ -40,6 +40,8 @@ void CANDIDATE::Clear() {
   Performance.Accuracy.Value = 0;
   Performance.NPV.Value = 0;
   Performance.PPV.Value = 0;
+  Performance.BalancedAccuracy.Value = 0;
+  Performance.F1score.Value = 0;
 }
 
 /**********************************************************************

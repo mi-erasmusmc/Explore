@@ -641,14 +641,14 @@ Out: unsigned int, the minimum order of a cutoff
 Description: Returns the order of the minimal cutoff for a specific
 FeatureOperator currently used in the rule.
 **********************************************************************/
-unsigned int RULE::GetMinCutoff(unsigned int FOperator) {
+unsigned int RULE::GetMinCutoff(unsigned int Fnum, int ConjunctionNr) {
     CONDITION* CurrentCondition;
-    unsigned int Result = FeatureOperators[FOperator].Cutoffs.size();
+    unsigned int Result = Features[0][Fnum].Cutoffs.size();
 
-    for (unsigned int i=0; i<Conjunctions.size(); i++) {
-        for (unsigned int j=0; j<Conjunctions[i].Conditions.size() && Conjunctions[i].Size>1; j++) {
+    for (unsigned int i=0; i<ConjunctionNr; i++) {
+        for (unsigned int j=0; j<Conjunctions[i].Conditions.size(); j++) {
             CurrentCondition = &Conjunctions[i].Conditions[j];
-            if (CurrentCondition->FeatureOperator==FOperator) {
+            if (CurrentCondition->FeatureNumber==Fnum && (Conjunctions[i].Size>1 || FeatureOperators[CurrentCondition->FeatureOperator].RepeatedFeature)) {
                 if (CurrentCondition->CutoffNumber<Result) {
                     Result = CurrentCondition->CutoffNumber;
                 }
@@ -688,14 +688,14 @@ Out: unsigned int, the maximum order of a cutoff
 Description: Returns the order of the maximum cutoff for a specific
 FeatureOperator currently used in the rule.
 **********************************************************************/
-unsigned int RULE::GetMaxCutoff(unsigned int FOperator) {
+unsigned int RULE::GetMaxCutoff(unsigned int Fnum) {
     CONDITION* CurrentCondition;
     unsigned int Result = 0;
 
     for (unsigned int i=0; i<Conjunctions.size(); i++) {
         for (unsigned int j=0; j<Conjunctions[i].Conditions.size() && Conjunctions[i].Size>1; j++) {
             CurrentCondition = &Conjunctions[i].Conditions[j];
-            if (CurrentCondition->FeatureOperator==FOperator) {
+            if (CurrentCondition->FeatureNumber==Fnum && (Conjunctions[i].Size>1 || FeatureOperators[CurrentCondition->FeatureOperator].RepeatedFeature)) {
                 if (CurrentCondition->CutoffNumber>Result) {
                     Result = CurrentCondition->CutoffNumber;
                 }
@@ -1670,9 +1670,6 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
   Start = clock();
 #endif
 
-    // int FOperatorNr_start = 1;
-    // int FOperatorNr_end = FOperatorNr_start+1;
-
     // Counters as reference
     int ConjunctionSize, ConjunctionNr, ConditionNr, FOperatorNr, MaxFOperator;
     CONDITION* Condition;
@@ -1728,7 +1725,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                     for (unsigned int j=0; j<Conjunctions[0].Conditions.size(); j++) { // Go per condition
                         for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
                             if (j<Conjunctions[i].Size) {
-                                if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator) {
+                                if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator && FeatureOperators[Conjunctions[i].Conditions[j].FeatureOperator].Operator==EQUAL) {
                                     FOperatorNr++;
                                     i=0;
                                     j=0;
@@ -1766,7 +1763,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                             }
                         }
                         if (Left<(Conjunctions.size()-1-ConjunctionNr)){
-                            Incremented =false;
+                            Incremented=false;
                         }
                     }
                 } else {
@@ -1783,8 +1780,8 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
     } else {
         // AM: Algorithm 6
         Incremented = true;                                                         // First FeatureSet generated for current Combination
-        // FOperatorNr = 0;
         FOperatorNr = FOperatorNr_start;
+
         // Iterate through conjunctions (from front to back)
         for (ConjunctionNr=0; ConjunctionNr<=(int)Conjunctions.size()-1; ConjunctionNr++) {
 
@@ -1792,9 +1789,18 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
             if (ConjunctionNr>0) {
                 if (BinaryReduction && Conjunctions[ConjunctionNr].Size==1) {
                     // Simply go to next FeatureOperator, no repeats
+
+                    if (FOperatorNr_start > 0 && Conjunctions[ConjunctionNr-1].Size!=1) { // For Parallel = TWO when starting with higher FOperatorNr
+                        FOperatorNr=0;
+                        NumRepeats=0;
+                    } else if (FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[Conjunctions[ConjunctionNr-1].Size-1].FeatureOperator].Operator!=EQUAL
+                        && Conjunctions[ConjunctionNr-1].Size!=1) { // Unless previous feature is continuous and not also term size 1, then repeat so "go back one"
+                        FOperatorNr--;
+                    }
+
                 } else if (Conjunctions[ConjunctionNr-1].Size>1) {
                     FOperatorNr=0;
-                    NumRepeats = 0;
+                    NumRepeats=0;
                 } else {//allow multiple occurences of nominal features
                     if (FeatureOperators[Conjunctions[ConjunctionNr - 1].Conditions[0].FeatureOperator].Operator ==
                         EQUAL && !BinaryReduction) {
@@ -1865,7 +1871,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
 
                     Condition = &Conjunctions[ConjunctionNr].Conditions[ConditionNr];    // Save reference to condition
 
-                    if (Conjunctions[ConjunctionNr].Size>1 ) {
+                    if (Conjunctions[ConjunctionNr].Size>1) {
                         PreviousCondition = &FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator]; // AM: copy previous term
                         NumRepeats = 0;
                     } else {
@@ -1877,7 +1883,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                             for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
                                 PreviousConjunction = &Conjunctions[i];
                                 for (unsigned int j = 0; j < PreviousConjunction->Conditions.size(); j++) {
-                                    if (FONext == PreviousConjunction->Conditions[j].FeatureOperator) {
+                                    if (FONext == PreviousConjunction->Conditions[j].FeatureOperator && FeatureOperators[ PreviousConjunction->Conditions[j].FeatureOperator].Operator==EQUAL) {
                                         FONext++;
                                         i=0;
                                         j=0;
@@ -1904,7 +1910,11 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                             }
                         } else {
                             //other operator can occur solo only once
-                            PreviousCondition = &FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator+1]; // AM: take next feature-operator
+                            if (Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator+1<FeatureOperators.size()) {
+                                PreviousCondition = &FeatureOperators[Conjunctions[ConjunctionNr-1].Conditions[ConditionNr].FeatureOperator+1]; // AM: take next feature-operator
+                            } else { // out of bounds
+                                return NextFeatureSet(FOperatorNr_start, FOperatorNr_end); // Next feature set
+                            }
                         }
 
                     }
@@ -1914,7 +1924,6 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                 }
 
             }
-
 
             // Not the conjunction at which we started, conjunction sizes do not match
             if (ConjunctionNr!=StartConjunctionNr && Conjunctions[ConjunctionNr].Size!=Conjunctions[ConjunctionNr-1].Size) {
@@ -1929,7 +1938,7 @@ bool RULE::NextFeatureSet(int FOperatorNr_start, int FOperatorNr_end) {
                         for (unsigned int j=0; j<Conjunctions[0].Conditions.size(); j++) { // Go per condition
                             for (i=0; i<=ConjunctionNr-1; i++) { // Go through all previous conjunctions (front of rule)
                                 if (j<Conjunctions[i].Size) {
-                                    if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator) {
+                                    if (FOperatorNr == Conjunctions[i].Conditions[j].FeatureOperator && FeatureOperators[Conjunctions[i].Conditions[j].FeatureOperator].Operator==EQUAL) {
                                         FOperatorNr++;
                                         i=0;
                                         j=0;
@@ -2043,7 +2052,7 @@ bool RULE::NextCutoffSet() {
                 MaxCutoff = CurrentCondition->Cutoffs.size();
 
                 if (CurrentConjunction->Size==1 && Conjunctions.size()>1) {                         // More than one conjunction and current conjunction size = 1
-                    if (CurrentCondition-> Operator==EQUAL){
+                    if (CurrentCondition->Operator==EQUAL){
                         if (CurrentCondition->CutoffNumber+1 < MaxCutoff) {
                             CurrentCondition->CutoffNumber++;
                             Incremented = true;
@@ -2116,7 +2125,7 @@ bool RULE::NextCutoffSet() {
                             ConditionNr--;
                         }
                     } else if (CurrentCondition->Operator==LESS) {
-                        MaxCutoff = GetMinCutoff(CurrentCondition->FeatureOperator);
+                        MaxCutoff = GetMinCutoff(CurrentCondition->FeatureNumber, ConjunctionNr);
                         if (CurrentCondition->CutoffNumber+1 < MaxCutoff) {
                             CurrentCondition->CutoffNumber++;
                             Incremented = true;
@@ -2124,7 +2133,7 @@ bool RULE::NextCutoffSet() {
                             ConditionNr--;
                         }
                     } else if (CurrentCondition-> Operator==GREATER){
-                        MaxCutoff = GetMaxCutoff(CurrentCondition->FeatureOperator);
+                        MaxCutoff = GetMaxCutoff(CurrentCondition->FeatureNumber);
                         if (CurrentCondition->CutoffNumber+1 > MaxCutoff && CurrentCondition->CutoffNumber+1<CurrentCondition->Cutoffs.size()) {
                             CurrentCondition->CutoffNumber++;
                             Incremented = true;
@@ -2133,10 +2142,12 @@ bool RULE::NextCutoffSet() {
                         }
                     }
                 } else {
-                    if (CurrentFeatureOperator->IsSolo && CurrentFeatureOperator->NonSoloIncluded && CurrentConjunction->Size>1) { // && !(CurrentFeatureOperator->Operator == LESS)
-                        if (MaxCutoff == 2 || CurrentFeatureOperator->Operator==GREATER) { // MaxCutoff == 2 && Operator==EQUAL?
-                            MaxCutoff--; // Needed for binary, should be removed for categorical
-                        }
+                    if (CurrentFeatureOperator->Operator==EQUAL && MaxCutoff==2){ // Needed for binary,should be removed for categorical
+                        if (CurrentFeatureOperator->NonSoloIncluded) {MaxCutoff--;}
+                    } else if (CurrentFeatureOperator->Operator==GREATER) {
+                        if (CurrentFeatureOperator->NonSoloIncluded) {MaxCutoff--;}
+                    } else if (CurrentFeatureOperator->Operator==LESS){
+                         if (CurrentFeatureOperator->RepeatedFeature) {MaxCutoff--;}
                     }
                     if (CurrentCondition->NextSame) { // For greater, also for equal or less?
                         MaxCutoff--;
@@ -2215,12 +2226,20 @@ bool RULE::NextCutoffSet() {
                         } else if (CurrentCondition->Operator==LESS) {
                             CurrentCondition->CutoffNumber = 0;
                         } else if (CurrentCondition->Operator==GREATER) {
-                            // Reset to next cutoff
-                            CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureOperator)+1;
+                            CurrentCondition->CutoffNumber = 0;
 
-                            // Or first if maximum reached
-                            if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
-                                CurrentCondition->CutoffNumber = 0;
+                            // Reset to next cutoff
+                            if (CurrentFeatureOperator->NonSoloIncluded || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->IsRepeated){
+                                CurrentCondition->CutoffNumber = GetMaxCutoff(CurrentCondition->FeatureNumber)+1;
+
+                                // Or first if maximum reached
+                                if (CurrentCondition->CutoffNumber > CurrentCondition->Cutoffs.size()-1) {
+                                    if (!CurrentFeatureOperator->RepeatedFeature){
+                                        CurrentCondition->CutoffNumber = 0;
+                                    } else {
+                                        CurrentCondition->CutoffNumber = 1;
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -2243,8 +2262,8 @@ bool RULE::NextCutoffSet() {
                             }
 
                             // Reset to next cutoff
-                            if (!(CurrentCondition->Operator==GREATER) && CurrentFeatureOperator->IsSolo && CurrentConjunction->Size>1) {
-                                CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureOperator)+1;
+                            if ((CurrentFeatureOperator->NonSoloIncluded && !(CurrentCondition->Operator==GREATER)) || (CurrentFeatureOperator->RepeatedFeature && !(CurrentCondition->Operator==LESS))) {
+                                CurrentCondition->CutoffNumber = GetMinCutoff(CurrentCondition->FeatureNumber, (int)Conjunctions.size())+1; // TODO: check if correct
                             }
                         }
                     }
@@ -2267,7 +2286,9 @@ bool RULE::NextCutoffSet() {
         vector<CONDITION>::iterator LFOperator(FeatureOperators.end());
         for (; CFOperator != LFOperator; CFOperator++) {
             CFOperator->IsSolo = false;
+            CFOperator->IsRepeated = false;
             CFOperator->NonSoloIncluded = false;
+            CFOperator->RepeatedFeature = false;
         }
 
         // Reset cutoffs of Conditions in rule and find equal features within conjunctions
@@ -2311,6 +2332,24 @@ bool RULE::NextCutoffSet() {
         for (ConjunctionNr = Conjunctions.size()-1; ConjunctionNr>=0; ConjunctionNr--) {
             if (Conjunctions[ConjunctionNr].Size==1) {
                 FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].IsSolo=true;
+
+                // Identify occurences of that feature in other terms (of size 1 or more than 1)
+                for (int C=ConjunctionNr-1; C>=0; C--) {
+                    CurrentConjunction = &Conjunctions[C];
+                    for (ConditionNr=0; ConditionNr<(int)CurrentConjunction->Size; ConditionNr++) {                // Iterate through conditions
+                        if (CurrentConjunction->Conditions[ConditionNr].FeatureNumber ==
+                            Conjunctions[ConjunctionNr].Conditions[0].FeatureNumber) {
+                            FeatureOperators[Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator].IsRepeated=true;
+
+                            if (CurrentConjunction->Size > 1 && CurrentConjunction->Conditions[ConditionNr].FeatureOperator ==
+                                                                Conjunctions[ConjunctionNr].Conditions[0].FeatureOperator) {
+                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].NonSoloIncluded = true;
+                            } else {
+                                FeatureOperators[CurrentConjunction->Conditions[ConditionNr].FeatureOperator].RepeatedFeature = true;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -2320,13 +2359,11 @@ bool RULE::NextCutoffSet() {
                 CurrentCondition = &Conjunctions[ConjunctionNr].Conditions[ConditionNr];
                 CurrentFeatureOperator = &FeatureOperators[CurrentCondition->FeatureOperator];
 
-                if (CurrentFeatureOperator->IsSolo==true) {                                                  // Is current condition solo?
+                if (CurrentFeatureOperator->IsSolo || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->NonSoloIncluded) {             // Is current condition solo?
                     if (CurrentConjunction->Size>1) {
-                        CurrentFeatureOperator->NonSoloIncluded = true;
-
-                        if (!(CurrentCondition->Operator==GREATER)) { // If operator = less or equal, start from next cutoff
+                        if ((CurrentFeatureOperator->NonSoloIncluded && !(CurrentCondition->Operator==GREATER)) || (CurrentFeatureOperator->RepeatedFeature && !(CurrentCondition->Operator==LESS))) {
                             if (CurrentCondition->Cutoffs.size()>1) {
-                                CurrentCondition->CutoffNumber = 1;
+                                CurrentCondition->CutoffNumber = 1; // Then start from next cutoff
                             } else {
                                 CutoffSetGenerated = false;
                                 return false;
@@ -2336,9 +2373,10 @@ bool RULE::NextCutoffSet() {
                     } else {
                         CurrentCondition->CutoffNumber = 0; // TODO: unneccesary?
 
-                        if (CurrentFeatureOperator->NonSoloIncluded && (CurrentCondition->Operator == GREATER)) {
+                        if ((CurrentFeatureOperator->NonSoloIncluded || CurrentFeatureOperator->RepeatedFeature || CurrentFeatureOperator->IsRepeated) && CurrentCondition->Operator == GREATER) {
                             if (CurrentCondition->Cutoffs.size()>1) {
-                                CurrentCondition-> CutoffNumber = 1;
+                                CurrentCondition->CutoffNumber = GetMaxCutoff(CurrentCondition->FeatureNumber)+1; // TODO: check if correct, or should it be MinCutoff?
+                                // CurrentCondition->CutoffNumber = 1;
                             } else {
                                 CutoffSetGenerated = false;
                                 return false;
@@ -2756,18 +2794,6 @@ void RULE::SetPrintCutoffSets(bool Setting) {
     IsPrintCutoffSets = Setting;
 }
 
-/**********************************************************************
-Function: SetPrintCutoffSets()
-Category: Modifiers
-Scope: public
-In: bool, yes or no
-Out: -
-Description: Rule must cout conditionsets that it generates.
-**********************************************************************/
-void RULE::SetPrintCutoffSetsBestLength(bool Setting) {
-    IsPrintCutoffSetsBestLength = Setting;
-}
-
 
 /**********************************************************************
 Function: SetTestMode()
@@ -2789,9 +2815,6 @@ void RULE::SetTestMode(PARTITION_TYPE PType) {
                 break;
             case VALIDATION:
                 PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetValidationClasses();
-                break;
-            case TRAIN: // both learn and validation set
-                PartitionClasses = (*Features)[FeatureOperators[j].FeatureNumber].GetTrainClasses();
                 break;
         }
         FeatureOperators[j].InitialiseSets(PartitionClasses);
@@ -3423,11 +3446,9 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float Cand
                 CountCandidates++;
 
                 if (CompareBestCandidate(CurrentPerformance, Initialised, CandidatePerformance, MaximizeMeasure)) {
-                    // PartitionCandidates = SaveCandidate(CurrentPerformance, PartitionCandidates, MaximizeMeasure, RestrictionSet);
                     Found = true;
                 }
             } else {
-                // PartitionCandidates = SaveCandidate(CurrentPerformance, PartitionCandidates, MaximizeMeasure, RestrictionSet);
 
                 Candidate = true;
                 CountCandidates++;
@@ -3438,7 +3459,10 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float Cand
 
     switch (RuleOutputMethod) {
         case EVERY:
-            PrintCutoffSet();
+            if (Candidate) {
+                cout << "Candidate model: ";
+                PrintCutoffSet();
+            }
             if (IsPrintPerformance) {
                 PrintPerformance();
             }
@@ -3463,8 +3487,7 @@ bool RULE::TestRule(bool Initialised, vector<CONSTRAINT> Constraints, float Cand
     End = clock();
     ExploreTiming.AddTime("EXPLORE::TestRule", Start, End);
 #endif
-    // TODO: indicate when partition candidates NOT updated or return Candidate instead?
-    // return Candidate;
+
     return Found;
 }
 
@@ -3506,6 +3529,12 @@ bool RULE::CompareConstraints(PERFORMANCE CurrentPerformance, bool Initialised, 
                         break;
                     case ACCURACY:
                         RuleValue = CurrentPerformance.Accuracy.Value;
+                        break;
+                    case BALANCEDACCURACY:
+                        RuleValue = CurrentPerformance.BalancedAccuracy.Value;
+                        break;
+                    case F1SCORE:
+                        RuleValue = CurrentPerformance.F1score.Value;
                 }
                 ConstraintValue = (*CurrentConstraint).Value;
                 if (ConstraintValue > RuleValue) {
@@ -3575,7 +3604,7 @@ bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised
                 break;
         }
 
-        if (CandidateValue<=RuleValue) { // TODO: why = included here?
+        if (CandidateValue<RuleValue) {
 #ifdef DEBUG_TIMING
             End = clock();
         ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
@@ -3583,7 +3612,7 @@ bool RULE::CompareBestCandidate(PERFORMANCE CurrentPerformance, bool Initialised
             return true;
         }
 
-        if (CandidateValue>RuleValue) {
+        if (CandidateValue>=RuleValue) {
 #ifdef DEBUG_TIMING
             End = clock();
         ExploreTiming.AddTime("EXPLORE::CompareBestCandidate", Start, End);
@@ -3643,167 +3672,6 @@ CANDIDATE RULE::SaveCandidate(PERFORMANCE_MEASURE MaximizeMeasure, bool Restrict
     End = clock();
     ExploreTiming.AddTime("EXPLORE::SaveCandidate", Start, End);
 #endif
-}
-
-/**********************************************************************
-Function: BestLength()
-Category: Modifiers
-Scope: public
-In: -
-Out: -
-Description: is stop criterium met?
-**********************************************************************/
-int RULE::FindBestLength(bool Initialised, CANDIDATE PartitionCandidates, PARTITION_METHOD PartitionMethod,PERFORMANCE_MEASURE MaximizeMeasure) {
-    float best;
-    float current;
-    int Opt=0;
-
-    CANDIDATE BestCandidate;
-
-    if (Initialised) {
-        SetTestMode(VALIDATION);
-
-        if (PartitionCandidates.IsValid()) {
-            // if (PartitionCandidates.size()>0) {
-            for (unsigned int i=GetMinRuleLength(); i<=GetMaxRuleLength(); i++){
-                BestCandidate = ChooseBestCandidate(i, Initialised, PartitionCandidates, MaximizeMeasure);
-
-                if (BestCandidate.Performance.Accuracy.Value != 0) {  // Check if BestCandidate not empty
-                    if (SetRule(BestCandidate))
-                    {
-                        cout << "RULELENGTH " << i << endl << endl;
-                        cout << "Best candidate (within this partition): ";
-                        PrintCutoffSet();
-                        cout << endl;
-                        cout << "Learn-set: ";
-                        BestCandidate.Performance.Print();
-                        cout << endl;
-
-                        if (!(PartitionMethod==RESUBSTITUTION)){
-                            BestCandidate.Performance = CalculatePerformance();          // Test BestCandidate on validation partition
-                            cout << "Validation-set: ";
-                            BestCandidate.Performance.Print();
-                            cout << endl;
-                        }
-                        switch (MaximizeMeasure){
-
-                            case ACCURACY:
-                                current = BestCandidate.Performance.Accuracy.Value;
-                                break;
-                            case SENSITIVITY:
-                                current = BestCandidate.Performance.Sensitivity.Value;
-                                break;
-                            case SPECIFICITY:
-                                current = BestCandidate.Performance.Specificity.Value;
-                                break;
-                            case NPV:
-                                current = BestCandidate.Performance.NPV.Value;
-                                break;
-                            case PPV:
-                                current = BestCandidate.Performance.PPV.Value;
-                                break;
-                            case BALANCEDACCURACY:
-                                current = BestCandidate.Performance.BalancedAccuracy.Value;
-                                break;
-                            case F1SCORE:
-                                current = BestCandidate.Performance.F1score.Value;
-                                break;
-                        }
-                        if (i==1) {
-                            best = current;
-                            Opt = 1;
-                        }
-                        else {
-                            if (current > best) {
-                                best = current;
-                                Opt = i;
-                            }
-                        }
-                    }
-                }
-            }
-            return Opt;
-        } else {
-#if defined(EXPLORE_MPI_DEBUG)
-            cout << "--> No Candidates" << endl;
-#endif
-        }
-    }
-    return 0;
-}
-
-
-
-/**********************************************************************
-Function: ChooseBestCandidate()
-Category: Modifiers
-Scope: public
-In: insigned int, rule length
-Out: -
-Description: Retrieves the best candidate and puts it in
-BestCandidate.
-**********************************************************************/
-CANDIDATE RULE::ChooseBestCandidate(unsigned int RuleLength, bool Initialised, CANDIDATE PartitionCandidates, PERFORMANCE_MEASURE MaximizeMeasure) {
-#ifdef DEBUG_TIMING
-    clock_t Start, End;
-  Start = clock();
-#endif
-//    bool Found = false;
-//    CANDIDATE BestCandidate;
-//
-//    if (Initialised) {
-//        tbb::concurrent_vector<CANDIDATE>::iterator CurrentCandidate(PartitionCandidates.begin());
-//        tbb::concurrent_vector<CANDIDATE>::iterator LastCandidate(PartitionCandidates.end());
-//
-//        // TODO: check if better place to create variable
-//        BestCandidate = (*CurrentCandidate);
-//
-//        float CurrentValue;
-//        float BestValue;
-//
-//        while (CurrentCandidate != LastCandidate) {
-//            CurrentValue = 0;
-//            if ((*CurrentCandidate).Features.size()==RuleLength){
-//                switch (MaximizeMeasure) {
-//                    case SENSITIVITY:
-//                        CurrentValue = (*CurrentCandidate).Performance.Sensitivity.Value;
-//                        break;
-//                    case SPECIFICITY:
-//                        CurrentValue = (*CurrentCandidate).Performance.Specificity.Value;
-//                        break;
-//                    case NPV:
-//                        CurrentValue = (*CurrentCandidate).Performance.NPV.Value;
-//                        break;
-//                    case PPV:
-//                        CurrentValue = (*CurrentCandidate).Performance.PPV.Value;
-//                        break;
-//                    case ACCURACY:
-//                        CurrentValue = (*CurrentCandidate).Performance.Accuracy.Value;
-//                        break;
-//                }
-//
-//                if (BestValue<=CurrentValue) {
-//                    BestCandidate = (*CurrentCandidate);
-//                    BestValue = CurrentValue;
-//                    Found = true;
-//                }
-//            }
-//            CurrentCandidate++;
-//        }
-//    }
-//
-//#ifdef DEBUG_TIMING
-//    End = clock();
-//  ExploreTiming.AddTime("EXPLORE::ChooseBestCandidate", Start, End);
-//#endif
-//
-//  if (Found) {
-//      return BestCandidate;
-//  } else {
-//      return CANDIDATE();
-//  }
-
-    return PartitionCandidates;
 }
 
 /**********************************************************************

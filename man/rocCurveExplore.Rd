@@ -6,6 +6,13 @@
 \usage{
 rocCurveExplore(modelsCurve, data, labels)
 }
+\arguments{
+\item{modelsCurve}{modelsCurve}
+
+\item{data}{data}
+
+\item{labels}{labels}
+}
 \value{
 auc value for EXPLORE
 }
