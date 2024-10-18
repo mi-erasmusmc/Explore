@@ -104,17 +104,4 @@ test_that("Test EndRulelength 5", {
   
 })
 
-test_that("getDataSetPath list cases", {
-  
-  dataset <- "iris"
-  data_path <- getDataSetPath(dataset = dataset) 
-  expect_equal(data_path$class_feature, "'class'")
-  
-  dataset <- "binary_3"
-  data_path <- getDataSetPath(dataset = dataset)
-  expect_equal(data_path$class_feature, "'outcomeCount'")
-  
-  dataset <- "mix_4_ordered"
-  expect_error(getDataSetPath(dataset = dataset))
 
-})
